@@ -1,6 +1,6 @@
-// Regras da fila (porte das RPCs do Postgres: adicionar_item_fila, alterar_status_fila, sala_chamar_fila).
+// Regras da fila: emitir senha, mudar status (chamar, iniciar, finalizar...) e "Chamar Próximo".
 // O SQLite do Node é síncrono e uma transação IMMEDIATE trava a escrita, então a geração da senha
-// é atômica sem precisar de pg_advisory_xact_lock.
+// é atômica.
 import { randomUUID } from 'node:crypto';
 import { db, agora, diaLocal, transacao, emConflito } from './db.js';
 import { lerConfig } from './config.js';

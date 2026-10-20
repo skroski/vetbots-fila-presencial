@@ -1,6 +1,6 @@
 # Banco SQLite e API
 
-Substitui o antigo Supabase/Postgres (tabelas `fila_*`, RPCs `adicionar_item_fila`, `alterar_status_fila`, `sala_chamar_fila`, `advisory lock`, RLS e Realtime). Agora é **um arquivo**: `data/fila.db`.
+O banco é **um único arquivo**: `data/fila.db`.
 
 ## Por que SQLite
 - Zero instalação e zero manutenção: usa o módulo **`node:sqlite`, embutido no Node** (22.16+). Não há pacote nativo no `npm install`, então nada falha por falta de Python/compilador. Observação: no Node 22 o módulo ainda é marcado como experimental (o aviso é silenciado em `server/silenciar-aviso.js`); no Node 24 já não avisa. Os testes (`npm test`) cobrem tudo que o sistema usa dele.
@@ -47,6 +47,3 @@ Erros: JSON `{ "erro": "mensagem legível" }` com status 400/401/404/409/413/415
 
 ## Integrar com outro sistema (ex.: dashboard da clínica)
 A API é HTTP simples: um sistema externo pode emitir senhas com `POST /api/itens` (`servicoId`, `tutorNome`, `petNome`, `prioridade`) e ler o estado com `GET /api/state`. Rode só dentro da rede da clínica.
-
-## Migrar dados da versão antiga (Supabase)
-Não há migração automática. Para histórico, exporte `fila_itens` do Postgres em CSV e importe com um script `INSERT` (mapeie `uuid`→texto, `timestamptz`→ISO com `Z`, `jsonb`→texto JSON, `ciclo`=dia de `chegada_em`). Para clínicas novas não é necessário.

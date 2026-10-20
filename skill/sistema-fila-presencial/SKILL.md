@@ -1,6 +1,6 @@
 ---
 name: sistema-fila-presencial
-description: Sistema de Fila Presencial Veterinária (Node + SQLite, 100% local, sem Supabase e sem internet). Recepção e triagem, telão de TV com playlist de vídeos MP4 e sinal sonoro, chamador de consultório, totem touch com impressão térmica e métricas. Cores e logotipo personalizáveis em tela. Use para instalar o pacote em uma clínica, personalizar (cores, logo, vídeos, salas, serviços), subir na rede local (LAN/Docker), fazer backup, ou evoluir o sistema. Compatível com Claude Code, Codex, Antigravity e Gemini CLI.
+description: Sistema de Fila Presencial Veterinária (Node + SQLite, 100% local, sem serviços externos e sem internet). Recepção e triagem, telão de TV com playlist de vídeos MP4 e sinal sonoro, chamador de consultório, totem touch com impressão térmica e métricas. Cores e logotipo personalizáveis em tela. Use para instalar o pacote em uma clínica, personalizar (cores, logo, vídeos, salas, serviços), subir na rede local (LAN/Docker), fazer backup, ou evoluir o sistema. Compatível com Claude Code, Codex, Antigravity e Gemini CLI.
 ---
 
 # Sistema de Fila Presencial Veterinária (Node + SQLite, rede local)
@@ -28,7 +28,7 @@ Repositório oficial do pacote: https://github.com/skroski/vetbots-fila-presenci
 | **Personalização** | `references/personalizacao.md` | Cores, logotipo, vídeos MP4 da TV, layouts, codecs, PIN dos Ajustes. |
 | **Rede local** | `references/rede-local-lan.md` | IP fixo, firewall, Smart TVs, tablets, consultórios. |
 | **Totem e impressão** | `references/totem-e-impressao.md` | Kiosk, impressão térmica 58/80 mm silenciosa. |
-| **Possibilidades** | `references/possibilidades.md` | O que dá para evoluir (e o que mudou em relação à versão Supabase). |
+| **Possibilidades** | `references/possibilidades.md` | O que dá para evoluir a partir daqui. |
 | **Agentes de IA** | `references/agentes.md` | Como cada agente usa esta skill. |
 
 ---
@@ -65,7 +65,7 @@ Requisitos: **Node.js 22.16 ou superior** (ou Docker). Nada mais: o SQLite vem e
 Rode `criar-projeto.mjs <pasta> --atualizar`: sobrescreve apenas o código (`server/`, `web/`, `shared/`, scripts, Docker), **preservando `data/`** (banco, logotipo, vídeos) e `.env`. Depois `npm install && npm start`.
 
 ### C) Evoluir o sistema
-- Regras da fila: `server/queue.js` (porte das antigas RPCs do Postgres). Senhas são geradas dentro de transação `IMMEDIATE` (`transacao(fn, { imediata: true })` em `server/db.js`) + índice único `(ciclo, senha)`.
+- Regras da fila: `server/queue.js`. Senhas são geradas dentro de transação `IMMEDIATE` (`transacao(fn, { imediata: true })` em `server/db.js`) + índice único `(ciclo, senha)`.
 - Rotas: `server/app.js`. Configurações editáveis: `server/config.js` (adicione a chave no `SCHEMA` e use em `web/src/types/queue.ts`).
 - Nova coluna/tabela: **acrescente** um item ao fim de `MIGRATIONS` em `server/db.js` (nunca edite os anteriores; a versão fica em `PRAGMA user_version`).
 - Telas: `web/src/pages/`. Cores sempre por `brand-*` (nunca `emerald-*`): vêm da cor escolhida em `/config`.
@@ -75,7 +75,7 @@ Rode `criar-projeto.mjs <pasta> --atualizar`: sobrescreve apenas o código (`ser
 
 ## Decisões importantes (não desfazer sem avisar o usuário)
 
-- **SQLite em vez de Supabase**: sem nuvem e sem Postgres. Dados em `data/fila.db` (WAL). Backup: copiar a pasta `data/` ou botão em Ajustes; o servidor também gera backup diário automático em `data/backups/`.
+- **SQLite local**: sem nuvem e sem servidor de banco. Dados em `data/fila.db` (WAL). Backup: copiar a pasta `data/` ou botão em Ajustes; o servidor também gera backup diário automático em `data/backups/`.
 - **Rede local apenas**: não há login de usuário. Quem está na rede abre as telas. Os Ajustes podem ter PIN (`ADMIN_PIN`). **Não exponha a porta na internet.**
 - **Numeração reinicia todo dia** (configurável em Ajustes). O "dia" é o do fuso do computador servidor (no Docker, `TZ`, padrão `America/Sao_Paulo`).
 - **Vídeos**: MP4 H.264 + AAC é o formato seguro para Smart TVs. Ficam em `data/uploads/videos` e são servidos com HTTP Range (necessário em TVs e Safari).

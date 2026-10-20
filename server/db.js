@@ -1,5 +1,5 @@
 // Banco de dados SQLite (um único arquivo em data/fila.db).
-// Substitui o Supabase/Postgres: sem servidor de banco, sem conta, sem internet.
+// Sem servidor de banco, sem conta, sem internet.
 // Usa o SQLite embutido no próprio Node (node:sqlite): nada para compilar nem baixar no npm install.
 import './silenciar-aviso.js';
 // Importação dinâmica: o aviso "experimental" do Node 22 sai no momento do carregamento, e aqui já está silenciado.
@@ -24,7 +24,7 @@ db.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA foreign_
 /**
  * Executa `fn` dentro de uma transação (confirma ao terminar, desfaz se der erro).
  * `imediata: true` trava a escrita já no início (BEGIN IMMEDIATE): é o que serializa a geração de senhas
- * e o "Chamar Próximo", no lugar do antigo pg_advisory_xact_lock do Postgres.
+ * e o "Chamar Próximo".
  */
 export function transacao(fn, { imediata = false } = {}) {
   db.exec(imediata ? 'BEGIN IMMEDIATE' : 'BEGIN');

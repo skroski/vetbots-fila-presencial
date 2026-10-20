@@ -1,6 +1,6 @@
 # Sistema de Fila Presencial Veterinária (Node + SQLite)
 
-Pacote com a **skill para agentes de IA** e o **aplicativo completo** (`assets/app/`) de fila presencial para clínicas veterinárias: recepção, telão de TV com vídeos MP4, chamador de consultório, totem e métricas. Roda na rede local, sem internet e sem Supabase.
+Pacote com a **skill para agentes de IA** e o **aplicativo completo** (`assets/app/`) de fila presencial para clínicas veterinárias: recepção, telão de TV com vídeos MP4, chamador de consultório, totem e métricas. Roda na rede local, sem internet e sem serviços externos.
 
 ## Início rápido
 

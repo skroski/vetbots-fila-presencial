@@ -3,20 +3,13 @@
 ## Já está pronto
 Recepção, TV com playlist de vídeos MP4 (2 layouts), chamador, totem com impressão térmica, métricas, personalização de cor e logotipo, ajustes de salas/serviços, PIN dos Ajustes, backup diário automático e manual, Docker, instalação por duplo clique.
 
-## O que mudou em relação à versão com Supabase
-| | Antes (Supabase) | Agora (SQLite) |
-| :--- | :--- | :--- |
-| Banco | Postgres na nuvem ou Docker | Um arquivo `data/fila.db` |
-| Instalação | Criar projeto, rodar migrações SQL, configurar chaves | `npm install` + `npm start` |
-| Tempo real | Supabase Realtime | SSE próprio + consulta a cada 10 s |
-| Acesso de fora da clínica | Sim (nuvem) | **Não**: só rede local (de propósito) |
-| Login | Supabase Auth (opcional) | PIN opcional nos Ajustes |
-| Configurações (salas/serviços) | Só no navegador (não persistiam) | No banco, para todos os aparelhos |
-| Cores / logotipo | Variáveis de build (`VITE_CLINIC_NAME`) | Pela tela de Ajustes, sem recompilar |
-| Vídeos | Não existia | Playlist MP4 na TV |
-| Backup | Do provedor | Diário automático + botão + copiar `data/` |
+## Características do desenho
+- Roda só na rede local, sem acesso de fora da clínica (de propósito).
+- Sem login de usuários: PIN opcional nos Ajustes.
+- Configurações (salas, serviços, cores, logotipo) gravadas no banco e iguais em todos os aparelhos.
+- Backup diário automático, botão em Ajustes e cópia simples da pasta `data/`.
 
-Também ganhou: "Chamar Próximo" atômico no servidor, numeração diária, números sem repetição garantidos por índice único, mensagens de erro na tela, aviso de falta de conexão, fontes embutidas (offline).
+Também inclui: "Chamar Próximo" atômico no servidor, numeração diária, números sem repetição garantidos por índice único, mensagens de erro na tela, aviso de falta de conexão, fontes embutidas (offline).
 
 ## Próximos passos possíveis (por esforço)
 

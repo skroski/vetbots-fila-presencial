@@ -7,4 +7,4 @@ Quando o usuário falar de fila presencial, chamada na TV, chamador de consultó
 3. O aplicativo (Node + SQLite + React) está em `assets/app/`. Banco: `references/banco-sqlite-e-api.md`.
 4. Cores, logotipo e vídeos: pela tela `/config` (`references/personalizacao.md`).
 5. Rede local, firewall e Smart TVs: `references/rede-local-lan.md`. Instalação: `references/instalacao.md`.
-6. Sem Supabase. Nunca apague a pasta `data/` de uma instalação.
+6. Nunca apague a pasta `data/` de uma instalação.

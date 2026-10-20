@@ -33,7 +33,7 @@ node scripts/install.mjs --uninstall
 - *"Preciso levar para outro repositório/branch"* → `criar-projeto.mjs <pasta> --git` e `git remote add origin ... && git push`.
 
 ## Regras para qualquer agente
-1. Não reintroduza Supabase/Postgres: o pacote é local e leve por decisão.
+1. Não adicione dependência de serviços externos ou de servidor de banco: o pacote é local e agnóstico por decisão.
 2. Nunca apague nem sobrescreva `data/` de uma instalação existente.
 3. Cores sempre `brand-*`; textos em português do Brasil.
 4. Termine com `npm test`, `npm run build` e uma checagem visual de `/tv` e `/config`.
