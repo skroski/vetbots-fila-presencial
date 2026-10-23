@@ -16,7 +16,7 @@ import { cssDaCor } from '../shared/cores.js';
 export const ADMIN_PIN = process.env.ADMIN_PIN || '';
 const DIST = join(ROOT, 'web', 'dist');
 
-fila.carregarPadroes();
+if (fila.carregarPadroes()) media.carregarVideoPadrao();
 
 export const app = express();
 app.disable('x-powered-by');
@@ -194,6 +194,11 @@ app.put('/api/midias', admin, ass(async (req, res) => {
   emitir();
   res.status(201).json(novo);
 }));
+app.post('/api/midias/youtube', admin, json, (req, res) => {
+  const novo = media.adicionarYoutube(req.body || {});
+  emitir();
+  res.status(201).json(novo);
+});
 app.post('/api/midias/ordem', admin, json, (req, res) => {
   const lista = media.reordenarMidias(req.body?.ids);
   emitir();

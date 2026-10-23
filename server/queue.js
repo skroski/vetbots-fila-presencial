@@ -290,10 +290,12 @@ export function chamarProximo(salaId) {
 
 // ---------- carga inicial (serviços e salas padrão, só na primeira execução) ----------
 
+/** Devolve true na primeira execução (banco novo): quem chama aproveita para carregar o vídeo padrão. */
 export function carregarPadroes() {
   const vazio = (t) => db.prepare(`select count(*) as n from ${t}`).get().n === 0;
+  const primeiraVez = vazio('fila_servicos');
   transacao(() => {
-    if (vazio('fila_servicos')) {
+    if (primeiraVez) {
       const ins = db.prepare('insert into fila_servicos (id, nome, prefixo, ordem, created_at) values (?, ?, ?, ?, ?)');
       [
         ['Emergência', 'X'],
@@ -313,6 +315,7 @@ export function carregarPadroes() {
       ].forEach((nome) => ins.run(randomUUID(), nome, agora()));
     }
   });
+  return primeiraVez;
 }
 
 export { ATIVOS };

@@ -48,6 +48,11 @@ test('carga inicial cria serviços e salas padrão', async () => {
   assert.equal(s.salas.length, 7);
   assert.equal(typeof s.servicos[0].ativo, 'boolean');
   assert.match(s.config.brand_color, /^#[0-9a-f]{6}$/);
+  // instalação nova já vem com o vídeo do YouTube na playlist
+  assert.equal(s.midias.length, 1);
+  assert.equal(s.midias[0].tipo, 'youtube');
+  assert.equal(s.midias[0].youtube_id, 'FB56YWC3tz4');
+  assert.equal(s.midias[0].ativo, true);
 });
 
 test('200 senhas simultâneas saem únicas e sequenciais', async () => {
@@ -199,9 +204,45 @@ test('upload de vídeo: valida assinatura, lista, serve com Range (206) e exclui
   assert.equal(rng.headers.get('accept-ranges'), 'bytes');
 
   assert.equal((await api('PATCH', `/api/midias/${m.id}`, { ativo: false })).body.ativo, false);
-  assert.equal((await estado()).midias.length, 1);
+  assert.equal((await estado()).midias.length, 2); // o vídeo padrão do YouTube + este MP4
   assert.equal((await api('DELETE', `/api/midias/${m.id}`)).status, 204);
   assert.equal((await fetch(base + m.url)).status, 404);
+});
+
+test('YouTube: aceita os links comuns, rejeita o resto e convive com os MP4', async () => {
+  const ids = [];
+  for (const url of [
+    'https://www.youtube.com/watch?v=FB56YWC3tz4&list=PL123',
+    'https://youtu.be/FB56YWC3tz4?si=abc',
+    'youtube.com/shorts/FB56YWC3tz4',
+    'https://m.youtube.com/embed/FB56YWC3tz4',
+    ' FB56YWC3tz4 ',
+  ]) {
+    const r = await api('POST', '/api/midias/youtube', { url });
+    assert.equal(r.status, 201, url);
+    assert.equal(r.body.tipo, 'youtube');
+    assert.equal(r.body.youtube_id, 'FB56YWC3tz4');
+    assert.equal(r.body.url, 'https://www.youtube.com/watch?v=FB56YWC3tz4');
+    assert.equal(r.body.nome, 'Vídeo do YouTube (FB56YWC3tz4)');
+    ids.push(r.body.id);
+  }
+  for (const url of ['https://vimeo.com/123456789', 'https://evil.example/watch?v=FB56YWC3tz4', 'https://www.youtube.com/', 'oi', '']) {
+    assert.equal((await api('POST', '/api/midias/youtube', { url })).status, 400, url);
+  }
+  const lista = (await estado()).midias;
+  assert.equal(lista.length, 6); // 5 acima + o vídeo padrão
+  assert.ok(lista.every((m) => m.tipo === 'youtube' && m.arquivo === ''));
+  assert.equal((await api('PATCH', `/api/midias/${ids[0]}`, { nome: 'Institucional' })).body.nome, 'Institucional');
+  for (const id of ids) assert.equal((await api('DELETE', `/api/midias/${id}`)).status, 204);
+  assert.equal((await estado()).midias.length, 1);
+});
+
+test('config: tamanho da TV e lista de chamadas', async () => {
+  assert.equal((await api('PUT', '/api/config', { tv_video_size: '1_2', tv_show_lists: false })).body.tv_video_size, '1_2');
+  assert.equal((await api('PUT', '/api/config', { tv_video_size: '2_3' })).body.tv_video_size, '2_3');
+  assert.equal((await estado()).config.tv_show_lists, false);
+  assert.equal((await api('PUT', '/api/config', { tv_video_size: '3_4' })).status, 400);
+  await api('PUT', '/api/config', { tv_video_size: '1_3', tv_show_lists: true });
 });
 
 test('upload de logo: aceita PNG, rejeita arquivo disfarçado e remove', async () => {

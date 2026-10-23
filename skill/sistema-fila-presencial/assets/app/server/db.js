@@ -117,6 +117,11 @@ const MIGRATIONS = [
     created_at text not null
   );
   `,
+  // 2: vídeos do YouTube na playlist (a TV carrega o player oficial; só esses itens precisam de internet)
+  `
+  alter table midias add column tipo text not null default 'arquivo' check (tipo in ('arquivo', 'youtube'));
+  alter table midias add column youtube_id text;
+  `,
 ];
 
 export function migrate() {

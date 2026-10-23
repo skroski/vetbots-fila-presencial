@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Volume2, VolumeX, Bell, Monitor, Lock, Unlock, Sparkles, Maximize } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
 import { tocarChimeFila, desbloquearAudio } from '@/lib/audioChime';
@@ -148,12 +148,20 @@ function ChamadaDestaque({
   room,
   privacy,
   pulsing,
+  painelVw,
 }: {
   current: QueueItem | null;
   room: QueueRoom | undefined;
   privacy: boolean;
   pulsing: boolean;
+  /** Largura aproximada do painel em vw: a senha e os textos se ajustam a ela (1/3, 1/2 ou 2/3 de vídeo) */
+  painelVw: number;
 }) {
+  // Fonte monoespaçada: cada caractere ocupa ~0,62 em. A senha cresce até caber em 86% do painel, mesmo com 5 caracteres (A1000).
+  const caracteres = Math.max(4, (current?.senha || '').length);
+  const tamanhoSenha = `max(4rem, min(calc(${(painelVw * 0.86).toFixed(1)}vw / ${(caracteres * 0.62).toFixed(2)}), 38vh))`;
+  const tamanhoNome = `clamp(1.5rem, ${(painelVw * 0.058).toFixed(2)}vw, 4.25rem)`;
+  const tamanhoSala = `clamp(1.25rem, ${(painelVw * 0.048).toFixed(2)}vw, 3.5rem)`;
   return (
     <section
       role="status"
@@ -171,19 +179,19 @@ function ChamadaDestaque({
 
       <div
         className={`font-mono font-black leading-none tabular-nums tracking-tight text-base-content transition-transform duration-500 ${pulsing ? 'scale-105' : ''}`}
-        style={{ fontSize: 'clamp(6rem, min(21vw, 38vh), 26rem)' }}
+        style={{ fontSize: tamanhoSenha }}
       >
         {current?.senha || '— —'}
       </div>
 
-      <p className="max-w-full truncate font-extrabold text-base-content" style={{ fontSize: 'clamp(1.75rem, 3.6vw, 4.25rem)' }}>
+      <p className="max-w-full truncate font-extrabold text-base-content" style={{ fontSize: tamanhoNome }}>
         {nomeExibido(current, privacy)}
       </p>
 
       {current ? (
         <div
           className="flex max-w-full flex-wrap items-baseline justify-center gap-x-4 gap-y-1 rounded-lg bg-base-content px-8 py-3 text-base-100"
-          style={{ fontSize: 'clamp(1.5rem, 3vw, 3.5rem)' }}
+          style={{ fontSize: tamanhoSala }}
         >
           <span className="font-semibold">Dirija-se ao</span>
           <strong className="font-black">{room?.nome || 'Consultório Principal'}</strong>
@@ -207,17 +215,20 @@ function ListasGrandes({
   waiting,
   rooms,
   privacy,
+  lado,
 }: {
   recentes: QueueItem[];
   waiting: QueueItem[];
   rooms: QueueRoom[];
   privacy: boolean;
+  /** Coluna larga (vídeo em 1/2 da tela): as duas listas ficam lado a lado em vez de empilhadas */
+  lado: boolean;
 }) {
   // Limitada também pela altura: em telas baixas (1366x768) as duas listas precisam caber sem cortar.
   const senhaGrande = { fontSize: 'clamp(2rem, min(3.2vw, 5.2vh), 3.75rem)' };
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
-      <section aria-label="Chamadas anteriores" className="rounded-lg border border-base-300 bg-base-100 p-4">
+    <div className={`flex min-h-0 flex-1 gap-3 overflow-hidden ${lado ? 'flex-row' : 'flex-col'}`}>
+      <section aria-label="Chamadas anteriores" className={`rounded-lg ${lado ? 'flex-1' : ''} border border-base-300 bg-base-100 p-4`}>
         <h2 className="mb-2 text-lg font-bold text-base-content">Chamadas anteriores</h2>
         <ul className="space-y-1.5">
           {recentes.slice(0, 3).map((item, i) => (
@@ -259,6 +270,28 @@ function ListasGrandes({
   );
 }
 
+/** Esconde o cursor (e, na tela cheia, os botões) quando ninguém mexe no mouse: a TV fica limpa para o cliente. */
+function useOciosa(ms: number) {
+  const [ociosa, setOciosa] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const aoMexer = useCallback(() => {
+    setOciosa(false);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setOciosa(true), ms);
+  }, [ms]);
+  useEffect(() => {
+    aoMexer();
+    window.addEventListener('keydown', aoMexer);
+    window.addEventListener('touchstart', aoMexer);
+    return () => {
+      clearTimeout(timer.current);
+      window.removeEventListener('keydown', aoMexer);
+      window.removeEventListener('touchstart', aoMexer);
+    };
+  }, [aoMexer]);
+  return { ociosa, aoMexer };
+}
+
 export default function TvDisplayPage() {
   const { items, rooms, midias, config, loading } = useQueueSystem();
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => lerPreferencia('vet_tv_sound', config.tv_sound));
@@ -296,6 +329,9 @@ export default function TvDisplayPage() {
   const telaCheia = temVideo && config.tv_layout === 'tela_cheia';
   const lateral = temVideo && config.tv_layout === 'lateral';
   const compacto = temVideo && config.tv_layout === 'video_16_9';
+  const meioDaTela = config.tv_video_size === '1_2';
+  const doisTercos = config.tv_video_size === '2_3';
+  const { ociosa, aoMexer } = useOciosa(4000);
 
   // Nova chamada: animação, aviso em tela cheia e som. A primeira leitura só "memoriza" (não toca ao abrir a TV).
   // A dependência é a CHAVE da chamada (texto), não o objeto: a cada atualização do servidor `current` é um objeto
@@ -420,10 +456,19 @@ export default function TvDisplayPage() {
   // ---------- Layout 1: vídeo em tela cheia; a chamada assume a tela por alguns segundos ----------
   if (telaCheia) {
     return (
-      <div onClick={aoClicar} className="fixed inset-0 bg-black text-white select-none overflow-hidden">
+      <div
+        onClick={aoClicar}
+        onMouseMove={aoMexer}
+        className={`fixed inset-0 bg-black text-white select-none overflow-hidden ${ociosa ? 'cursor-none' : ''}`}
+      >
         <TvVideo playlist={playlist} muted={config.tv_video_muted} duck={overlay} className="absolute inset-0 h-full w-full" fit="cover" />
 
-        <div className="absolute top-0 inset-x-0 flex items-center justify-between gap-4 p-4 bg-gradient-to-b from-black/70 to-transparent">
+        {/* Marca e botões somem quando ninguém mexe no mouse (voltam ao mexer ou tocar); o aviso de áudio nunca some */}
+        <div
+          className={`absolute top-0 inset-x-0 flex items-center justify-between gap-4 p-4 bg-gradient-to-b from-black/70 to-transparent transition-opacity duration-500 ${
+            ociosa && !needsGesture ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
           {titulo}
           {controles}
         </div>
@@ -462,7 +507,11 @@ export default function TvDisplayPage() {
   // ---------- Layout 2: vídeo à esquerda, painel de chamadas à direita ----------
   if (lateral) {
     return (
-      <div onClick={aoClicar} className="h-screen bg-base-200 text-base-content flex flex-col p-5 gap-4 select-none overflow-hidden">
+      <div
+        onClick={aoClicar}
+        onMouseMove={aoMexer}
+        className={`h-screen bg-base-200 text-base-content flex flex-col p-5 gap-4 select-none overflow-hidden ${ociosa ? 'cursor-none' : ''}`}
+      >
         <header className="flex items-center justify-between gap-4 border-b border-base-300 pb-4">
           {titulo}
           {controles}
@@ -482,21 +531,36 @@ export default function TvDisplayPage() {
     );
   }
 
-  // ---------- Layout 3: vídeo pequeno (sempre 16:9) e senha gigante ----------
+  // ---------- Layout 3: TV menor/proporcional (1/3, 1/2 ou 2/3 da tela, sempre 16:9) + chamadas ----------
   if (compacto) {
+    const colunas = doisTercos
+      ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]'
+      : meioDaTela
+        ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'
+        : 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]';
+    const painelVw = doisTercos ? 31 : meioDaTela ? 47 : 62;
+    // O vídeo nunca passa de uma altura máxima: sobra espaço para as listas mesmo em telas baixas.
+    const vhMax = config.tv_show_lists ? (doisTercos ? 48 : 44) : 72;
+    const larguraMax = `min(100%, calc(${vhMax}vh * 16 / 9))`;
     return (
-      <div onClick={aoClicar} className="flex min-h-screen select-none flex-col gap-4 bg-base-200 p-5 text-base-content lg:h-screen lg:overflow-hidden">
+      <div
+        onClick={aoClicar}
+        onMouseMove={aoMexer}
+        className={`flex min-h-screen select-none flex-col gap-4 bg-base-200 p-5 text-base-content lg:h-screen lg:overflow-hidden ${ociosa ? 'cursor-none' : ''}`}
+      >
         <header className="flex items-center justify-between gap-4 border-b border-base-300 pb-4">
           {titulo}
           {controles}
         </header>
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_clamp(20rem,28vw,38rem)]">
-          <ChamadaDestaque current={current} room={currentRoom} privacy={privacyMode} pulsing={isPulsing} />
-          <div className="flex min-h-0 flex-col gap-3">
-            <div className="aspect-video w-full shrink-0 overflow-hidden rounded-lg border border-base-300 bg-black">
+        <div className={`grid min-h-0 flex-1 grid-cols-1 gap-5 ${colunas}`}>
+          <ChamadaDestaque current={current} room={currentRoom} privacy={privacyMode} pulsing={isPulsing} painelVw={painelVw} />
+          <div className={`flex min-h-0 flex-col gap-3 ${config.tv_show_lists ? '' : 'justify-center'}`}>
+            <div className="mx-auto aspect-video shrink-0 overflow-hidden rounded-lg border border-base-300 bg-black" style={{ width: larguraMax }}>
               <TvVideo playlist={playlist} muted={config.tv_video_muted} duck={isPulsing} className="h-full w-full" fit="contain" />
             </div>
-            <ListasGrandes recentes={chamados.slice(1)} waiting={waiting} rooms={rooms} privacy={privacyMode} />
+            {config.tv_show_lists && (
+              <ListasGrandes recentes={chamados.slice(1)} waiting={waiting} rooms={rooms} privacy={privacyMode} lado={meioDaTela || doisTercos} />
+            )}
           </div>
         </div>
       </div>
@@ -505,7 +569,11 @@ export default function TvDisplayPage() {
 
   // ---------- Layout sem vídeos: chamada em destaque absoluto ----------
   return (
-    <div onClick={aoClicar} className="min-h-screen bg-base-200 text-base-content flex flex-col justify-between p-6 md:p-10 select-none overflow-hidden">
+    <div
+      onClick={aoClicar}
+      onMouseMove={aoMexer}
+      className={`min-h-screen bg-base-200 text-base-content flex flex-col justify-between p-6 md:p-10 select-none overflow-hidden ${ociosa ? 'cursor-none' : ''}`}
+    >
       <header className="flex items-center justify-between border-b border-base-300 pb-5 gap-4">
         {titulo}
         {controles}

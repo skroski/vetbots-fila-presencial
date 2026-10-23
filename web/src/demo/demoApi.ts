@@ -417,7 +417,7 @@ function validarConfig(e: Estado, parcial: Record<string, unknown>) {
   const cfg = e.config as unknown as Record<string, unknown>;
   const tipos: Record<string, 'texto' | 'bool' | 'int' | 'cor' | string[]> = {
     clinic_name: 'texto', clinic_subtitle: 'texto', brand_color: 'cor', show_brand_text: 'bool', tv_sound: 'bool', tv_privacy: 'bool',
-    tv_layout: ['lateral', 'tela_cheia', 'video_16_9'], tv_video_muted: 'bool', tv_overlay_seconds: 'int',
+    tv_layout: ['lateral', 'tela_cheia', 'video_16_9'], tv_video_size: ['1_3', '1_2', '2_3'], tv_show_lists: 'bool', tv_video_muted: 'bool', tv_overlay_seconds: 'int',
     ticket_footer: 'texto', ticket_show_logo: 'bool', ticket_width_mm: ['58', '80'], reset_daily: 'bool',
   };
   for (const [chave, valor] of Object.entries(parcial)) {
@@ -498,7 +498,7 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
       e.servicos.push(srv);
       return { status: 201, corpo: srv, mudou: true };
     }
-    if (caminho === '/api/midias/ordem') throw new ErroHttp(403, INDISPONIVEL);
+    if (caminho === '/api/midias/ordem' || caminho === '/api/midias/youtube') throw new ErroHttp(403, INDISPONIVEL);
   }
 
   if (metodo === 'PATCH') {

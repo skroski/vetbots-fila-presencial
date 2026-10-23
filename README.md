@@ -6,7 +6,7 @@ Este repositório é proprietário. O uso interno autorizado não permite redist
 
 Sistema de atendimento para clínicas e hospitais veterinários: a recepção emite senhas, o veterinário chama pelo consultório, a TV anuncia, o totem faz autoatendimento e o gestor acompanha métricas.
 
-Roda **na rede local** (Node.js + SQLite). Sem conta em nuvem, sem banco externo, sem chave de API e sem internet durante o uso.
+Roda **na rede local** (Node.js + SQLite). Sem conta em nuvem, sem banco externo, sem chave de API e sem internet durante o uso. Única exceção, opcional: vídeos do YouTube na TV, que precisam de internet no aparelho da TV (os MP4 enviados tocam offline).
 
 ---
 
@@ -52,7 +52,7 @@ O servidor mostra o IP do computador. Nos outros aparelhos (TV, tablet, totem), 
 | Métricas | `http://IP:3000/metricas` | Espera e volume |
 | Ajustes | `http://IP:3000/config` | Marca, salas, serviços, TV e backup |
 
-**Comece por `/config`:** nome da clínica, cor, logotipo, serviços, salas e vídeos MP4 da TV.
+**Comece por `/config`:** nome da clínica, cor, logotipo, serviços, salas e vídeos da TV (MP4 enviados ou link do YouTube).
 
 Para aprender cada tela, clique em **Ajuda** na barra de navegação do sistema (ou abra `http://IP:3000/ajuda/`). O **Tour guiado** (com voz) funciona sem internet e percorre todos os módulos. O mesmo guia está em [docs/instalacao.html](docs/instalacao.html).
 
@@ -75,7 +75,7 @@ Tudo da clínica fica na pasta `data/`: banco, logotipo, vídeos e backups.
 | TV ou tablet não abre o endereço | Confirme que está no mesmo Wi-Fi/rede e libere a porta no firewall (rede privada) |
 | "A interface ainda não foi gerada" | Rode `npm run build` e reinicie |
 | "Node.js antigo demais" | Instale o Node 22.16+ (LTS) ou use Docker |
-| Vídeo não toca na TV | Use MP4 H.264/AAC com `+faststart` |
+| Vídeo não toca na TV | Use MP4 H.264/AAC com `+faststart`. Vídeo do YouTube: confira a internet da TV e se o dono permite exibir em outros sites (senão a TV pula para o próximo) |
 | Senhas viram o dia no horário errado | Corrija o fuso do computador ou defina `TZ` |
 
 ## Ajuda para instalar

@@ -1,6 +1,6 @@
 ---
 name: sistema-fila-presencial
-description: Sistema de Fila Presencial Veterinária (Node + SQLite, 100% local, sem serviços externos e sem internet). Recepção e triagem, telão de TV com playlist de vídeos MP4 e sinal sonoro, chamador de consultório, totem touch com impressão térmica e métricas. Cores e logotipo personalizáveis em tela. Use quando pedirem para instalar, ligar ou configurar a fila da clínica ("instale a fila", "sistema de senhas", "painel da TV"), para instalar o pacote em uma clínica, personalizar (cores, logo, vídeos, salas, serviços), subir na rede local (LAN/Docker), fazer backup, ou evoluir o sistema. Compatível com Claude Code, Codex, Antigravity e Gemini CLI.
+description: Sistema de Fila Presencial Veterinária (Node + SQLite, 100% local, sem serviços externos e sem internet; vídeos do YouTube são opcionais e só eles precisam de internet na TV). Recepção e triagem, telão de TV com playlist de vídeos MP4 e sinal sonoro, chamador de consultório, totem touch com impressão térmica e métricas. Cores e logotipo personalizáveis em tela. Use quando pedirem para instalar, ligar ou configurar a fila da clínica ("instale a fila", "sistema de senhas", "painel da TV"), para instalar o pacote em uma clínica, personalizar (cores, logo, vídeos, salas, serviços), subir na rede local (LAN/Docker), fazer backup, ou evoluir o sistema. Compatível com Claude Code, Codex, Antigravity e Gemini CLI.
 ---
 
 # Sistema de Fila Presencial Veterinária (Node + SQLite, rede local)
@@ -72,7 +72,7 @@ Requisitos: **Node.js 22.16+** (ou Docker). O SQLite vem embutido no Node (`node
 ## O que o sistema entrega
 
 1. **Recepção & Triagem (`/`)**: emissão de senhas por serviço (A Consulta, B Retorno, C Vacina, E Exames, X Emergência...), prioridades Normal / Preferencial (Lei 10.048) / Emergência, quadro de status, transferência de sala/serviço sem perder o horário de chegada, impressão térmica.
-2. **Telão da TV (`/tv`)**: senha gigante, sinal sonoro de 2 tons (Web Audio, sem MP3), modo privacidade (LGPD), últimas chamadas e próximos. **Playlist de vídeos MP4 em loop**, em dois layouts: *vídeo + painel* ou *vídeo em tela cheia* (a chamada assume a tela por alguns segundos).
+2. **Telão da TV (`/tv`)**: senha gigante, sinal sonoro de 2 tons (Web Audio, sem MP3), modo privacidade (LGPD), últimas chamadas e próximos. **Playlist em loop de vídeos MP4 ou links do YouTube** (basta colar o link em Ajustes), em três layouts: *vídeo de fundo* (tela cheia, a chamada assume a tela por alguns segundos), *vídeo + painel* ou *TV menor + chamadas* (vídeo 16:9 em 1/3, 1/2 ou 2/3 da tela).
 3. **Chamador do consultório (`/chamar`, `/chamar/<id-da-sala>`)**: "Chamar Próximo" atômico (Emergência > Preferencial > Normal, depois chegada), repetir chamada, iniciar, finalizar, não compareceu, retornar à fila, transferir.
 4. **Totem (`/totem`)**: autoatendimento touch com impressão da senha e retorno automático.
 5. **Métricas (`/metricas`)**: TME, TMA, volume por serviço, taxa de ausência (hoje, 7 e 30 dias).
@@ -96,7 +96,7 @@ Tempo real por **SSE** (`/api/events`) com polling de 10 s como rede de seguran�
 - **SQLite local**: sem nuvem e sem servidor de banco. Dados em `data/fila.db` (WAL). Backup: copiar a pasta `data/` ou botão em Ajustes; o servidor também gera backup diário automático em `data/backups/`.
 - **Rede local apenas**: não há login de usuário. Quem está na rede abre as telas. Os Ajustes podem ter PIN (`ADMIN_PIN`). **Não exponha a porta na internet.**
 - **Numeração reinicia todo dia** (configurável em Ajustes). O "dia" é o do fuso do computador servidor (no Docker, `TZ`, padrão `America/Sao_Paulo`).
-- **Vídeos**: MP4 H.264 + AAC é o formato seguro para Smart TVs. Ficam em `data/uploads/videos` e são servidos com HTTP Range (necessário em TVs e Safari).
+- **Vídeos**: MP4 H.264 + AAC é o formato seguro para Smart TVs; link do YouTube também vale (a TV carrega o player oficial e precisa de internet; o servidor nunca acessa a internet). Ficam em `data/uploads/videos` e são servidos com HTTP Range (necessário em TVs e Safari).
 - Tudo em português do Brasil; interface sem dependência de internet (fontes e ícones embutidos no build).
 
 ## Verificação mínima antes de entregar

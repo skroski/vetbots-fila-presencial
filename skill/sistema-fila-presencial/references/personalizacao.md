@@ -8,13 +8,19 @@ Para programadores: o servidor injeta as variáveis CSS `--brand-*` no HTML (sem
 ## Logotipo
 Ajustes → Aparência → *Enviar logotipo*: PNG, JPG, WebP ou SVG, até 5 MB (fundo transparente fica melhor). Aparece na recepção, TV, totem, no ícone da aba e (opcional, em preto e branco) no cupom impresso. Sem logotipo, usa o ícone 🐾 padrão.
 
-## Vídeos da TV (MP4)
-Ajustes → **TV & Vídeos** → *Enviar vídeos (MP4)*. Pode enviar vários de uma vez, reordenar (setas), pausar um (olho) ou excluir. A TV toca em sequência e volta ao primeiro, sem parar. Acompanhamento do envio por barra de progresso (arquivos grandes pelo Wi-Fi podem levar minutos).
+## Vídeos da TV (MP4 e YouTube)
+Ajustes → **TV & Vídeos**. Dois jeitos de adicionar, na mesma playlist:
+- *Enviar vídeos (MP4)*: vários de uma vez, com barra de progresso (arquivos grandes pelo Wi-Fi podem levar minutos). Toca da rede local, mesmo sem internet.
+- *Link do YouTube*: cole o endereço (watch, youtu.be, shorts, embed ou live); ao colar, o vídeo já entra na playlist, com miniatura e título. O servidor guarda só o ID; **a TV precisa de internet** para tocar. Se o dono do vídeo não permitir exibição em outros sites, ou se faltar internet, a TV pula para o próximo item.
+
+Uma instalação nova já vem com um vídeo do YouTube (apresentação da VetBots) na playlist; pause, troque ou exclua em Ajustes. Ele só aparece em bancos novos: quem já usa o sistema não é alterado.
+
+Dá para reordenar (setas), renomear, pausar (olho) ou excluir. A TV toca em sequência e volta ao primeiro, sem parar.
 
 **Layouts**
+- *Vídeo de fundo*: o vídeo ocupa tudo, com uma faixa inferior da chamada atual; ao chamar alguém, o aviso grande assume a tela por N segundos (4 a 60) e o vídeo volta. Botões e cursor somem quando ninguém mexe no mouse.
 - *Vídeo + painel*: vídeo à esquerda; senha atual, chamadas recentes e próximos à direita, sempre visíveis.
-- *Vídeo em tela cheia*: o vídeo ocupa tudo, com uma faixa inferior da chamada atual; ao chamar alguém, o aviso grande assume a tela por N segundos (4 a 60) e o vídeo volta.
-- *Vídeo pequeno 16:9*: vídeo menor no canto, sempre em 16:9, e a senha gigante com contraste máximo (acima de 13:1, WCAG AAA) ocupando a maior parte da tela; chamadas anteriores e próximos em números grandes ao lado.
+- *TV menor + chamadas*: vídeo sempre em 16:9, ocupando **1/3, 1/2 ou 2/3 da tela**, e a senha gigante com contraste máximo (acima de 13:1, WCAG AAA) no resto. A opção *Mostrar chamadas anteriores e próximos* pode ser desligada para ficar só a chamada atual.
 - Sem vídeo ativo: painel clássico de chamadas em destaque.
 
 **Som**: por padrão os vídeos tocam **mudos** (navegadores só liberam autoplay sem som, e o sinal da chamada fica bem audível). Em Ajustes dá para ligar o som do vídeo; ele abaixa o volume durante a chamada. O primeiro toque/clique do controle remoto libera o áudio.

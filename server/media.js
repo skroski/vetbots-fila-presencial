@@ -91,15 +91,20 @@ async function receber(req, { dir, extensoes, maxBytes, nomeOriginal }) {
 
 // ---------- vídeos ----------
 
-const midia = (r) => ({
-  id: r.id,
-  nome: r.nome,
-  arquivo: r.arquivo,
-  url: `/midia/${r.arquivo}`,
-  tamanho: r.tamanho,
-  ordem: r.ordem,
-  ativo: !!r.ativo,
-});
+const midia = (r) => {
+  const yt = r.tipo === 'youtube';
+  return {
+    id: r.id,
+    nome: r.nome,
+    tipo: yt ? 'youtube' : 'arquivo',
+    youtube_id: yt ? r.youtube_id : null,
+    arquivo: yt ? '' : r.arquivo,
+    url: yt ? `https://www.youtube.com/watch?v=${r.youtube_id}` : `/midia/${r.arquivo}`,
+    tamanho: r.tamanho,
+    ordem: r.ordem,
+    ativo: !!r.ativo,
+  };
+};
 
 export const listarMidias = () => db.prepare('select * from midias order by ordem, created_at').all().map(midia);
 
@@ -117,6 +122,47 @@ export async function enviarVideo(req, nomeOriginal) {
   );
   return midia(db.prepare('select * from midias where id = ?').get(id));
 }
+
+const ID_YOUTUBE = /^[\w-]{11}$/;
+const HOSTS_YOUTUBE = new Set(['youtube.com', 'youtube-nocookie.com', 'youtu.be']);
+
+/** Extrai o ID de 11 caracteres de qualquer link comum do YouTube (watch, youtu.be, shorts, embed, live) ou do próprio ID. */
+export function idDoYoutube(entrada) {
+  const texto = String(entrada ?? '').trim();
+  if (ID_YOUTUBE.test(texto)) return texto;
+  let url;
+  try {
+    url = new URL(/^https?:\/\//i.test(texto) ? texto : `https://${texto}`);
+  } catch {
+    return null;
+  }
+  const host = url.hostname.toLowerCase().replace(/^(www|m|music)\./, '');
+  if (!HOSTS_YOUTUBE.has(host)) return null;
+  const partes = url.pathname.split('/').filter(Boolean);
+  const id = host === 'youtu.be' ? partes[0] : url.searchParams.get('v') || (['shorts', 'embed', 'live', 'v'].includes(partes[0]) ? partes[1] : '');
+  return ID_YOUTUBE.test(id || '') ? id : null;
+}
+
+// Só guarda o ID: o servidor não acessa a internet. A TV é quem carrega o player do YouTube.
+export function adicionarYoutube({ url, nome }) {
+  const id = idDoYoutube(url);
+  if (!id) throw new HttpError(400, 'Não reconheci esse link. Cole o endereço do vídeo, como https://www.youtube.com/watch?v=...');
+  const rotulo = nome === undefined || nome === null || !String(nome).trim() ? `Vídeo do YouTube (${id})` : nomeSeguro(nome);
+  const novo = randomUUID();
+  const ordem = db.prepare('select coalesce(max(ordem), -1) + 1 as o from midias').get().o;
+  db.prepare(
+    "insert into midias (id, nome, arquivo, tamanho, ordem, created_at, tipo, youtube_id) values (?, ?, ?, 0, ?, ?, 'youtube', ?)",
+  ).run(novo, rotulo, `youtube-${novo}`, ordem, agora(), id);
+  return midia(db.prepare('select * from midias where id = ?').get(novo));
+}
+
+// Vídeo que já vem na playlist de uma instalação nova (a pessoa pode pausar, trocar ou excluir em Ajustes).
+export const VIDEO_PADRAO = {
+  url: 'https://www.youtube.com/watch?v=FB56YWC3tz4',
+  nome: 'Apresentação de VetBots . Chatbot com IA para Clínicas Veterinárias',
+};
+
+export const carregarVideoPadrao = () => adicionarYoutube(VIDEO_PADRAO);
 
 export function editarMidia(id, { ativo, nome }) {
   const atual = db.prepare('select * from midias where id = ?').get(id);
@@ -140,7 +186,7 @@ export async function excluirMidia(id) {
   const atual = db.prepare('select * from midias where id = ?').get(id);
   if (!atual) throw new HttpError(404, 'Vídeo não encontrado.');
   db.prepare('delete from midias where id = ?').run(id);
-  await rm(join(VIDEOS_DIR, atual.arquivo), { force: true });
+  if (atual.tipo !== 'youtube') await rm(join(VIDEOS_DIR, atual.arquivo), { force: true });
 }
 
 // ---------- logotipo ----------

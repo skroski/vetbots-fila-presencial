@@ -22,6 +22,7 @@ import {
   Tv,
   Upload,
   X,
+  Youtube,
 } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
 import { api, ApiError, enviarArquivo, getAdminPin, setAdminPin } from '@/lib/api';
@@ -313,9 +314,121 @@ async function salvarConfig(parcial: Partial<AppConfig>, mensagem?: string) {
   }
 }
 
+const ehLinkYoutube = (t: string) => /(youtu\.be|youtube\.com|youtube-nocookie\.com)/i.test(t);
+
+/** Miniatura de um vídeo do YouTube; sem internet no computador do administrador cai para um ícone. */
+function MiniaturaYoutube({ id }: { id: string }) {
+  const [falhou, setFalhou] = useState(false);
+  return (
+    <div className="relative h-14 w-24 shrink-0 overflow-hidden rounded-lg bg-black">
+      {falhou ? (
+        <Youtube className="absolute inset-0 m-auto h-6 w-6 text-neutral" aria-hidden="true" />
+      ) : (
+        <img
+          src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover"
+          onError={() => setFalhou(true)}
+        />
+      )}
+      <span className="absolute bottom-0.5 left-0.5 rounded bg-black/80 px-1 text-[10px] font-bold text-white">YouTube</span>
+    </div>
+  );
+}
+
+/** Desenho esquemático de cada layout da TV (aparece no cartão de escolha). */
+function PreviaLayout({ tipo, tamanho }: { tipo: AppConfig['tv_layout']; tamanho: AppConfig['tv_video_size'] }) {
+  const video = 'rounded-sm bg-primary/60';
+  const texto = 'rounded-sm bg-base-content/70';
+  return (
+    <div className="relative aspect-video w-full overflow-hidden rounded-md border border-base-300 bg-base-200" aria-hidden="true">
+      {tipo === 'tela_cheia' && (
+        <>
+          <div className={`absolute inset-0 ${video} opacity-60`} />
+          <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-base-100/90 px-2 py-1">
+            <div className={`${texto} h-3 w-10`} />
+            <div className="h-1.5 w-16 rounded-sm bg-base-content/40" />
+          </div>
+        </>
+      )}
+      {tipo === 'lateral' && (
+        <div className="absolute inset-1 grid grid-cols-[3fr_2fr] gap-1">
+          <div className={video} />
+          <div className="flex flex-col items-center justify-center gap-1">
+            <div className={`${texto} h-4 w-4/5`} />
+            <div className="h-2 w-3/5 rounded-sm bg-base-content/40" />
+            <div className="mt-1 h-2 w-4/5 rounded-sm bg-base-content/25" />
+          </div>
+        </div>
+      )}
+      {tipo === 'video_16_9' && (
+        <div
+          className={`absolute inset-1 grid gap-1 ${
+            tamanho === '2_3'
+              ? 'grid-cols-[1fr_2fr]'
+              : tamanho === '1_2'
+                ? 'grid-cols-2'
+                : 'grid-cols-[2fr_1fr]'
+          }`}
+        >
+          <div className="flex flex-col items-center justify-center gap-1 rounded-sm border border-primary/60">
+            <div className={`${texto} ${tamanho === '2_3' ? 'h-3.5 w-4/5' : 'h-5 w-4/5'}`} />
+            <div className="h-2 w-3/5 rounded-sm bg-base-content/40" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className={`${video} aspect-video w-full`} />
+            <div className="h-2 rounded-sm bg-base-content/25" />
+            <div className="h-2 rounded-sm bg-base-content/25" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
   const [progresso, setProgresso] = useState<{ nome: string; pct: number } | null>(null);
   const arquivoRef = useRef<HTMLInputElement>(null);
+  const [link, setLink] = useState('');
+  const [adicionando, setAdicionando] = useState(false);
+
+  const adicionarYoutube = async (texto: string) => {
+    const url = texto.trim();
+    if (!url || adicionando) return;
+    setAdicionando(true);
+    try {
+      const novo = await api<Media>('POST', '/api/midias/youtube', { url });
+      setLink('');
+      await refresh();
+      toast.success('Vídeo do YouTube adicionado à playlist.');
+      // Melhoria opcional: pega o título do vídeo (o navegador de quem administra pode estar offline; sem título, vale o nome padrão).
+      try {
+        const r = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(novo.url)}&format=json`);
+        const titulo = r.ok ? ((await r.json()) as { title?: string }).title : '';
+        if (titulo) {
+          await api('PATCH', `/api/midias/${novo.id}`, { nome: titulo });
+          await refresh();
+        }
+      } catch {
+        /* sem título: continua com o nome padrão */
+      }
+    } catch (e) {
+      toast.error(erroDe(e));
+    }
+    setAdicionando(false);
+  };
+
+  const renomear = async (m: Media) => {
+    const nome = prompt('Novo nome do vídeo:', m.nome)?.trim();
+    if (!nome || nome === m.nome) return;
+    try {
+      await api('PATCH', `/api/midias/${m.id}`, { nome });
+      await refresh();
+    } catch (e) {
+      toast.error(erroDe(e));
+    }
+  };
 
   const enviar = async (files: FileList | null) => {
     if (!files?.length) return;
@@ -356,7 +469,7 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
   };
 
   const excluir = async (m: Media) => {
-    if (!confirm(`Excluir o vídeo "${m.nome}" definitivamente?`)) return;
+    if (!confirm(m.tipo === 'youtube' ? `Remover "${m.nome}" da playlist?` : `Excluir o vídeo "${m.nome}" definitivamente?`)) return;
     try {
       await api('DELETE', `/api/midias/${m.id}`);
       await refresh();
@@ -379,8 +492,9 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
           </a>
         </div>
         <p className="text-xs text-neutral">
-          Os vídeos tocam em sequência e em loop na TV, sem parar. Formato mais compatível com Smart TVs:{' '}
-          <strong className="text-base-content">MP4 (H.264 + AAC), 1080p</strong>. Sem vídeos ativos, a TV mostra só o painel de chamadas.
+          Os vídeos tocam em sequência e em loop na TV, sem parar. Envie um arquivo{' '}
+          <strong className="text-base-content">MP4 (H.264 + AAC), 1080p</strong>, que toca mesmo sem internet, ou cole um link do YouTube.
+          Sem vídeos ativos, a TV mostra só o painel de chamadas.
         </p>
 
         <input
@@ -395,6 +509,46 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
           <Upload className="h-4 w-4" />
           Enviar vídeos (MP4)
         </button>
+
+        <form
+          className="space-y-2 rounded-lg border border-base-300 bg-base-200/50 p-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void adicionarYoutube(link);
+          }}
+        >
+          <label htmlFor="link-youtube" className="flex items-center gap-2 text-xs font-semibold text-base-content">
+            <Youtube className="h-4 w-4" aria-hidden="true" />
+            Ou cole o link de um vídeo do YouTube
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="link-youtube"
+              type="url"
+              inputMode="url"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              onPaste={(e) => {
+                const colado = e.clipboardData.getData('text');
+                if (ehLinkYoutube(colado)) {
+                  e.preventDefault();
+                  void adicionarYoutube(colado); // colou um link do YouTube: já entra na playlist
+                }
+              }}
+              placeholder="https://www.youtube.com/watch?v=..."
+              className="input input-bordered input-sm flex-1"
+              disabled={adicionando}
+            />
+            <button type="submit" className="btn btn-primary btn-sm" disabled={adicionando || !link.trim()}>
+              {adicionando ? <span className="loading loading-spinner loading-xs" /> : <Plus className="h-4 w-4" />}
+              Adicionar
+            </button>
+          </div>
+          <p className="text-xs text-neutral">
+            Ao colar o link, o vídeo já entra na playlist. Vídeos do YouTube precisam de internet na TV e só tocam se o dono permitir
+            a exibição em outros sites.
+          </p>
+        </form>
 
         {progresso && (
           <div className="space-y-1">
@@ -416,15 +570,21 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
             {midias.map((m, i) => (
               <li key={m.id} className={`flex items-center gap-3 p-3 ${m.ativo ? '' : 'opacity-50'}`}>
                 <span className="w-5 text-center text-xs font-mono text-neutral">{i + 1}</span>
-                <video
-                  src={`${m.url}#t=0.5`}
-                  muted
-                  preload="metadata"
-                  className="h-14 w-24 object-cover rounded-lg bg-black shrink-0"
-                />
+                {m.tipo === 'youtube' && m.youtube_id ? (
+                  <MiniaturaYoutube id={m.youtube_id} />
+                ) : (
+                  <video
+                    src={`${m.url}#t=0.5`}
+                    muted
+                    preload="metadata"
+                    className="h-14 w-24 object-cover rounded-lg bg-black shrink-0"
+                  />
+                )}
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-base-content truncate">{m.nome}</div>
-                  <div className="text-xs text-neutral">{formatarTamanho(m.tamanho)}</div>
+                  <div className="text-xs text-neutral">
+                    {m.tipo === 'youtube' ? 'YouTube · precisa de internet na TV' : `MP4 · ${formatarTamanho(m.tamanho)}`}
+                  </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <button className={botaoDiscreto} disabled={i === 0} onClick={() => mover(i, -1)} title="Subir">
@@ -433,10 +593,13 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
                   <button className={botaoDiscreto} disabled={i === midias.length - 1} onClick={() => mover(i, 1)} title="Descer">
                     <ArrowDown className="h-4 w-4" />
                   </button>
+                  <button className={botaoDiscreto} onClick={() => renomear(m)} title="Renomear" aria-label={`Renomear ${m.nome}`}>
+                    <Pencil className="h-4 w-4" />
+                  </button>
                   <button className={botaoDiscreto} onClick={() => alternar(m)} title={m.ativo ? 'Pausar na playlist' : 'Ativar'}>
                     {m.ativo ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
-                  <button className={`${botaoDiscreto} hover:!bg-error hover:!text-error-content`} onClick={() => excluir(m)} title="Excluir">
+                  <button className={`${botaoDiscreto} hover:!bg-error hover:!text-error-content`} onClick={() => excluir(m)} title="Excluir" aria-label={`Excluir ${m.nome}`}>
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
@@ -452,26 +615,68 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
         <div className="grid sm:grid-cols-3 gap-3">
           {(
             [
+              ['tela_cheia', 'Vídeo de fundo', 'O vídeo ocupa a tela toda, só com a faixa da chamada atual. Ao chamar alguém, o aviso grande assume a tela por alguns segundos.'],
               ['lateral', 'Vídeo + painel', 'Vídeo à esquerda e a chamada sempre visível à direita.'],
-              ['tela_cheia', 'Vídeo em tela cheia', 'O vídeo ocupa a tela; a chamada assume tudo por alguns segundos e depois o vídeo volta.'],
-              ['video_16_9', 'Vídeo pequeno 16:9', 'Vídeo menor, sempre em 16:9, e a senha gigante em alto contraste para o cliente ler de longe.'],
+              ['video_16_9', 'TV menor + chamadas', 'Vídeo menor, sempre em 16:9, em 1/3, 1/2 ou 2/3 da tela, com a senha gigante em alto contraste.'],
             ] as const
-          ).map(([valor, titulo, detalhe]) => (
-            <button
-              key={valor}
-              onClick={() => salvarConfig({ tv_layout: valor })}
-              className={`card text-left p-4 border transition duration-200 ${
-                config.tv_layout === valor ? 'border-primary bg-primary/10' : 'border-base-300 bg-base-100 hover:border-primary/50'
-              }`}
-            >
-              <div className="text-sm font-bold text-base-content flex items-center gap-2">
-                {config.tv_layout === valor && <Check className="h-4 w-4 text-accent" />}
-                {titulo}
-              </div>
-              <div className="text-xs text-neutral mt-1">{detalhe}</div>
-            </button>
-          ))}
+          ).map(([valor, titulo, detalhe]) => {
+            const marcado = config.tv_layout === valor;
+            return (
+              <button
+                key={valor}
+                type="button"
+                aria-pressed={marcado}
+                onClick={() => salvarConfig({ tv_layout: valor })}
+                className={`card text-left p-3 gap-3 border-2 transition duration-200 ${
+                  marcado ? 'border-primary bg-primary/10' : 'border-base-300 bg-base-100 hover:border-primary/50'
+                }`}
+              >
+                <PreviaLayout tipo={valor} tamanho={config.tv_video_size} />
+                <div>
+                  <div className="text-sm font-bold text-base-content flex items-center gap-2">
+                    {marcado && <Check className="h-4 w-4 text-accent" aria-hidden="true" />}
+                    {titulo}
+                  </div>
+                  <div className="text-xs text-neutral mt-1">{detalhe}</div>
+                </div>
+              </button>
+            );
+          })}
         </div>
+
+        {config.tv_layout === 'video_16_9' && (
+          <div className="space-y-3 rounded-lg border border-base-300 bg-base-200/50 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span id="tamanho-tv" className="text-xs font-semibold text-base-content">Quanto da tela o vídeo ocupa</span>
+              <div role="radiogroup" aria-labelledby="tamanho-tv" className="join">
+                {(
+                  [
+                    ['1_3', '1/3 da tela'],
+                    ['1_2', '1/2 da tela'],
+                    ['2_3', '2/3 da tela'],
+                  ] as const
+                ).map(([valor, rotulo]) => (
+                  <button
+                    key={valor}
+                    type="button"
+                    role="radio"
+                    aria-checked={config.tv_video_size === valor}
+                    onClick={() => salvarConfig({ tv_video_size: valor })}
+                    className={`btn btn-sm join-item ${config.tv_video_size === valor ? 'btn-primary' : 'btn-ghost border-base-300'}`}
+                  >
+                    {rotulo}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <Interruptor
+              ativo={config.tv_show_lists}
+              onChange={(v) => salvarConfig({ tv_show_lists: v })}
+              titulo="Mostrar chamadas anteriores e próximos"
+              detalhe="Desligado, a TV mostra só o vídeo e a chamada atual, bem grande."
+            />
+          </div>
+        )}
 
         {config.tv_layout === 'tela_cheia' && (
           <label className="block text-xs text-neutral space-y-1">

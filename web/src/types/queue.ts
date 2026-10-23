@@ -131,6 +131,9 @@ export const PRIORITY_STYLES: Record<QueuePriority, { badge: string; border: str
 export interface Media {
   id: string;
   nome: string;
+  /** 'arquivo' = MP4 enviado (toca da rede local); 'youtube' = player do YouTube (precisa de internet na TV) */
+  tipo: 'arquivo' | 'youtube';
+  youtube_id: string | null;
   arquivo: string;
   url: string;
   tamanho: number;
@@ -149,6 +152,10 @@ export interface AppConfig {
   tv_sound: boolean;
   tv_privacy: boolean;
   tv_layout: 'lateral' | 'tela_cheia' | 'video_16_9';
+  /** Parte da largura da tela ocupada pelo vídeo no layout "TV menor" */
+  tv_video_size: '1_3' | '1_2' | '2_3';
+  /** No layout "TV menor": mostrar também chamadas anteriores e próximos (desligado = só a chamada atual) */
+  tv_show_lists: boolean;
   tv_video_muted: boolean;
   tv_overlay_seconds: number;
   ticket_footer: string;
@@ -165,7 +172,9 @@ export const DEFAULT_CONFIG: AppConfig = {
   logo_url: null,
   tv_sound: true,
   tv_privacy: false,
-  tv_layout: 'lateral',
+  tv_layout: 'video_16_9',
+  tv_video_size: '1_3',
+  tv_show_lists: true,
   tv_video_muted: true,
   tv_overlay_seconds: 12,
   ticket_footer: 'Acompanhe pelo telão da sala de espera.',
