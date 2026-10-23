@@ -254,6 +254,9 @@ function paginaInicial() {
     .replace('<!--FILA:HEAD-->', cabeca);
 }
 
+// Guia de instalação e Help guiado (docs/instalacao.html + MP3 do tour) em /ajuda/
+app.use('/ajuda', express.static(join(ROOT, 'docs'), { index: 'instalacao.html', maxAge: '1h' }));
+
 if (semBuild) {
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api/')) return next();

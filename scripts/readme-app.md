@@ -32,7 +32,7 @@ A janela mostra o IP do computador. Nos outros aparelhos, na mesma rede, abra:
 
 Comece por **`/config`**: nome, cor, logotipo, serviços, salas e vídeos MP4.
 
-Para aprender cada tela, abra [docs/instalacao.html](docs/instalacao.html) no navegador e use o **Tour guiado** (com voz, funciona sem internet).
+Para aprender cada tela, clique em **Ajuda** na barra de navegação do sistema (ou abra `http://IP:3000/ajuda/`) e use o **Tour guiado** (com voz, funciona sem internet). O mesmo guia está em [docs/instalacao.html](docs/instalacao.html).
 
 ## Pedir ajuda ao Claude, Codex ou Gemini
 

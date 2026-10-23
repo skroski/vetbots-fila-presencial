@@ -3,6 +3,5 @@ web/dist
 data
 .git
 .env
-docs
 skill
 *.log

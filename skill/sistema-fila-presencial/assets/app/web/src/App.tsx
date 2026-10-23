@@ -6,7 +6,7 @@ import RoomCallerPage from '@/pages/RoomCallerPage';
 import TotemPage from '@/pages/TotemPage';
 import MetricsPage from '@/pages/MetricsPage';
 import SettingsPage from '@/pages/SettingsPage';
-import { Tv, DoorOpen, Users, Touchpad, BarChart3, Settings, WifiOff, Sun, Moon } from 'lucide-react';
+import { Tv, DoorOpen, Users, Touchpad, BarChart3, Settings, WifiOff, Sun, Moon, CircleHelp } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { ApiError } from '@/lib/api';
 
@@ -94,7 +94,7 @@ export default function App() {
 
   return (
     <>
-      <Toaster richColors position="top-right" />
+      <Toaster richColors closeButton position="top-right" />
       {loaded && !online && (
         <div role="alert" className="alert alert-error fixed top-0 inset-x-0 z-[60] justify-center rounded-none py-1.5 text-sm font-semibold">
           <WifiOff className="h-4 w-4" />
@@ -130,6 +130,18 @@ export default function App() {
               </button>
             );
           })}
+
+          {/* Guia de instalação e tour guiado (servidos em /ajuda/); abre em outra aba para não perder a tela atual */}
+          <a
+            href="/ajuda/"
+            target="_blank"
+            rel="noopener"
+            title="Ajuda: guia de instalação e tour guiado"
+            className="btn btn-ghost btn-sm h-12 min-h-12 min-w-12 whitespace-nowrap rounded-full border-0 px-2 font-medium text-neutral sm:px-3"
+          >
+            <CircleHelp className="h-4 w-4" />
+            <span className="hidden sm:inline">Ajuda</span>
+          </a>
 
           <button
             onClick={alternarTema}

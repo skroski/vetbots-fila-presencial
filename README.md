@@ -54,7 +54,7 @@ O servidor mostra o IP do computador. Nos outros aparelhos (TV, tablet, totem), 
 
 **Comece por `/config`:** nome da clínica, cor, logotipo, serviços, salas e vídeos MP4 da TV.
 
-Para aprender cada tela, abra [docs/instalacao.html](docs/instalacao.html) no navegador. O **Tour guiado** (com voz) funciona sem internet e percorre todos os módulos.
+Para aprender cada tela, clique em **Ajuda** na barra de navegação do sistema (ou abra `http://IP:3000/ajuda/`). O **Tour guiado** (com voz) funciona sem internet e percorre todos os módulos. O mesmo guia está em [docs/instalacao.html](docs/instalacao.html).
 
 ---
 
@@ -128,7 +128,7 @@ npm run build:demo
 npx vite preview --mode demo --config web/vite.config.ts
 ```
 
-Os dados de exemplo são regerados a cada 12 horas; o botão **Reiniciar** no selo da demonstração volta ao início na hora. O código fica em `web/src/demo/` e só entra no build feito com `--mode demo`.
+Os dados de exemplo são regerados a cada 12 horas; o botão **Reiniciar** no selo da demonstração volta ao início na hora, e o **X** fecha o aviso. O guia de instalação também fica disponível em `/ajuda/`. O código fica em `web/src/demo/` e só entra no build feito com `--mode demo`.
 
 ### Skill para agentes de IA
 
