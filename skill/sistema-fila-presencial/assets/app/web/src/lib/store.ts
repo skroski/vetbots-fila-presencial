@@ -3,11 +3,12 @@
 import { useSyncExternalStore } from 'react';
 import { api } from '@/lib/api';
 import { cssDaCor } from '@shared/cores.js';
-import { DEFAULT_CONFIG, type AppConfig, type Media, type QueueItem, type QueueRoom, type QueueService } from '@/types/queue';
+import { DEFAULT_CONFIG, type AppConfig, type Media, type QueueItem, type QueueRoom, type QueueService, type QueueVeterinarian } from '@/types/queue';
 
 export interface Snapshot {
   services: QueueService[];
   rooms: QueueRoom[];
+  veterinarios: QueueVeterinarian[];
   items: QueueItem[];
   midias: Media[];
   config: AppConfig;
@@ -18,6 +19,7 @@ export interface Snapshot {
 interface EstadoServidor {
   servicos: QueueService[];
   salas: QueueRoom[];
+  veterinarios: QueueVeterinarian[];
   itens: QueueItem[];
   midias: Media[];
   config: AppConfig;
@@ -33,6 +35,7 @@ declare global {
 let snap: Snapshot = {
   services: [],
   rooms: [],
+  veterinarios: [],
   items: [],
   midias: [],
   config: { ...DEFAULT_CONFIG, ...(window.__FILA_CONFIG__ || {}) },
@@ -94,6 +97,7 @@ export async function refresh(): Promise<void> {
     publicar({
       services: s.servicos,
       rooms: s.salas,
+      veterinarios: s.veterinarios || [],
       items: s.itens,
       midias: s.midias,
       config: s.config,

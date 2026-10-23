@@ -7,7 +7,7 @@ export type AcaoFila = 'chamar' | 'iniciar' | 'finalizar' | 'ausente' | 'retorna
 
 /** Fila em tempo real (servidor local + SQLite). Todas as telas usam este hook. */
 export function useQueueSystem() {
-  const { services, rooms, items, midias, config, loaded, online } = useStore();
+  const { services, rooms, veterinarios, items, midias, config, loaded, online } = useStore();
 
   const adicionarItem = useCallback(
     async (params: {
@@ -26,8 +26,32 @@ export function useQueueSystem() {
     [],
   );
 
+  const editarItem = useCallback(
+    async (
+      itemId: string,
+      params: Partial<{
+        servicoId: string;
+        tutorNome: string;
+        petNome: string;
+        veterinarioNome: string;
+        prioridade: QueuePriority;
+        motivoResumido: string;
+        salaId: string | null;
+      }>,
+    ) => {
+      const atualizado = await api<QueueItem>('PATCH', `/api/itens/${itemId}`, params);
+      void refresh();
+      return atualizado;
+    },
+    [],
+  );
+
   const alterarStatus = useCallback(
-    async (itemId: string, acao: AcaoFila, extra?: { salaId?: string; novoServicoId?: string; motivo?: string }) => {
+    async (
+      itemId: string,
+      acao: AcaoFila,
+      extra?: { salaId?: string; novoServicoId?: string; motivo?: string; veterinarioNome?: string },
+    ) => {
       await api('POST', `/api/itens/${itemId}/acao`, { acao, ...extra });
       void refresh();
     },
@@ -35,8 +59,8 @@ export function useQueueSystem() {
   );
 
   /** "Chamar Próximo": o servidor escolhe (Emergência > Preferencial > Normal) de forma atômica. */
-  const chamarProximo = useCallback(async (salaId: string) => {
-    const item = await api<QueueItem>('POST', `/api/salas/${salaId}/chamar-proximo`);
+  const chamarProximo = useCallback(async (salaId: string, extra?: { veterinarioNome?: string }) => {
+    const item = await api<QueueItem>('POST', `/api/salas/${salaId}/chamar-proximo`, extra);
     void refresh();
     return item;
   }, []);
@@ -44,6 +68,7 @@ export function useQueueSystem() {
   return {
     services,
     rooms,
+    veterinarios,
     items,
     midias,
     config,
@@ -51,6 +76,7 @@ export function useQueueSystem() {
     online,
     fetchAll: refresh,
     adicionarItem,
+    editarItem,
     alterarStatus,
     chamarProximo,
   };

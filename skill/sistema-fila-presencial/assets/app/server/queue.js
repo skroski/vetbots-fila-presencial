@@ -133,6 +133,61 @@ export function excluirServico(id) {
   if (!db.prepare('delete from fila_servicos where id = ?').run(id).changes) throw new HttpError(404, 'Serviço não encontrado.');
 }
 
+// ---------- veterinários ----------
+
+const veterinario = (r) => ({
+  id: r.id,
+  nome: r.nome,
+  crmv: r.crmv ?? null,
+  ativo: r.ativo === 1,
+  ordem: r.ordem,
+});
+
+export const listarVeterinarios = () =>
+  db.prepare('select * from fila_veterinarios order by ordem asc, created_at asc').all().map(veterinario);
+
+export function criarVeterinario({ nome, crmv }) {
+  const n = texto(nome, 80, 'Nome do veterinário', { obrigatorio: true });
+  const c = texto(crmv, 40, 'CRMV');
+  try {
+    const id = randomUUID();
+    const ordem = db.prepare('select coalesce(max(ordem), -1) + 1 as o from fila_veterinarios').get().o;
+    db.prepare('insert into fila_veterinarios (id, nome, crmv, ordem, created_at) values (?, ?, ?, ?, ?)').run(
+      id, n, c, ordem, agora(),
+    );
+    return veterinario(db.prepare('select * from fila_veterinarios where id = ?').get(id));
+  } catch (e) {
+    if (emConflito(e)) throw new HttpError(409, 'Já existe um profissional cadastrado com esse nome.');
+    throw e;
+  }
+}
+
+export function editarVeterinario(id, { nome, crmv, ativo, ordem }) {
+  const atual = db.prepare('select * from fila_veterinarios where id = ?').get(id);
+  if (!atual) throw new HttpError(404, 'Veterinário não encontrado.');
+  const novo = {
+    nome: nome === undefined ? atual.nome : texto(nome, 80, 'Nome do veterinário', { obrigatorio: true }),
+    crmv: crmv === undefined ? atual.crmv : texto(crmv, 40, 'CRMV'),
+    ativo: ativo === undefined ? atual.ativo : ativo ? 1 : 0,
+    ordem: Number.isInteger(ordem) ? ordem : atual.ordem,
+  };
+  try {
+    db.prepare('update fila_veterinarios set nome = ?, crmv = ?, ativo = ?, ordem = ? where id = ?').run(
+      novo.nome, novo.crmv, novo.ativo, novo.ordem, id,
+    );
+  } catch (e) {
+    if (emConflito(e)) throw new HttpError(409, 'Já existe um profissional cadastrado com esse nome.');
+    throw e;
+  }
+  return veterinario(db.prepare('select * from fila_veterinarios where id = ?').get(id));
+}
+
+export function excluirVeterinario(id) {
+  if (!db.prepare('delete from fila_veterinarios where id = ?').run(id).changes) {
+    throw new HttpError(404, 'Veterinário não encontrado.');
+  }
+}
+
 // ---------- senhas ----------
 
 export function adicionarItem(p) {
@@ -185,7 +240,7 @@ export function adicionarItem(p) {
 
 // ---------- mudanças de status ----------
 
-function aplicarAcao(id, acao, { salaId, novoServicoId, motivo } = {}) {
+function aplicarAcao(id, acao, { salaId, novoServicoId, motivo, veterinarioNome } = {}) {
   if (!ACOES.includes(acao)) throw new HttpError(400, 'Ação de fila inválida.');
   const atual = db.prepare('select * from fila_itens where id = ?').get(id);
   if (!atual) throw new HttpError(404, 'Item da fila não encontrado.');
@@ -201,6 +256,9 @@ function aplicarAcao(id, acao, { salaId, novoServicoId, motivo } = {}) {
 
   const n = { ...atual };
   const t = agora();
+  if (veterinarioNome !== undefined) {
+    n.veterinario_nome = texto(veterinarioNome, 120, 'Veterinário');
+  }
   switch (acao) {
     case 'chamar':
       n.status = 'chamado';
@@ -247,11 +305,11 @@ function aplicarAcao(id, acao, { salaId, novoServicoId, motivo } = {}) {
   }
 
   db.prepare(
-    `update fila_itens set status = ?, sala_id = ?, servico_id = ?, chamado_em = ?, iniciado_em = ?,
+    `update fila_itens set status = ?, sala_id = ?, servico_id = ?, veterinario_nome = ?, chamado_em = ?, iniciado_em = ?,
             finalizado_em = ?, ausente_em = ?, cancelado_em = ?, historico_transferencias = ?, updated_at = ?
       where id = ?`,
   ).run(
-    n.status, n.sala_id, n.servico_id, n.chamado_em, n.iniciado_em,
+    n.status, n.sala_id, n.servico_id, n.veterinario_nome, n.chamado_em, n.iniciado_em,
     n.finalizado_em, n.ausente_em, n.cancelado_em, n.historico_transferencias, t, id,
   );
 
@@ -267,9 +325,53 @@ export function alterarStatus(id, acao, extra) {
   return transacao(() => aplicarAcao(id, acao, extra), { imediata: true });
 }
 
+export function editarItem(id, p = {}) {
+  return transacao(() => {
+    const atual = db.prepare('select * from fila_itens where id = ?').get(id);
+    if (!atual) throw new HttpError(404, 'Item da fila não encontrado.');
+
+    const tutorEntrada = p.tutorNome !== undefined ? p.tutorNome : p.tutor_nome;
+    const petEntrada = p.petNome !== undefined ? p.petNome : p.pet_nome;
+    const vetEntrada = p.veterinarioNome !== undefined ? p.veterinarioNome : p.veterinario_nome;
+    const motEntrada = p.motivoResumido !== undefined ? p.motivoResumido : p.motivo_resumido;
+    const salaEntrada = p.salaId !== undefined ? p.salaId : p.sala_id;
+    const srvEntrada = p.servicoId !== undefined ? p.servicoId : p.servico_id;
+
+    if (tutorEntrada !== undefined && !String(tutorEntrada).trim()) {
+      throw new HttpError(400, 'Informe o nome do tutor.');
+    }
+    if (p.prioridade !== undefined && !PRIORIDADES.includes(p.prioridade)) {
+      throw new HttpError(400, 'Prioridade inválida.');
+    }
+    if (salaEntrada && !db.prepare('select 1 from fila_salas where id = ?').get(salaEntrada)) {
+      throw new HttpError(400, 'Sala inexistente.');
+    }
+    if (srvEntrada && !db.prepare('select 1 from fila_servicos where id = ?').get(srvEntrada)) {
+      throw new HttpError(400, 'Serviço inexistente.');
+    }
+
+    const tutor = tutorEntrada === undefined ? atual.tutor_nome : texto(tutorEntrada, 120, 'Nome do tutor', { obrigatorio: true });
+    const pet = petEntrada === undefined ? atual.pet_nome : texto(petEntrada, 120, 'Pet');
+    const vet = vetEntrada === undefined ? atual.veterinario_nome : texto(vetEntrada, 120, 'Veterinário');
+    const prio = p.prioridade === undefined ? atual.prioridade : p.prioridade;
+    const mot = motEntrada === undefined ? atual.motivo_resumido : texto(motEntrada, 300, 'Motivo');
+    const sala = salaEntrada === undefined ? atual.sala_id : (salaEntrada || null);
+    const srv = srvEntrada === undefined ? atual.servico_id : srvEntrada;
+
+    db.prepare(
+      `update fila_itens
+          set tutor_nome = ?, pet_nome = ?, veterinario_nome = ?, prioridade = ?,
+              motivo_resumido = ?, sala_id = ?, servico_id = ?, updated_at = ?
+        where id = ?`,
+    ).run(tutor, pet, vet, prio, mot, sala, srv, agora(), id);
+
+    return item(db.prepare('select * from fila_itens where id = ?').get(id));
+  }, { imediata: true });
+}
+
 // "Chamar Próximo" atômico: Emergência > Preferencial > Normal, depois por ordem de chegada.
 // Duas veterinárias clicando ao mesmo tempo nunca chamam o mesmo paciente.
-export function chamarProximo(salaId) {
+export function chamarProximo(salaId, { veterinarioNome } = {}) {
   return transacao(
     () => {
       const s = db.prepare('select * from fila_salas where id = ? and ativa = 1').get(salaId);
@@ -282,7 +384,7 @@ export function chamarProximo(salaId) {
         )
         .get(salaId);
       if (!proximo) throw new HttpError(404, 'Nenhum paciente aguardando na fila no momento.');
-      return aplicarAcao(proximo.id, 'chamar', { salaId });
+      return aplicarAcao(proximo.id, 'chamar', { salaId, veterinarioNome });
     },
     { imediata: true },
   );
@@ -313,6 +415,12 @@ export function carregarPadroes() {
         'Consultório 01', 'Consultório 02', 'Consultório 03', 'Sala de Vacinas',
         'Sala de Procedimentos', 'Ultrassom / Raio-X', 'Recepção / Triagem',
       ].forEach((nome) => ins.run(randomUUID(), nome, agora()));
+    }
+    if (vazio('fila_veterinarios')) {
+      const ins = db.prepare('insert into fila_veterinarios (id, nome, ordem, created_at) values (?, ?, ?, ?)');
+      ['Dra. Camila', 'Dr. Rafael', 'Dra. Helena'].forEach((nome, i) =>
+        ins.run(randomUUID(), nome, i, agora()),
+      );
     }
   });
   return primeiraVez;

@@ -7,7 +7,7 @@
 // - Envio de logo/vídeos e backup ficam desativados.
 // - Nada sai do navegador: não há servidor, banco nem rede.
 import { DEFAULT_CONFIG } from '@/types/queue';
-import type { AppConfig, QueueItem, QueuePriority, QueueRoom, QueueService } from '@/types/queue';
+import type { AppConfig, QueueItem, QueuePriority, QueueRoom, QueueService, QueueVeterinarian } from '@/types/queue';
 
 const CHAVE = 'fila-demo-v1';
 const CANAL = 'fila-demo';
@@ -20,6 +20,7 @@ interface Estado {
   criadoEm: number;
   servicos: QueueService[];
   salas: QueueRoom[];
+  veterinarios: QueueVeterinarian[];
   itens: Item[];
   config: AppConfig;
 }
@@ -217,11 +218,18 @@ function semear(): Estado {
     itens.push(novoItem(dh(m as number), p as string, prio as QueuePriority, hoje, { tutor_nome: tutor as string, pet_nome: pet as string })),
   );
 
+  const veterinarios: QueueVeterinarian[] = [
+    { id: 'vet-1', nome: 'Dra. Camila', crmv: 'CRMV-SP 12345', ativo: true, ordem: 0 },
+    { id: 'vet-2', nome: 'Dr. Rafael', crmv: 'CRMV-SP 23456', ativo: true, ordem: 1 },
+    { id: 'vet-3', nome: 'Dra. Helena', crmv: 'CRMV-SP 34567', ativo: true, ordem: 2 },
+  ];
+
   itens.sort((a, b) => a.chegada_em.localeCompare(b.chegada_em));
   return {
     criadoEm: Date.now(),
     servicos,
     salas,
+    veterinarios,
     itens,
     config: { ...DEFAULT_CONFIG, clinic_name: 'Clínica Veterinária Exemplo', clinic_subtitle: 'Demonstração do Painel de Atendimento' },
   };
@@ -343,7 +351,7 @@ function aplicarAcao(
   e: Estado,
   id: string,
   acao: string,
-  { salaId, novoServicoId, motivo }: { salaId?: string; novoServicoId?: string; motivo?: string } = {},
+  { salaId, novoServicoId, motivo, veterinarioNome }: { salaId?: string; novoServicoId?: string; motivo?: string; veterinarioNome?: string } = {},
 ): Item {
   if (!ACOES.includes(acao)) throw new ErroHttp(400, 'Ação de fila inválida.');
   const it = e.itens.find((i) => i.id === id);
@@ -353,6 +361,9 @@ function aplicarAcao(
   if (novoServicoId && !e.servicos.some((s) => s.id === novoServicoId)) throw new ErroHttp(400, 'Serviço inexistente.');
 
   const t = agora();
+  if (veterinarioNome !== undefined) {
+    it.veterinario_nome = texto(veterinarioNome, 120, 'Veterinário');
+  }
   switch (acao) {
     case 'chamar':
       it.status = 'chamado';
@@ -397,14 +408,14 @@ function aplicarAcao(
   return it;
 }
 
-function chamarProximo(e: Estado, salaId: string): Item {
+function chamarProximo(e: Estado, salaId: string, extra?: { veterinarioNome?: string }): Item {
   const sala = e.salas.find((s) => s.id === salaId && s.ativa);
   if (!sala) throw new ErroHttp(400, 'Sala inexistente ou desativada.');
   const proximo = e.itens
     .filter((i) => i.status === 'aguardando' && (!i.sala_id || i.sala_id === salaId))
     .sort((a, b) => ORDEM_PRIORIDADE[a.prioridade] - ORDEM_PRIORIDADE[b.prioridade] || a.chegada_em.localeCompare(b.chegada_em))[0];
   if (!proximo) throw new ErroHttp(404, 'Nenhum paciente aguardando na fila no momento.');
-  return aplicarAcao(e, proximo.id, 'chamar', { salaId });
+  return aplicarAcao(e, proximo.id, 'chamar', { salaId, veterinarioNome: extra?.veterinarioNome });
 }
 
 const prefixoValido = (p: unknown) => {
@@ -461,6 +472,7 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
         corpo: {
           servicos: [...e.servicos].sort((a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome)),
           salas: [...e.salas].sort((a, b) => a.nome.localeCompare(b.nome)),
+          veterinarios: [...(e.veterinarios || [])].sort((a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome)),
           itens: e.itens.filter((i) => ATIVOS.includes(i.status) || i.chegada_em >= corte),
           midias: [],
           config: configPublica(e),
@@ -479,10 +491,13 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
     if (caminho === '/api/auth/verificar') return { corpo: { ok: true } };
     if (caminho === '/api/itens') return { status: 201, corpo: adicionarItem(e, corpo), mudou: true };
     if (rota(/^\/api\/itens\/([^/]+)\/acao$/)) {
-      const { acao, salaId, novoServicoId, motivo } = corpo as Record<string, string>;
-      return { corpo: aplicarAcao(e, m![1], acao, { salaId, novoServicoId, motivo }), mudou: true };
+      const { acao, salaId, novoServicoId, motivo, veterinarioNome } = corpo as Record<string, string>;
+      return { corpo: aplicarAcao(e, m![1], acao, { salaId, novoServicoId, motivo, veterinarioNome }), mudou: true };
     }
-    if (rota(/^\/api\/salas\/([^/]+)\/chamar-proximo$/)) return { corpo: chamarProximo(e, m![1]), mudou: true };
+    if (rota(/^\/api\/salas\/([^/]+)\/chamar-proximo$/)) {
+      const { veterinarioNome } = corpo as Record<string, string>;
+      return { corpo: chamarProximo(e, m![1], { veterinarioNome }), mudou: true };
+    }
     if (caminho === '/api/salas') {
       const nome = texto(corpo.nome, 60, 'Nome da sala', true)!;
       if (e.salas.some((s) => s.nome.toLowerCase() === nome.toLowerCase())) throw new ErroHttp(409, 'Já existe uma sala com esse nome.');
@@ -498,10 +513,44 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
       e.servicos.push(srv);
       return { status: 201, corpo: srv, mudou: true };
     }
+    if (caminho === '/api/veterinarios') {
+      const nome = texto(corpo.nome, 80, 'Nome do veterinário', true)!;
+      const crmv = corpo.crmv ? texto(corpo.crmv, 30, 'CRMV') : null;
+      if (!e.veterinarios) e.veterinarios = [];
+      const vet: QueueVeterinarian = {
+        id: uuid(),
+        nome,
+        crmv,
+        ativo: true,
+        ordem: e.veterinarios.reduce((o, v) => Math.max(o, v.ordem), -1) + 1,
+      };
+      e.veterinarios.push(vet);
+      return { status: 201, corpo: vet, mudou: true };
+    }
     if (caminho === '/api/midias/ordem' || caminho === '/api/midias/youtube') throw new ErroHttp(403, INDISPONIVEL);
   }
 
   if (metodo === 'PATCH') {
+    if (rota(/^\/api\/itens\/([^/]+)$/)) {
+      const it = e.itens.find((i) => i.id === m![1]);
+      if (!it) throw new ErroHttp(404, 'Senha não encontrada.');
+      if (corpo.tutor_nome !== undefined) it.tutor_nome = texto(corpo.tutor_nome, 80, 'Nome do tutor', true)!;
+      if (corpo.pet_nome !== undefined) it.pet_nome = texto(corpo.pet_nome, 50, 'Nome do pet');
+      if (corpo.veterinario_nome !== undefined) it.veterinario_nome = texto(corpo.veterinario_nome, 80, 'Nome do veterinário');
+      if (corpo.motivo_resumido !== undefined) it.motivo_resumido = texto(corpo.motivo_resumido, 200, 'Motivo');
+      if (corpo.prioridade !== undefined && ['normal', 'prioridade', 'emergencia'].includes(String(corpo.prioridade))) {
+        it.prioridade = corpo.prioridade as QueuePriority;
+      }
+      if (corpo.servico_id !== undefined) {
+        if (!e.servicos.some((s) => s.id === corpo.servico_id)) throw new ErroHttp(400, 'Serviço inexistente.');
+        it.servico_id = String(corpo.servico_id);
+      }
+      if (corpo.sala_id !== undefined) {
+        if (corpo.sala_id && !e.salas.some((s) => s.id === corpo.sala_id)) throw new ErroHttp(400, 'Sala inexistente.');
+        it.sala_id = (corpo.sala_id as string) || null;
+      }
+      return { corpo: it, mudou: true };
+    }
     if (rota(/^\/api\/salas\/([^/]+)$/)) {
       const sala = e.salas.find((s) => s.id === m![1]);
       if (!sala) throw new ErroHttp(404, 'Sala não encontrada.');
@@ -526,6 +575,19 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
       if (Number.isInteger(corpo.ordem)) srv.ordem = corpo.ordem as number;
       return { corpo: srv, mudou: true };
     }
+    if (rota(/^\/api\/veterinarios\/([^/]+)$/)) {
+      if (!e.veterinarios) e.veterinarios = [];
+      const vet = e.veterinarios.find((v) => v.id === m![1]);
+      if (!vet) throw new ErroHttp(404, 'Veterinário não encontrado.');
+      if (corpo.nome !== undefined) {
+        const nome = texto(corpo.nome, 80, 'Nome do veterinário', true)!;
+        vet.nome = nome;
+      }
+      if (corpo.crmv !== undefined) vet.crmv = corpo.crmv ? texto(corpo.crmv, 30, 'CRMV') : null;
+      if (corpo.ativo !== undefined) vet.ativo = !!corpo.ativo;
+      if (Number.isInteger(corpo.ordem)) vet.ordem = corpo.ordem as number;
+      return { corpo: vet, mudou: true };
+    }
     if (rota(/^\/api\/midias\/([^/]+)$/)) throw new ErroHttp(403, INDISPONIVEL);
   }
 
@@ -542,6 +604,13 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
       const n = e.servicos.length;
       e.servicos = e.servicos.filter((s) => s.id !== m![1]);
       if (e.servicos.length === n) throw new ErroHttp(404, 'Serviço não encontrado.');
+      return { status: 204, mudou: true };
+    }
+    if (rota(/^\/api\/veterinarios\/([^/]+)$/)) {
+      if (!e.veterinarios) e.veterinarios = [];
+      const n = e.veterinarios.length;
+      e.veterinarios = e.veterinarios.filter((v) => v.id !== m![1]);
+      if (e.veterinarios.length === n) throw new ErroHttp(404, 'Veterinário não encontrado.');
       return { status: 204, mudou: true };
     }
     if (caminho === '/api/logo' || rota(/^\/api\/midias\/([^/]+)$/)) throw new ErroHttp(403, INDISPONIVEL);

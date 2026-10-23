@@ -17,6 +17,14 @@ export interface QueueRoom {
   ativa: boolean;
 }
 
+export interface QueueVeterinarian {
+  id: string;
+  nome: string;
+  crmv: string | null;
+  ativo: boolean;
+  ordem: number;
+}
+
 export interface TransferRecord {
   data: string;
   usuario_id?: string | null;

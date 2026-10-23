@@ -11,13 +11,14 @@ import {
   Share2,
   AlertTriangle,
   RotateCcw,
+  Stethoscope,
 } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
 import { QUEUE_PRIORITY_LABEL, PRIORITY_STYLES, type QueueItem } from '@/types/queue';
 import { tocarChimeFila } from '@/lib/audioChime';
 
 export default function RoomCallerPage() {
-  const { items, rooms, services, alterarStatus, chamarProximo, loading } = useQueueSystem();
+  const { items, rooms, services, veterinarios, alterarStatus, chamarProximo, loading } = useQueueSystem();
 
   // Obtém sala da URL ou localStorage
   // Aceita /chamar/<id-da-sala> (atalho fixo no consultório) ou ?sala=<id>
@@ -27,6 +28,7 @@ export default function RoomCallerPage() {
     pathRoomId || urlParams.get('sala') || localStorage.getItem('vet_caller_room_id') || '';
 
   const [selectedRoomId, setSelectedRoomId] = useState<string>(initialRoomId);
+  const [selectedVet, setSelectedVet] = useState<string>(() => localStorage.getItem('vet_caller_vet_name') || '');
   const [transferTarget, setTransferTarget] = useState<QueueItem | null>(null);
   const [transferRoom, setTransferRoom] = useState<string>('');
   const [transferReason, setTransferReason] = useState<string>('');
@@ -37,6 +39,11 @@ export default function RoomCallerPage() {
   const handleSelectRoom = (id: string) => {
     setSelectedRoomId(id);
     localStorage.setItem('vet_caller_room_id', id);
+  };
+
+  const handleSelectVet = (v: string) => {
+    setSelectedVet(v);
+    localStorage.setItem('vet_caller_vet_name', v);
   };
 
   // Paciente atualmente em atendimento ou chamado na sala selecionada
@@ -65,10 +72,15 @@ export default function RoomCallerPage() {
   const handleCallNext = async (specificItem?: QueueItem) => {
     if (!currentRoom) return;
     if (specificItem) {
-      await alterarStatus(specificItem.id, 'chamar', { salaId: currentRoom.id });
+      await alterarStatus(specificItem.id, 'chamar', {
+        salaId: currentRoom.id,
+        veterinarioNome: selectedVet || undefined,
+      });
     } else {
       // O servidor escolhe o próximo de forma atômica (duas salas nunca chamam o mesmo paciente)
-      await chamarProximo(currentRoom.id);
+      await chamarProximo(currentRoom.id, {
+        veterinarioNome: selectedVet || undefined,
+      });
     }
     tocarChimeFila();
   };
@@ -76,7 +88,10 @@ export default function RoomCallerPage() {
   // Ação: Repetir Chamada
   const handleRepeatCall = async () => {
     if (!currentPatient || !currentRoom) return;
-    await alterarStatus(currentPatient.id, 'chamar', { salaId: currentRoom.id });
+    await alterarStatus(currentPatient.id, 'chamar', {
+      salaId: currentRoom.id,
+      veterinarioNome: selectedVet || undefined,
+    });
     tocarChimeFila();
   };
 
@@ -117,26 +132,54 @@ export default function RoomCallerPage() {
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content flex flex-col pb-28">
-      {/* Barra de Seleção de Sala */}
+      {/* Barra de Seleção de Sala e Profissional */}
       <header className="navbar bg-base-200 border-b border-base-300 px-4 py-3 flex-wrap justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10 text-accent border border-primary/20">
-            <DoorOpen className="h-5 w-5" />
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10 text-accent border border-primary/20">
+              <DoorOpen className="h-5 w-5" />
+            </div>
+            <div>
+              <span className="text-xs text-neutral font-medium">Você está atendendo em:</span>
+              <div className="flex items-center gap-2">
+                <select
+                  value={currentRoom?.id || ''}
+                  onChange={(e) => handleSelectRoom(e.target.value)}
+                  className="select select-bordered select-sm font-bold text-base"
+                >
+                  {rooms.filter((r) => r.ativa).map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
-          <div>
-            <span className="text-xs text-neutral font-medium">Você está atendendo em:</span>
-            <div className="flex items-center gap-2">
-              <select
-                value={currentRoom?.id || ''}
-                onChange={(e) => handleSelectRoom(e.target.value)}
-                className="select select-bordered select-sm font-bold text-base"
-              >
-                {rooms.filter((r) => r.ativa).map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.nome}
-                  </option>
-                ))}
-              </select>
+
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10 text-accent border border-primary/20">
+              <Stethoscope className="h-5 w-5" />
+            </div>
+            <div>
+              <span className="text-xs text-neutral font-medium">Profissional no consultório:</span>
+              <div className="flex items-center gap-2">
+                <select
+                  value={selectedVet}
+                  onChange={(e) => handleSelectVet(e.target.value)}
+                  className="select select-bordered select-sm font-semibold text-sm"
+                >
+                  <option value="">Não identificado</option>
+                  {veterinarios.filter((v) => v.ativo).map((v) => (
+                    <option key={v.id} value={v.nome}>
+                      {v.nome} {v.crmv ? `(${v.crmv})` : ''}
+                    </option>
+                  ))}
+                  {selectedVet && !veterinarios.some((v) => v.nome === selectedVet) && (
+                    <option value={selectedVet}>{selectedVet}</option>
+                  )}
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -185,6 +228,12 @@ export default function RoomCallerPage() {
                     <p className="text-neutral text-sm mt-0.5">
                       Tutor(a): <strong className="text-base-content">{currentPatient.tutor_nome}</strong>
                     </p>
+                    {currentPatient.veterinario_nome && (
+                      <p className="text-primary text-xs font-semibold mt-1 flex items-center gap-1">
+                        <Stethoscope className="h-3.5 w-3.5" />
+                        <span>Veterinário(a): {currentPatient.veterinario_nome}</span>
+                      </p>
+                    )}
                   </div>
                   <div className="text-right">
                     <span

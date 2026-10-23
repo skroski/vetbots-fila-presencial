@@ -108,6 +108,7 @@ app.get('/api/state', (_req, res) => {
   res.json({
     servicos: fila.listarServicos(),
     salas: fila.listarSalas(),
+    veterinarios: fila.listarVeterinarios(),
     itens: fila.listarItens(),
     midias: media.listarMidias(),
     config: configPublica(),
@@ -123,20 +124,27 @@ app.post('/api/itens', json, (req, res) => {
   res.status(201).json(novo);
 });
 
-app.post('/api/itens/:id/acao', json, (req, res) => {
-  const { acao, salaId, novoServicoId, motivo } = req.body || {};
-  const atualizado = fila.alterarStatus(req.params.id, acao, { salaId, novoServicoId, motivo });
+app.patch('/api/itens/:id', json, (req, res) => {
+  const atualizado = fila.editarItem(req.params.id, req.body || {});
   emitir();
   res.json(atualizado);
 });
 
-app.post('/api/salas/:id/chamar-proximo', (req, res) => {
-  const chamado = fila.chamarProximo(req.params.id);
+app.post('/api/itens/:id/acao', json, (req, res) => {
+  const { acao, salaId, novoServicoId, motivo, veterinarioNome } = req.body || {};
+  const atualizado = fila.alterarStatus(req.params.id, acao, { salaId, novoServicoId, motivo, veterinarioNome });
+  emitir();
+  res.json(atualizado);
+});
+
+app.post('/api/salas/:id/chamar-proximo', json, (req, res) => {
+  const { veterinarioNome } = req.body || {};
+  const chamado = fila.chamarProximo(req.params.id, { veterinarioNome });
   emitir();
   res.json(chamado);
 });
 
-// ---------- cadastros (salas, serviços) ----------
+// ---------- cadastros (salas, serviços, veterinários) ----------
 
 app.post('/api/salas', admin, json, (req, res) => {
   const s = fila.criarSala(req.body || {});
@@ -166,6 +174,22 @@ app.patch('/api/servicos/:id', admin, json, (req, res) => {
 });
 app.delete('/api/servicos/:id', admin, (req, res) => {
   fila.excluirServico(req.params.id);
+  emitir();
+  res.status(204).end();
+});
+
+app.post('/api/veterinarios', admin, json, (req, res) => {
+  const v = fila.criarVeterinario(req.body || {});
+  emitir();
+  res.status(201).json(v);
+});
+app.patch('/api/veterinarios/:id', admin, json, (req, res) => {
+  const v = fila.editarVeterinario(req.params.id, req.body || {});
+  emitir();
+  res.json(v);
+});
+app.delete('/api/veterinarios/:id', admin, (req, res) => {
+  fila.excluirVeterinario(req.params.id);
   emitir();
   res.status(204).end();
 });

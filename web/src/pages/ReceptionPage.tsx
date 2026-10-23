@@ -1,19 +1,14 @@
 import { useState, useMemo } from 'react';
 import {
-  Plus,
-  Tv,
-  Megaphone,
-  UserCheck,
-  CheckCircle2,
-  Clock,
-  Printer,
   ArrowRightLeft,
-  UserX,
-  XCircle,
-  Search,
-  Filter,
   DoorOpen,
-  Volume2,
+  Megaphone,
+  Pencil,
+  Plus,
+  Printer,
+  Search,
+  Stethoscope,
+  Tv,
 } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
 import { agoraServidor } from '@/lib/store';
@@ -31,7 +26,7 @@ import { toast } from 'sonner';
 import { tocarChimeFila } from '@/lib/audioChime';
 
 export default function ReceptionPage() {
-  const { services, rooms, items, config, adicionarItem, alterarStatus } = useQueueSystem();
+  const { services, rooms, veterinarios, items, config, adicionarItem, editarItem, alterarStatus } = useQueueSystem();
 
   // Estados de filtro e busca
   const [statusFilter, setStatusFilter] = useState<string>('todos_ativos');
@@ -52,6 +47,17 @@ export default function ReceptionPage() {
   const [targetRoom, setTargetRoom] = useState('');
   const [targetService, setTargetService] = useState('');
   const [transferReason, setTransferReason] = useState('');
+
+  // Modal de Edição de Informações
+  const [editTarget, setEditTarget] = useState<QueueItem | null>(null);
+  const [editTutor, setEditTutor] = useState('');
+  const [editPet, setEditPet] = useState('');
+  const [editVet, setEditVet] = useState('');
+  const [editPriority, setEditPriority] = useState<QueuePriority>('normal');
+  const [editMotivo, setEditMotivo] = useState('');
+  const [editServiceId, setEditServiceId] = useState('');
+  const [editRoomId, setEditRoomId] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
 
   // Métricas rápidas no topo
   const stats = useMemo(() => {
@@ -289,6 +295,12 @@ export default function ReceptionPage() {
                         {item.pet_nome ? `${item.pet_nome} 🐾` : '—'}
                       </div>
                       <span className="text-xs text-neutral">{item.tutor_nome}</span>
+                      {item.veterinario_nome && (
+                        <div className="text-xs text-primary font-medium flex items-center gap-1 mt-0.5">
+                          <Stethoscope className="h-3 w-3" />
+                          <span>{item.veterinario_nome}</span>
+                        </div>
+                      )}
                     </td>
                     <td className="py-3.5 px-4 text-xs font-semibold text-base-content/80">
                       {srv?.nome || 'Geral'}
@@ -330,6 +342,23 @@ export default function ReceptionPage() {
                             <Megaphone className="h-4 w-4" />
                           </button>
                         )}
+
+                        <button
+                          onClick={() => {
+                            setEditTarget(item);
+                            setEditTutor(item.tutor_nome);
+                            setEditPet(item.pet_nome || '');
+                            setEditVet(item.veterinario_nome || '');
+                            setEditPriority(item.prioridade);
+                            setEditMotivo(item.motivo_resumido || '');
+                            setEditServiceId(item.servico_id);
+                            setEditRoomId(item.sala_id || '');
+                          }}
+                          className="btn btn-ghost btn-square btn-sm"
+                          title="Editar Dados da Senha"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
 
                         <button
                           onClick={() => {
@@ -471,6 +500,35 @@ export default function ReceptionPage() {
 
               <div>
                 <label className="label-text mb-1 block font-semibold">
+                  Veterinário / Profissional Responsável (Opcional)
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={veterinarianName}
+                    onChange={(e) => setVeterinarianName(e.target.value)}
+                    className="select select-bordered flex-1"
+                  >
+                    <option value="">Não definido (Fila do consultório)</option>
+                    {veterinarios.filter((v) => v.ativo).map((v) => (
+                      <option key={v.id} value={v.nome}>
+                        {v.nome} {v.crmv ? `(${v.crmv})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                  {veterinarios.length === 0 && (
+                    <input
+                      type="text"
+                      placeholder="Ou digite o nome do profissional"
+                      value={veterinarianName}
+                      onChange={(e) => setVeterinarianName(e.target.value)}
+                      className="input input-bordered flex-1"
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="label-text mb-1 block font-semibold">
                   Motivo Resumido (Opcional)
                 </label>
                 <input
@@ -598,6 +656,180 @@ export default function ReceptionPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Modal de Edição de Informações */}
+      {editTarget && (
+        <div className="modal modal-open">
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!editTutor.trim()) return;
+              setSavingEdit(true);
+              try {
+                await editarItem(editTarget.id, {
+                  tutorNome: editTutor.trim(),
+                  petNome: editPet.trim() || undefined,
+                  veterinarioNome: editVet.trim() || undefined,
+                  prioridade: editPriority,
+                  motivoResumido: editMotivo.trim() || undefined,
+                  servicoId: editServiceId,
+                  salaId: editRoomId || null,
+                });
+                toast.success(`Senha ${editTarget.senha} atualizada!`);
+                setEditTarget(null);
+              } catch (err) {
+                toast.error(err instanceof Error ? err.message : 'Erro ao salvar alterações.');
+              } finally {
+                setSavingEdit(false);
+              }
+            }}
+            className="modal-box max-w-lg space-y-4 p-8"
+          >
+            <div className="flex items-center justify-between border-b border-base-300 pb-3">
+              <h3 className="text-lg font-bold text-base-content flex items-center gap-2">
+                <Pencil className="h-5 w-5 text-accent" />
+                <span>Editar Dados: Senha {editTarget.senha}</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditTarget(null)}
+                className="btn btn-ghost btn-sm btn-circle"
+                aria-label="Fechar"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3.5">
+              <div>
+                <label className="label-text mb-1 block font-semibold">Tipo de Serviço / Fila</label>
+                <select
+                  value={editServiceId}
+                  onChange={(e) => setEditServiceId(e.target.value)}
+                  className="select select-bordered w-full"
+                >
+                  {services.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      [{s.prefixo}] {s.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="label-text mb-1 block font-semibold">Prioridade</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['normal', 'prioridade', 'emergencia'] as QueuePriority[]).map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setEditPriority(p)}
+                      className={`btn btn-sm ${
+                        editPriority === p
+                          ? p === 'emergencia'
+                            ? 'btn-error'
+                            : p === 'prioridade'
+                            ? 'btn-warning'
+                            : 'btn-primary'
+                          : 'btn-ghost border-base-300'
+                      }`}
+                    >
+                      {p === 'emergencia' ? 'Emergência' : p === 'prioridade' ? 'Preferencial' : 'Normal'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="label-text mb-1 block font-semibold">Nome do Tutor *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editTutor}
+                    onChange={(e) => setEditTutor(e.target.value)}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+                <div>
+                  <label className="label-text mb-1 block font-semibold">Nome do Pet</label>
+                  <input
+                    type="text"
+                    value={editPet}
+                    onChange={(e) => setEditPet(e.target.value)}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="label-text mb-1 block font-semibold">Veterinário / Profissional Responsável</label>
+                <div className="flex gap-2">
+                  <select
+                    value={editVet}
+                    onChange={(e) => setEditVet(e.target.value)}
+                    className="select select-bordered flex-1"
+                  >
+                    <option value="">Não definido (Fila do consultório)</option>
+                    {veterinarios.map((v) => (
+                      <option key={v.id} value={v.nome}>
+                        {v.nome} {v.crmv ? `(${v.crmv})` : ''} {!v.ativo ? '(Inativo)' : ''}
+                      </option>
+                    ))}
+                    {editVet && !veterinarios.some((v) => v.nome === editVet) && (
+                      <option value={editVet}>{editVet} (Personalizado)</option>
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="label-text mb-1 block font-semibold">Direcionar para Sala / Consultório</label>
+                <select
+                  value={editRoomId}
+                  onChange={(e) => setEditRoomId(e.target.value)}
+                  className="select select-bordered w-full"
+                >
+                  <option value="">Fila Geral (Qualquer consultório disponível)</option>
+                  {rooms.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="label-text mb-1 block font-semibold">Motivo Resumido</label>
+                <input
+                  type="text"
+                  value={editMotivo}
+                  onChange={(e) => setEditMotivo(e.target.value)}
+                  className="input input-bordered w-full"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-base-300">
+              <button
+                type="button"
+                onClick={() => setEditTarget(null)}
+                className="btn btn-ghost"
+                disabled={savingEdit}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={savingEdit}
+              >
+                {savingEdit ? 'Salvando...' : 'Salvar Alterações'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>

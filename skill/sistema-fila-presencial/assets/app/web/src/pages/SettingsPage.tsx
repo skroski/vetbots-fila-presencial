@@ -17,6 +17,7 @@ import {
   Pencil,
   Plus,
   Server,
+  Stethoscope,
   Tag,
   Trash2,
   Tv,
@@ -30,7 +31,7 @@ import { aplicarTemaTemporario, refresh } from '@/lib/store';
 import BrandMark from '@/components/BrandMark';
 import type { AppConfig, Media } from '@/types/queue';
 
-type Aba = 'marca' | 'tv' | 'rooms' | 'services' | 'sistema';
+type Aba = 'marca' | 'tv' | 'rooms' | 'vets' | 'services' | 'sistema';
 
 const CORES_PRONTAS = [
   { nome: 'VetBots', hex: '#2294aa' },
@@ -931,6 +932,143 @@ function AbaServicos() {
   );
 }
 
+// ---------- Aba: veterinários / equipe ----------
+
+function AbaVeterinarios() {
+  const { veterinarios } = useQueueSystem();
+  const executar = useAcaoCadastro();
+  const [nome, setNovoNome] = useState('');
+  const [crmv, setNovoCrmv] = useState('');
+  const [editando, setEditando] = useState<{ id: string; nome: string; crmv: string } | null>(null);
+
+  return (
+    <div className="space-y-6">
+      <div className="card bg-base-100 border border-base-300 shadow-soft p-4">
+        <p className="text-xs text-neutral mb-3">
+          Cadastre os profissionais da clínica. Eles ficam disponíveis para seleção rápida ao emitir senhas na recepção e no painel do chamador no consultório.
+        </p>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!nome.trim()) return;
+            void executar(
+              () => api('POST', '/api/veterinarios', { nome: nome.trim(), crmv: crmv.trim() || undefined }),
+              'Veterinário(a) adicionado(a).',
+            ).then(() => {
+              setNovoNome('');
+              setNovoCrmv('');
+            });
+          }}
+          className="flex flex-row flex-wrap sm:flex-nowrap gap-3"
+        >
+          <input
+            type="text"
+            placeholder="Nome do(a) profissional (ex: Dra. Camila, Dr. Rafael)..."
+            value={nome}
+            maxLength={80}
+            onChange={(e) => setNovoNome(e.target.value)}
+            className={`${campo} flex-1`}
+          />
+          <input
+            type="text"
+            maxLength={30}
+            placeholder="CRMV / Reg. (opcional)"
+            value={crmv}
+            onChange={(e) => setNovoCrmv(e.target.value)}
+            className={`${campo} sm:w-44`}
+          />
+          <button type="submit" className={botaoPrimario}>
+            <Plus className="h-4 w-4" />
+            <span>Adicionar Profissional</span>
+          </button>
+        </form>
+      </div>
+
+      <div className="card bg-base-100 border border-base-300 shadow-soft overflow-hidden divide-y divide-base-300">
+        {veterinarios.map((vet) => (
+          <div key={vet.id} className="p-4 flex flex-wrap items-center justify-between gap-3 hover:bg-base-200 transition">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className={`h-3 w-3 rounded-full shrink-0 ${vet.ativo ? 'bg-success' : 'bg-base-300'}`} />
+              {editando?.id === vet.id ? (
+                <form
+                  className="flex flex-wrap sm:flex-nowrap gap-2 flex-1"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void executar(
+                      () =>
+                        api('PATCH', `/api/veterinarios/${vet.id}`, {
+                          nome: editando.nome.trim(),
+                          crmv: editando.crmv.trim() || null,
+                        }),
+                      'Cadastro atualizado.',
+                    ).then(() => setEditando(null));
+                  }}
+                >
+                  <input
+                    autoFocus
+                    className={campo}
+                    value={editando.nome}
+                    onChange={(e) => setEditando({ ...editando, nome: e.target.value })}
+                    placeholder="Nome"
+                  />
+                  <input
+                    className={`${campo} sm:w-40`}
+                    value={editando.crmv}
+                    onChange={(e) => setEditando({ ...editando, crmv: e.target.value })}
+                    placeholder="CRMV (opcional)"
+                  />
+                  <button className={botaoDiscreto} type="submit" title="Salvar">
+                    <Check className="h-4 w-4" />
+                  </button>
+                  <button className={botaoDiscreto} type="button" onClick={() => setEditando(null)} title="Cancelar">
+                    <X className="h-4 w-4" />
+                  </button>
+                </form>
+              ) : (
+                <div className="min-w-0">
+                  <span className="font-semibold text-base-content text-sm block truncate">{vet.nome}</span>
+                  {vet.crmv && <span className="text-xs text-neutral block">{vet.crmv}</span>}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                className={botaoDiscreto}
+                onClick={() => setEditando({ id: vet.id, nome: vet.nome, crmv: vet.crmv || '' })}
+                title="Editar nome / CRMV"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => executar(() => api('PATCH', `/api/veterinarios/${vet.id}`, { ativo: !vet.ativo }))}
+                className={`btn btn-sm ${vet.ativo ? 'btn-primary btn-outline' : 'btn-ghost text-neutral'}`}
+              >
+                {vet.ativo ? 'Ativo' : 'Desativado'}
+              </button>
+              <button
+                className={`${botaoDiscreto} hover:!bg-error hover:!text-error-content`}
+                title="Excluir profissional"
+                onClick={() =>
+                  confirm(`Excluir o cadastro de "${vet.nome}"?`) &&
+                  executar(() => api('DELETE', `/api/veterinarios/${vet.id}`), 'Profissional excluído.')
+                }
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        ))}
+        {veterinarios.length === 0 && (
+          <div className="p-8 text-center text-xs text-neutral">
+            Nenhum profissional cadastrado na equipe ainda.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ---------- Aba: sistema (cupom, numeração, backup, endereços) ----------
 
 function AbaSistema({ config }: { config: AppConfig }) {
@@ -1062,6 +1200,7 @@ const ABAS: Array<{ id: Aba; rotulo: string; icone: typeof Palette }> = [
   { id: 'marca', rotulo: 'Aparência', icone: Palette },
   { id: 'tv', rotulo: 'TV & Vídeos', icone: Tv },
   { id: 'rooms', rotulo: 'Consultórios & Salas', icone: DoorOpen },
+  { id: 'vets', rotulo: 'Equipe de Veterinários', icone: Stethoscope },
   { id: 'services', rotulo: 'Serviços & Prefixos', icone: Tag },
   { id: 'sistema', rotulo: 'Sistema', icone: Server },
 ];
@@ -1101,7 +1240,7 @@ export default function SettingsPage() {
           </a>
           <div>
             <h1 className="text-lg font-bold text-base-content">Ajustes</h1>
-            <p className="text-xs text-neutral">Cores, logotipo, vídeos da TV, salas e serviços</p>
+            <p className="text-xs text-neutral">Cores, logotipo, vídeos da TV, salas, equipe e serviços</p>
           </div>
         </div>
 
@@ -1124,6 +1263,7 @@ export default function SettingsPage() {
         {aba === 'marca' && <AbaMarca config={config} />}
         {aba === 'tv' && <AbaTv config={config} midias={midias} />}
         {aba === 'rooms' && <AbaSalas />}
+        {aba === 'vets' && <AbaVeterinarios />}
         {aba === 'services' && <AbaServicos />}
         {aba === 'sistema' && <AbaSistema config={config} />}
       </main>

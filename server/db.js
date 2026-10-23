@@ -122,6 +122,17 @@ const MIGRATIONS = [
   alter table midias add column tipo text not null default 'arquivo' check (tipo in ('arquivo', 'youtube'));
   alter table midias add column youtube_id text;
   `,
+  // 3: equipe de veterinários / profissionais
+  `
+  create table fila_veterinarios (
+    id         text primary key,
+    nome       text not null unique,
+    crmv       text,
+    ativo      integer not null default 1,
+    ordem      integer not null default 0,
+    created_at text not null
+  );
+  `,
 ];
 
 export function migrate() {

@@ -278,3 +278,53 @@ test('backup devolve um SQLite válido', async () => {
   assert.equal(buf.subarray(0, 15).toString('latin1'), 'SQLite format 3');
   writeFileSync(join(dir, 'copia.db'), buf);
 });
+
+test('crud de veterinários e edição de informações de senha', async () => {
+  // Listar veterinários no estado
+  const estInicial = await estado();
+  assert.ok(Array.isArray(estInicial.veterinarios));
+  assert.ok(estInicial.veterinarios.length > 0);
+
+  // Criar novo veterinário
+  const novoVet = await api('POST', '/api/veterinarios', { nome: 'Dra. Beatriz Santos', crmv: 'CRMV-SP 99999' });
+  assert.equal(novoVet.status, 201);
+  assert.equal(novoVet.body.nome, 'Dra. Beatriz Santos');
+  assert.equal(novoVet.body.crmv, 'CRMV-SP 99999');
+  assert.equal(novoVet.body.ativo, true);
+
+  // Editar veterinário (ex: mudar nome / crmv / status)
+  const vetEditado = await api('PATCH', `/api/veterinarios/${novoVet.body.id}`, { nome: 'Dra. Beatriz S. Silva', ativo: false });
+  assert.equal(vetEditado.status, 200);
+  assert.equal(vetEditado.body.nome, 'Dra. Beatriz S. Silva');
+  assert.equal(vetEditado.body.ativo, false);
+
+  // Criar uma senha
+  const srv = estInicial.servicos[0];
+  const itemCriado = (await api('POST', '/api/itens', { servicoId: srv.id, tutorNome: 'Lucas', petNome: 'Pipoca' })).body;
+
+  // Editar dados da senha (tutor, pet, veterinario_nome, motivo, prioridade)
+  const itemEditado = await api('PATCH', `/api/itens/${itemCriado.id}`, {
+    tutor_nome: 'Lucas Mendes',
+    pet_nome: 'Pipoca Fofa',
+    veterinario_nome: 'Dra. Beatriz S. Silva',
+    motivo_resumido: 'Consulta de rotina',
+    prioridade: 'prioridade',
+  });
+  assert.equal(itemEditado.status, 200);
+  assert.equal(itemEditado.body.tutor_nome, 'Lucas Mendes');
+  assert.equal(itemEditado.body.pet_nome, 'Pipoca Fofa');
+  assert.equal(itemEditado.body.veterinario_nome, 'Dra. Beatriz S. Silva');
+  assert.equal(itemEditado.body.motivo_resumido, 'Consulta de rotina');
+  assert.equal(itemEditado.body.prioridade, 'prioridade');
+
+  // Chamar com profissional especificado
+  const sala = estInicial.salas[0];
+  const chamado = await api('POST', `/api/salas/${sala.id}/chamar-proximo`, { veterinarioNome: 'Dr. Roberto' });
+  assert.equal(chamado.status, 200);
+  assert.equal(chamado.body.veterinario_nome, 'Dr. Roberto');
+
+  // Excluir veterinário criado
+  const del = await api('DELETE', `/api/veterinarios/${novoVet.body.id}`);
+  assert.equal(del.status, 204);
+});
+
