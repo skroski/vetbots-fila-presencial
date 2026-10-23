@@ -8,7 +8,7 @@ const api = process.env.API_URL || 'http://127.0.0.1:3000';
 
 // Em desenvolvimento (npm run dev) o Vite serve a interface e repassa a API ao servidor Node.
 // Em produção o próprio servidor Node entrega web/dist.
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   root: aqui,
   plugins: [react()],
   resolve: {
@@ -18,7 +18,8 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: path.resolve(aqui, 'dist'),
+    // --mode demo gera a versão estática para a Vercel (API simulada no navegador, sem servidor)
+    outDir: path.resolve(aqui, mode === 'demo' ? 'dist-demo' : 'dist'),
     emptyOutDir: true,
   },
   server: {
@@ -30,4 +31,4 @@ export default defineConfig({
       '/marca': api,
     },
   },
-});
+}));

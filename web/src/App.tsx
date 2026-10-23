@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Toaster, toast } from 'sonner';
 import ReceptionPage from '@/pages/ReceptionPage';
 import TvDisplayPage from '@/pages/TvDisplayPage';
@@ -11,6 +11,9 @@ import { useStore } from '@/lib/store';
 import { ApiError } from '@/lib/api';
 
 type Tema = 'light' | 'dark';
+
+// Só existe no build de demonstração (vite build --mode demo); no sistema real o trecho é removido.
+const DemoBadge = import.meta.env.MODE === 'demo' ? lazy(() => import('@/demo/DemoBadge')) : null;
 
 const ROTAS = [
   { caminho: '/', exato: true, rotulo: 'Recepção', Icone: Users },
@@ -99,6 +102,11 @@ export default function App() {
         </div>
       )}
       {renderRoute()}
+      {DemoBadge && !isKioskOrTv && (
+        <Suspense fallback={null}>
+          <DemoBadge />
+        </Suspense>
+      )}
 
       {/* Seletor rápido de telas na LAN (oculto na TV e Totem) */}
       {!isKioskOrTv && (

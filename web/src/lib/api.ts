@@ -66,6 +66,10 @@ export function enviarArquivo<T = unknown>(
   onProgress?: (pct: number) => void,
 ): Promise<T> {
   return new Promise((resolve, reject) => {
+    if (import.meta.env.MODE === 'demo') {
+      reject(new ApiError(403, 'Envio de arquivos indisponível na demonstração.'));
+      return;
+    }
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', `${path}${path.includes('?') ? '&' : '?'}nome=${encodeURIComponent(file.name)}`);
     const pin = getAdminPin();

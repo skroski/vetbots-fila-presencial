@@ -115,6 +115,21 @@ Copie `.env.example` para `.env` só se precisar mudar algo.
 | `MAX_VIDEO_MB` | `2048` | Limite por vídeo |
 | `TZ` | fuso local | Virada diária das senhas |
 
+### Demonstração online (Vercel)
+
+Para mostrar o sistema a clientes sem instalar nada, o repositório já está pronto para a Vercel. A demonstração é **só uma vitrine**: roda inteira no navegador, com dados fictícios salvos no `localStorage` e as abas do mesmo navegador sincronizadas (recepção, TV e consultório). Não há servidor nem banco. Envio de logotipo, vídeos e backup ficam desativados.
+
+O **sistema real não muda**: continua com servidor Node + SQLite na rede da clínica, porque recepção, TV e totem são aparelhos diferentes e precisam compartilhar a mesma fila.
+
+Para publicar: na Vercel, **Add New → Project**, importe este repositório e clique em Deploy. O `vercel.json` já define o comando de build (`npm run build:demo`) e a saída (`web/dist-demo`). Para testar localmente:
+
+```bash
+npm run build:demo
+npx vite preview --mode demo --config web/vite.config.ts
+```
+
+Os dados de exemplo são regerados a cada 12 horas; o botão **Reiniciar** no selo da demonstração volta ao início na hora. O código fica em `web/src/demo/` e só entra no build feito com `--mode demo`.
+
 ### Skill para agentes de IA
 
 A pasta `skill/sistema-fila-presencial/` é a skill (Claude Code, Codex, Antigravity/Gemini CLI) e leva o app completo dentro, para instalar offline em qualquer clínica. Para tê-la disponível em qualquer pasta:

@@ -20,3 +20,4 @@ Fale em linguagem simples e um passo por vez. Nunca apague `data/`, nunca invent
 - Cores sempre por `brand-*`; textos em português do Brasil; nada de serviços externos ou banco em nuvem.
 - A voz do Help (`docs/instalacao.html`) é somente MP3 Fish Audio versionado, sem `speechSynthesis`. Ao mudar o roteiro, aumente `JOURNEY.version` e rode `npm run help:audio`.
 - Nunca commite `.env` nem chaves.
+- O produto real é servidor Node + SQLite na rede local (vários aparelhos compartilham a fila); não troque por localStorage. A demonstração da Vercel (`npm run build:demo`, código em `web/src/demo/`) é uma vitrine só de navegador e não deve vazar para o build normal: confira com `npm run build` e `grep -l BroadcastChannel web/dist/assets/*.js` (sem resultado).
