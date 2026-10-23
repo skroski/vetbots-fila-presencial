@@ -93,23 +93,23 @@ export default function MetricsPage() {
   }, [filteredItems]);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col">
-      <header className="border-b border-slate-800 bg-slate-950 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-base-100 text-base-content flex flex-col pb-28">
+      <header className="navbar bg-base-200 border-b border-base-300 px-6 py-4 flex-wrap justify-between gap-4">
         <div className="flex items-center gap-3">
           <a
             href="/"
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+            className="btn btn-ghost btn-square" aria-label="Voltar à recepção"
           >
             <ArrowLeft className="h-5 w-5" />
           </a>
           <div>
-            <h1 className="text-lg font-bold text-white">Métricas de Fila e Atendimento</h1>
-            <p className="text-xs text-slate-400">Tempo Médio de Espera, Atendimento e Volumes</p>
+            <h1 className="text-lg font-bold text-base-content">Métricas de Fila e Atendimento</h1>
+            <p className="text-xs text-neutral">Tempo Médio de Espera, Atendimento e Volumes</p>
           </div>
         </div>
 
         {/* Seletor de Período */}
-        <div className="flex gap-2 bg-slate-900 border border-slate-800 p-1 rounded-xl">
+        <div role="tablist" className="tabs tabs-boxed !flex max-w-full flex-wrap">
           {[
             { id: 'today', label: 'Hoje' },
             { id: '7d', label: 'Últimos 7 dias' },
@@ -117,12 +117,9 @@ export default function MetricsPage() {
           ].map((p) => (
             <button
               key={p.id}
+              role="tab"
               onClick={() => setPeriod(p.id as any)}
-              className={`text-xs px-3 py-1.5 rounded-lg font-semibold transition ${
-                period === p.id
-                  ? 'bg-brand-600 text-white'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+              className={`tab h-auto whitespace-nowrap py-1.5 ${period === p.id ? 'tab-active' : ''}`}
             >
               {p.label}
             </button>
@@ -133,55 +130,55 @@ export default function MetricsPage() {
       <main className="max-w-6xl w-full mx-auto p-6 space-y-6">
         {/* Cartões Principais */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold flex items-center gap-2">
-              <Clock className="h-4 w-4 text-brand-400" />
-              Tempo Médio de Espera (TME)
-            </span>
-            <div className="text-3xl font-black text-white mt-2">
-              {formatMinutes(metrics.avgWait)}
+          <div className="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-soft">
+            <div className="stat">
+              <div className="stat-title flex items-center gap-2">
+                <Clock className="h-4 w-4 text-accent" />
+                Tempo Médio de Espera (TME)
+              </div>
+              <div className="stat-value text-3xl">{formatMinutes(metrics.avgWait)}</div>
+              <div className="stat-desc">Da chegada até ser chamado</div>
             </div>
-            <span className="text-xs text-slate-500 mt-1 block">Da chegada até ser chamado</span>
           </div>
 
-          <div className="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold flex items-center gap-2">
-              <Timer className="h-4 w-4 text-blue-400" />
-              Tempo Médio de Atendimento (TMA)
-            </span>
-            <div className="text-3xl font-black text-white mt-2">
-              {formatMinutes(metrics.avgService)}
+          <div className="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-soft">
+            <div className="stat">
+              <div className="stat-title flex items-center gap-2">
+                <Timer className="h-4 w-4 text-info" />
+                Tempo Médio de Atendimento (TMA)
+              </div>
+              <div className="stat-value text-3xl">{formatMinutes(metrics.avgService)}</div>
+              <div className="stat-desc">Duração média da consulta</div>
             </div>
-            <span className="text-xs text-slate-500 mt-1 block">Duração média da consulta</span>
           </div>
 
-          <div className="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold flex items-center gap-2">
-              <Users className="h-4 w-4 text-purple-400" />
-              Total de Pacientes Triados
-            </span>
-            <div className="text-3xl font-black text-white mt-2">{metrics.total}</div>
-            <span className="text-xs text-slate-500 mt-1 block">
-              {metrics.finalizados} atendidos com sucesso
-            </span>
+          <div className="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-soft">
+            <div className="stat">
+              <div className="stat-title flex items-center gap-2">
+                <Users className="h-4 w-4 text-secondary" />
+                Total de Pacientes Triados
+              </div>
+              <div className="stat-value text-3xl">{metrics.total}</div>
+              <div className="stat-desc">{metrics.finalizados} atendidos com sucesso</div>
+            </div>
           </div>
 
-          <div className="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold flex items-center gap-2">
-              <UserX className="h-4 w-4 text-rose-400" />
-              Taxa de Ausência
-            </span>
-            <div className="text-3xl font-black text-rose-400 mt-2">{metrics.taxaAusencia}%</div>
-            <span className="text-xs text-slate-500 mt-1 block">
-              {metrics.ausentes} não compareceram
-            </span>
+          <div className="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-soft">
+            <div className="stat">
+              <div className="stat-title flex items-center gap-2">
+                <UserX className="h-4 w-4 text-error" />
+                Taxa de Ausência
+              </div>
+              <div className="stat-value text-3xl text-error">{metrics.taxaAusencia}%</div>
+              <div className="stat-desc">{metrics.ausentes} não compareceram</div>
+            </div>
           </div>
         </div>
 
         {/* Distribuição por Especialidade / Serviço */}
-        <div className="bg-slate-950/60 border border-slate-800 p-6 rounded-2xl">
-          <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-brand-400" />
+        <div className="card bg-base-100 border border-base-300 shadow-soft p-6">
+          <h2 className="text-base font-bold text-base-content mb-4 flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-accent" />
             <span>Volume de Atendimentos por Serviço</span>
           </h2>
 
@@ -193,19 +190,14 @@ export default function MetricsPage() {
               return (
                 <div key={srv.id} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-200">
+                    <span className="font-semibold text-base-content">
                       [{srv.prefixo}] {srv.nome}
                     </span>
-                    <span className="text-slate-400">
+                    <span className="text-neutral">
                       {count} ({percent}%)
                     </span>
                   </div>
-                  <div className="h-2.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-brand-500 rounded-full transition-all duration-500"
-                      style={{ width: `${percent}%` }}
-                    />
-                  </div>
+                  <progress className="progress progress-primary w-full" value={Number(percent)} max={100} />
                 </div>
               );
             })}

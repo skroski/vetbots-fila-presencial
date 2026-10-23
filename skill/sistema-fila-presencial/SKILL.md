@@ -1,17 +1,51 @@
 ---
 name: sistema-fila-presencial
-description: Sistema de Fila Presencial Veterinária (Node + SQLite, 100% local, sem serviços externos e sem internet). Recepção e triagem, telão de TV com playlist de vídeos MP4 e sinal sonoro, chamador de consultório, totem touch com impressão térmica e métricas. Cores e logotipo personalizáveis em tela. Use para instalar o pacote em uma clínica, personalizar (cores, logo, vídeos, salas, serviços), subir na rede local (LAN/Docker), fazer backup, ou evoluir o sistema. Compatível com Claude Code, Codex, Antigravity e Gemini CLI.
+description: Sistema de Fila Presencial Veterinária (Node + SQLite, 100% local, sem serviços externos e sem internet). Recepção e triagem, telão de TV com playlist de vídeos MP4 e sinal sonoro, chamador de consultório, totem touch com impressão térmica e métricas. Cores e logotipo personalizáveis em tela. Use quando pedirem para instalar, ligar ou configurar a fila da clínica ("instale a fila", "sistema de senhas", "painel da TV"), para instalar o pacote em uma clínica, personalizar (cores, logo, vídeos, salas, serviços), subir na rede local (LAN/Docker), fazer backup, ou evoluir o sistema. Compatível com Claude Code, Codex, Antigravity e Gemini CLI.
 ---
 
 # Sistema de Fila Presencial Veterinária (Node + SQLite, rede local)
 
-Pacote completo e independente de gestão de atendimento presencial para clínicas e hospitais veterinários.
+Pacote completo de gestão de atendimento presencial para clínicas e hospitais veterinários.
 **Um programa só**: servidor Node + banco SQLite (um arquivo) + interface React já embutida. Roda na rede local
 da clínica, sem internet, sem conta em nuvem e sem servidor de banco.
 
-Repositório oficial do pacote: https://github.com/skroski/vetbots-fila-presencial
+Repositório oficial: https://github.com/skroski/vetbots-fila-presencial
 
 `$SKILL` = pasta desta skill (`~/.claude/skills/sistema-fila-presencial/`, `~/.agents/skills/...`, `~/.gemini/config/skills/...`).
+
+---
+
+## Instalar para um cliente (o caso mais comum)
+
+Quem pede costuma **não ser técnico**. Fale em português simples, um passo por vez, sem despejar comandos: execute você mesmo e conte o resultado em uma frase.
+
+1. **Pasta**: use `~/fila-clinica`, a menos que a pessoa indique outra. Só pergunte se a pasta já existir e não estiver vazia (nesse caso, pare e avise; para atualizar use o passo B).
+2. **Node**: rode `node -v`. Precisa ser **22.16 ou mais novo**. Se faltar ou for antigo, não invente atalhos: peça para instalar a versão **LTS** em https://nodejs.org (no Windows com `winget`: `winget install OpenJS.NodeJS.LTS`) e reabrir o agente; ou ofereça Docker.
+3. **Criar e instalar** (leva 1 a 2 minutos; o `npm install` já gera a interface):
+   ```bash
+   node "$SKILL/scripts/criar-projeto.mjs" ~/fila-clinica --install
+   ```
+4. **Ligar**: `cd ~/fila-clinica && npm start` **em segundo plano** (o servidor não termina). Leia os endereços que o servidor imprime; nunca invente o IP.
+5. **Entregar** em uma lista curta: recepção `/`, TV `/tv`, consultório `/chamar`, totem `/totem`, métricas `/metricas`, ajustes `/config`, cada um com o IP real.
+6. **Orientar o primeiro uso**: abrir `/config` (nome, cor, logotipo, serviços, salas, vídeos MP4) e o guia `docs/instalacao.html`, cujo **Tour guiado** ensina cada tela.
+7. **Avisar sobre o dia a dia**: o servidor ligado por você para quando o agente fecha. Para uso contínuo: duplo clique em `iniciar.bat` (Windows) / `iniciar.command` (macOS), ou Docker (`docker compose up -d --build`), que liga sozinho. Para ligar junto com o computador: `references/instalacao.md`, seção "Iniciar junto com o computador".
+
+Não precisa de chave de API, conta ou internet. Nunca exponha a porta 3000 na internet e nunca apague `data/`.
+
+### Atualizar uma instalação existente
+```bash
+node "$SKILL/scripts/criar-projeto.mjs" <pasta> --atualizar
+```
+Troca só o código e **preserva `data/`** (banco, logotipo, vídeos) e `.env`. Depois `npm install && npm start`.
+
+### Pedidos do dia a dia
+| Pedido | O que fazer |
+| :--- | :--- |
+| Trocar cor, logotipo, vídeos, salas, serviços | É pela tela `/config`: oriente o caminho (`references/personalizacao.md`). Não mexa em código. |
+| TV ou tablet não abre | `references/rede-local-lan.md` (mesma rede, firewall, IP fixo). |
+| Backup / restaurar | `references/instalacao.md`, seção Backup. |
+| Ligar com o computador | `references/instalacao.md`. |
+| Campo, tela ou regra nova | Seção "Evoluir o sistema" abaixo. |
 
 ---
 
@@ -19,17 +53,19 @@ Repositório oficial do pacote: https://github.com/skroski/vetbots-fila-presenci
 
 | Componente | Local | O que é |
 | :--- | :--- | :--- |
-| **Aplicativo completo** | `assets/app/` | Código pronto para instalar: `server/` (API + SQLite + SSE + uploads), `web/` (React/Vite/Tailwind), `shared/`, Docker, scripts de início, `docs/instalacao.html`. |
-| **Criador de projeto** | `scripts/criar-projeto.mjs` | Copia `assets/app/` para uma pasta nova (e instala/inicia se pedido). |
-| **Instalador multi-agente** | `scripts/install.mjs` | Instala esta skill em Claude Code, Codex, Gemini/Antigravity. |
-| **Instalação passo a passo** | `references/instalacao.md` | Windows, macOS, Linux, Docker, início automático, atualização, restauração. |
+| **Aplicativo completo** | `assets/app/` | Código pronto para instalar: `server/`, `web/`, `shared/`, Docker, scripts de início, `docs/instalacao.html`. |
+| **Criador de projeto** | `scripts/criar-projeto.mjs` | Copia `assets/app/` para a pasta de destino (padrão `~/fila-clinica`); `--install`, `--atualizar`, `--git`. |
+| **Instalador da skill** | `scripts/install.mjs` | Instala esta skill em Claude Code, Codex, Gemini/Antigravity. |
+| **Instalação passo a passo** | `references/instalacao.md` | Windows, macOS, Linux, Docker, início automático, backup, atualização. |
 | **Arquitetura e telas** | `references/arquitetura-e-telas.md` | As 6 telas, fluxo e regras. |
-| **Banco e API** | `references/banco-sqlite-e-api.md` | Tabelas SQLite, regras de senha/prioridade, endpoints REST, tempo real (SSE). |
-| **Personalização** | `references/personalizacao.md` | Cores, logotipo, vídeos MP4 da TV, layouts, codecs, PIN dos Ajustes. |
-| **Rede local** | `references/rede-local-lan.md` | IP fixo, firewall, Smart TVs, tablets, consultórios. |
-| **Totem e impressão** | `references/totem-e-impressao.md` | Kiosk, impressão térmica 58/80 mm silenciosa. |
-| **Possibilidades** | `references/possibilidades.md` | O que dá para evoluir a partir daqui. |
+| **Banco e API** | `references/banco-sqlite-e-api.md` | Tabelas, regras de senha/prioridade, endpoints, tempo real (SSE). |
+| **Personalização** | `references/personalizacao.md` | Cores, logotipo, vídeos MP4, layouts, codecs, PIN. |
+| **Rede local** | `references/rede-local-lan.md` | IP fixo, firewall, Smart TVs, tablets. |
+| **Totem e impressão** | `references/totem-e-impressao.md` | Kiosk, impressão térmica 58/80 mm. |
+| **Possibilidades** | `references/possibilidades.md` | O que dá para evoluir. |
 | **Agentes de IA** | `references/agentes.md` | Como cada agente usa esta skill. |
+
+Requisitos: **Node.js 22.16+** (ou Docker). O SQLite vem embutido no Node (`node:sqlite`): sem módulo nativo, sem Python/Visual Studio no Windows.
 
 ---
 
@@ -46,30 +82,12 @@ Tempo real por **SSE** (`/api/events`) com polling de 10 s como rede de seguran�
 
 ---
 
-## Como usar esta skill (fluxo do agente)
-
-### A) Instalar em uma clínica / criar o projeto
-1. Descubra a pasta destino (pergunte só se não houver como deduzir).
-2. Rode:
-   ```bash
-   node "$SKILL/scripts/criar-projeto.mjs" <pasta-destino> --install
-   ```
-   Isso copia `assets/app/`, roda `npm install` (que também gera a interface) e deixa pronto para `npm start`.
-3. Inicie: `cd <pasta> && npm start` (ou `docker compose up -d --build`). O terminal imprime os endereços de cada tela com o IP da rede.
-4. Abra `http://IP:3000/config` e personalize: nome, **cor**, **logotipo**, **vídeos MP4**, salas e serviços.
-5. Entregue ao usuário os endereços (TV, recepção, consultórios, totem) e a página `docs/instalacao.html`.
-
-Requisitos: **Node.js 22.16 ou superior** (ou Docker). Nada mais: o SQLite vem embutido no próprio Node (`node:sqlite`), então não há módulo nativo para compilar nem binário para baixar (importante no Windows de clínica, sem Python/Visual Studio).
-
-### B) Atualizar o código de um projeto já instalado
-Rode `criar-projeto.mjs <pasta> --atualizar`: sobrescreve apenas o código (`server/`, `web/`, `shared/`, scripts, Docker), **preservando `data/`** (banco, logotipo, vídeos) e `.env`. Depois `npm install && npm start`.
-
-### C) Evoluir o sistema
+## Evoluir o sistema
 - Regras da fila: `server/queue.js`. Senhas são geradas dentro de transação `IMMEDIATE` (`transacao(fn, { imediata: true })` em `server/db.js`) + índice único `(ciclo, senha)`.
 - Rotas: `server/app.js`. Configurações editáveis: `server/config.js` (adicione a chave no `SCHEMA` e use em `web/src/types/queue.ts`).
 - Nova coluna/tabela: **acrescente** um item ao fim de `MIGRATIONS` em `server/db.js` (nunca edite os anteriores; a versão fica em `PRAGMA user_version`).
 - Telas: `web/src/pages/`. Cores sempre por `brand-*` (nunca `emerald-*`): vêm da cor escolhida em `/config`.
-- Teste: `npm test` (15 testes de API: concorrência de senhas, fluxo completo, Range 206, SSE, PIN, backup). `npm run dev` roda API + Vite com recarga.
+- Teste: `npm test` (API: concorrência de senhas, fluxo completo, Range 206, SSE, PIN, backup). `npm run dev` roda API + Vite com recarga.
 
 ---
 

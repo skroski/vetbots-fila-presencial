@@ -8,33 +8,33 @@
 <style>
   :root {
     color-scheme: light dark;
-    --accent: #059669;
-    --accent-strong: #047857;
-    --accent-soft: #d1fae5;
-    --bg: #f6f8f7;
+    --accent: #2294aa;
+    --accent-strong: #176b7d;
+    --accent-soft: #dff1f5;
+    --bg: #f7f8f8;
     --surface: #ffffff;
-    --text: #0f172a;
-    --muted: #475569;
-    --border: #dfe5e2;
-    --code-bg: #0f172a;
+    --text: #1a2223;
+    --muted: #3d4243;
+    --border: #e9eced;
+    --code-bg: #231e1a;
     --code-text: #e2e8f0;
-    --warn-bg: #fef3c7;
-    --warn-text: #78350f;
-    --radius: 16px;
+    --warn-bg: #fbeadb;
+    --warn-text: #7a3f0f;
+    --radius: 8px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --accent: #34d399;
-      --accent-strong: #6ee7b7;
-      --accent-soft: #064e3b;
-      --bg: #0b1210;
-      --surface: #111b18;
-      --text: #e8f1ee;
-      --muted: #9fb3ad;
-      --border: #22322d;
-      --code-bg: #060b09;
-      --warn-bg: #3b2a07;
-      --warn-text: #fde68a;
+      --accent: #33b3cc;
+      --accent-strong: #7fd3e3;
+      --accent-soft: #123e47;
+      --bg: #231e1a;
+      --surface: #2c2621;
+      --text: #f4f2f1;
+      --muted: #b9b2ac;
+      --border: #3e3832;
+      --code-bg: #1a1612;
+      --warn-bg: #3d2a14;
+      --warn-text: #f3c28f;
     }
   }
   * { box-sizing: border-box; }
@@ -43,7 +43,7 @@
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font: 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font: 16px/1.6 Arial, Helvetica, system-ui, -apple-system, sans-serif;
   }
   a { color: var(--accent-strong); }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
@@ -60,10 +60,10 @@
     border-bottom: 1px solid var(--border);
   }
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.01em; }
-  .brand .logo { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); font-size: 18px; }
+  .brand .logo { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; background: var(--accent-soft); font-size: 18px; }
   .wrap { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 40px; max-width: 1120px; margin: 0 auto; padding: 24px clamp(16px, 4vw, 40px) 120px; }
   nav.toc { position: sticky; top: 84px; align-self: start; font-size: 14px; }
-  nav.toc h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 10px; }
+  nav.toc h2 { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
   nav.toc ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
   nav.toc a { display: block; padding: 6px 10px; border-radius: 8px; text-decoration: none; color: var(--muted); }
   nav.toc a:hover { background: var(--accent-soft); color: var(--text); }
@@ -79,16 +79,17 @@
   .hero h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.08; letter-spacing: -.03em; margin: 14px 0 12px; }
   .hero p.lead { font-size: 1.15rem; color: var(--muted); max-width: 46rem; margin: 0 0 22px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-  .btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 10px 20px; border-radius: 12px; border: 0; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 10px 20px; border-radius: 8px; border: 0; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
   .btn-primary { background: var(--accent); color: #fff; }
   @media (prefers-color-scheme: dark) { .btn-primary { color: #04130d; } }
   .btn-primary:hover { background: var(--accent-strong); }
   .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
   .btn-ghost:hover { border-color: var(--accent); }
+  .topbar .btn { white-space: nowrap; min-height: 40px; padding: 8px 14px; }
   .tour-status { font-size: 14px; color: var(--muted); }
 
   .screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 28px 0 0; padding: 0; list-style: none; }
-  .screens li { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .screens li { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
   .screens b { display: block; }
   .screens code { font-size: 13px; color: var(--accent-strong); }
   .screens span { display: block; color: var(--muted); font-size: 14px; }
@@ -106,19 +107,19 @@
   .card p:last-child { margin-bottom: 0; }
   .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
   ul.check { padding-left: 20px; margin: 8px 0; }
-  .note { background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; font-size: 15px; margin-top: 12px; }
-  .warn { background: var(--warn-bg); color: var(--warn-text); border-radius: 12px; padding: 12px 14px; font-size: 15px; margin-top: 12px; }
+  .note { background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; font-size: 15px; margin-top: 12px; }
+  .warn { background: var(--warn-bg); color: var(--warn-text); border-radius: 8px; padding: 12px 14px; font-size: 15px; margin-top: 12px; }
 
   /* ---------- código ---------- */
   .code { position: relative; margin: 10px 0; }
-  .code pre { margin: 0; padding: 14px 16px; padding-right: 92px; background: var(--code-bg); color: var(--code-text); border-radius: 12px; overflow-x: auto; font: 13.5px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .code pre { margin: 0; padding: 14px 16px; padding-right: 92px; background: var(--code-bg); color: var(--code-text); border-radius: 8px; overflow-x: auto; font: 13.5px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
   .code button { position: absolute; top: 8px; right: 8px; min-height: 32px; padding: 4px 12px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font: 600 12px/1 inherit; cursor: pointer; }
   .code button:hover { background: #334155; }
   code.i { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; font-size: .92em; }
 
   /* ---------- abas ---------- */
   [role=tablist] { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-  [role=tab] { min-height: 42px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
+  [role=tab] { min-height: 42px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
   [role=tab][aria-selected=true] { background: var(--accent); border-color: var(--accent); color: #fff; }
   @media (prefers-color-scheme: dark) { [role=tab][aria-selected=true] { color: #04130d; } }
   [role=tabpanel][hidden] { display: none; }
@@ -126,7 +127,7 @@
   /* ---------- tabela de endereços ---------- */
   .ipbox { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 16px; }
   .ipbox label { display: grid; gap: 4px; font-weight: 700; font-size: 14px; }
-  .ipbox input { min-height: 44px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: 600 16px ui-monospace, Menlo, monospace; width: 220px; }
+  .ipbox input { min-height: 44px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: 600 16px ui-monospace, Menlo, monospace; width: 220px; }
   .ipbox .hint { font-size: 13px; color: var(--muted); }
   table.urls { width: 100%; border-collapse: collapse; font-size: 15px; }
   table.urls th, table.urls td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -139,13 +140,13 @@
   .swatches button { width: 40px; height: 40px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
   .swatches button[aria-pressed=true] { border-color: var(--text); }
 
-  details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 16px; }
+  details { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 4px 16px; }
   details + details { margin-top: 8px; }
   summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
   details[open] summary { margin-bottom: 4px; }
 
   .checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
-  .checklist label { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; cursor: pointer; }
+  .checklist label { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: 8px; cursor: pointer; }
   .checklist label:hover { background: var(--accent-soft); }
   .checklist input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--accent); flex: none; }
   .progress { height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; margin: 8px 0 16px; }
@@ -153,10 +154,20 @@
 
   footer.page { border-top: 1px solid var(--border); padding: 28px clamp(16px, 4vw, 40px); text-align: center; color: var(--muted); font-size: 14px; }
 
+  /* ---------- passo a passo e fluxo (guia simples) ---------- */
+  ol.passos { list-style: none; counter-reset: p; margin: 0; padding: 0; display: grid; gap: 22px; }
+  ol.passos > li { counter-increment: p; position: relative; padding-left: 52px; }
+  ol.passos > li::before { content: counter(p); position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-strong); font-weight: 800; }
+  ol.passos h3 { margin: 4px 0 6px; }
+  ol.fluxo { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  ol.fluxo li { display: flex; gap: 10px; align-items: flex-start; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; }
+  ol.fluxo b { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; font-size: 13px; }
+  @media (prefers-color-scheme: dark) { ol.fluxo b { color: #04130d; } }
+
   /* ---------- Open Help (tour guiado) ---------- */
   .oh-overlay { inset: 0; position: fixed; pointer-events: none; z-index: 2147483000; }
   .oh-spotlight {
-    position: fixed; pointer-events: none; z-index: 2147483001; border-radius: 14px;
+    position: fixed; pointer-events: none; z-index: 2147483001; border-radius: 8px;
     border: 2px solid color-mix(in srgb, var(--accent) 80%, white);
     box-shadow: 0 0 0 9999px rgb(6 12 10 / 62%), 0 0 0 6px color-mix(in srgb, var(--accent) 24%, transparent);
     transition: top .18s ease, left .18s ease, width .18s ease, height .18s ease;
@@ -165,7 +176,7 @@
     position: fixed; left: 0; top: 0; z-index: 2147483002;
     width: min(400px, calc(100vw - 24px));
     background: var(--surface); color: var(--text);
-    border: 1px solid var(--border); border-radius: 18px; padding: 18px;
+    border: 1px solid var(--border); border-radius: 8px; padding: 18px;
     box-shadow: 0 24px 70px rgb(0 0 0 / 32%);
   }
   .oh-popover--center { left: 50%; top: 50%; transform: translate(-50%, -50%); }
@@ -180,13 +191,13 @@
   .oh-body { margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.55; }
   .oh-x { width: 34px; height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; }
   .oh-x:hover { background: var(--accent-soft); }
-  .oh-btn { min-height: 40px; padding: 8px 14px; border-radius: 10px; border: 0; font: inherit; font-weight: 700; cursor: pointer; }
+  .oh-btn { min-height: 40px; padding: 8px 14px; border-radius: 8px; border: 0; font: inherit; font-weight: 700; cursor: pointer; }
   .oh-btn.primary { background: var(--accent); color: #fff; }
   @media (prefers-color-scheme: dark) { .oh-btn.primary { color: #04130d; } }
   .oh-btn.primary:hover { background: var(--accent-strong); }
   .oh-btn.secondary { background: var(--accent-soft); color: var(--accent-strong); }
   .oh-arrow { position: absolute; width: 12px; height: 12px; background: var(--surface); border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: rotate(45deg); }
-  .oh-live { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 2147483003; background: var(--warn-bg); color: var(--warn-text); padding: 10px 16px; border-radius: 12px; font-size: 14px; max-width: calc(100vw - 24px); }
+  .oh-live { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 2147483003; background: var(--warn-bg); color: var(--warn-text); padding: 10px 16px; border-radius: 8px; font-size: 14px; max-width: calc(100vw - 24px); }
   .oh-launcher { position: fixed; right: 18px; bottom: 18px; z-index: 30; box-shadow: 0 10px 30px rgb(0 0 0 / 25%); }
   @media (max-width: 520px) {
     .oh-popover { padding: 16px; }
@@ -199,6 +210,7 @@
   }
   @media (forced-colors: active) { .oh-spotlight, .oh-popover, .oh-btn { border: 2px solid CanvasText; } }
   @media print { .oh-launcher, .oh-overlay, .oh-spotlight, .oh-popover, .topbar .btn, nav.toc { display: none !important; } }
+  h1, h2, h3, .brand { font-family: "Plus Jakarta Sans", Arial, Helvetica, system-ui, sans-serif; }
 </style>
 </head>
 <body>
@@ -206,21 +218,22 @@
 
 <header class="topbar">
   <div class="brand"><span class="logo" aria-hidden="true">🐾</span><span>VetBots · Fila Presencial</span></div>
-  <button class="btn btn-ghost" type="button" data-oh-start>Tour guiado</button>
+  <button class="btn btn-ghost" type="button" data-oh-start>🔊 Tour guiado</button>
 </header>
 
 <div class="wrap">
   <nav class="toc" aria-label="Neste guia">
     <h2>Neste guia</h2>
     <ol>
-      <li><a href="#requisitos">1 · Requisitos</a></li>
-      <li><a href="#pacote">2 · Obter o pacote</a></li>
-      <li><a href="#instalar">3 · Instalar e iniciar</a></li>
-      <li><a href="#enderecos">4 · Abrir as telas</a></li>
-      <li><a href="#personalizar">5 · Cores, logo e vídeos</a></li>
-      <li><a href="#tv">6 · TV, consultórios e totem</a></li>
-      <li><a href="#backup">7 · Backup e atualização</a></li>
+      <li><a href="#instalar">1 · Instalar</a></li>
+      <li><a href="#enderecos">2 · Abrir as telas</a></li>
+      <li><a href="#personalizar">3 · Configurar a clínica</a></li>
+      <li><a href="#usar">4 · Aprender a usar</a></li>
+      <li><a href="#tv">5 · TV, consultório e totem</a></li>
+      <li><a href="#backup">6 · Seus dados</a></li>
+      <li><a href="#apoio">Apoio e instalação</a></li>
       <li><a href="#problemas">Problemas comuns</a></li>
+      <li><a href="#tecnico">Para o técnico</a></li>
       <li><a href="#checklist">Checklist final</a></li>
     </ol>
   </nav>
@@ -228,220 +241,229 @@
   <main id="conteudo">
     <!-- ================= HERO ================= -->
     <div class="hero">
-      <span class="kicker">Node.js + SQLite · roda sem internet</span>
-      <h1>Instale a fila presencial da clínica em minutos</h1>
-      <p class="lead">Recepção, telão de TV com <strong>vídeos MP4</strong>, chamador de consultório, totem e métricas. Tudo em um programa só, na rede da clínica, com a <strong>cor e o logotipo</strong> da sua marca.</p>
+      <span class="kicker">Funciona sem internet · na rede da clínica</span>
+      <h1>Instale e aprenda a usar a fila da clínica</h1>
+      <p class="lead">Em poucos passos você instala, coloca a cor e o logotipo da clínica e já sabe emitir e chamar senhas. Quer ser guiado? Aperte o botão e <strong>ouça a explicação</strong> de cada passo.</p>
       <div class="actions">
-        <button class="btn btn-primary" type="button" data-oh-start>▶ Começar o tour guiado</button>
-        <a class="btn btn-ghost" href="#requisitos">Ver o passo a passo</a>
+        <button class="btn btn-primary" type="button" data-oh-start>🔊 Começar o tour guiado</button>
+        <a class="btn btn-ghost" href="#instalar">Ler o passo a passo</a>
         <span class="tour-status" id="tour-status" role="status"></span>
       </div>
+      <p class="tour-status">A narração usa exclusivamente áudios MP3 do Fish Audio incluídos neste pacote. O guia visual continua disponível mesmo sem áudio.</p>
       <ul class="screens" aria-label="Telas do sistema">
         <li><b>🧾 Recepção</b><code>/</code><span>Emite senhas e organiza a fila</span></li>
-        <li><b>📺 Telão da TV</b><code>/tv</code><span>Chamadas + vídeos em loop</span></li>
-        <li><b>🩺 Chamador</b><code>/chamar</code><span>Veterinário chama com 1 clique</span></li>
-        <li><b>🖐 Totem</b><code>/totem</code><span>Tutor retira a senha sozinho</span></li>
-        <li><b>📊 Métricas</b><code>/metricas</code><span>Espera, atendimento, ausências</span></li>
-        <li><b>🎨 Ajustes</b><code>/config</code><span>Cor, logo, vídeos, salas</span></li>
+        <li><b>📺 Telão da TV</b><code>/tv</code><span>Mostra as chamadas e os vídeos</span></li>
+        <li><b>🩺 Chamador</b><code>/chamar</code><span>O veterinário chama com 1 clique</span></li>
+        <li><b>🖐 Totem</b><code>/totem</code><span>O tutor retira a senha sozinho</span></li>
+        <li><b>📊 Métricas</b><code>/metricas</code><span>Quanto tempo a fila demora</span></li>
+        <li><b>🎨 Ajustes</b><code>/config</code><span>Cor, logo, vídeos e salas</span></li>
       </ul>
     </div>
 
-    <!-- ================= 1 REQUISITOS ================= -->
-    <section class="step" id="requisitos" aria-labelledby="h-req">
-      <h2 id="h-req"><span class="num" aria-hidden="true">1</span>Requisitos</h2>
-      <p class="sub">Um computador que fique ligado durante o expediente (o servidor) e os aparelhos da clínica na mesma rede.</p>
-      <div class="card" data-open-help="requisitos">
-        <div class="grid2">
-          <div>
-            <h3>💻 Computador servidor</h3>
-            <ul class="check">
-              <li>Windows 10/11, macOS ou Linux</li>
-              <li><strong>Node.js 22.16 ou superior</strong> (versão LTS), <em>ou</em> Docker</li>
-              <li>Pode ser o PC da recepção ou um mini-PC dedicado</li>
-              <li>Espaço em disco para os vídeos da TV</li>
-            </ul>
-            <p><a href="https://nodejs.org" target="_blank" rel="noopener">Baixar o Node.js (nodejs.org)</a>: instalador padrão, avançar até o fim.</p>
-          </div>
-          <div>
-            <h3>📡 Rede da clínica</h3>
-            <ul class="check">
-              <li>Servidor, TV, tablet e consultórios no <strong>mesmo Wi-Fi/cabo</strong></li>
-              <li>Internet <strong>não é necessária</strong> para operar</li>
-              <li>Recomendado: reservar um IP fixo para o servidor no roteador</li>
-            </ul>
-          </div>
-        </div>
-        <p class="note">Para conferir o Node: abra o terminal (ou Prompt de Comando) e digite <code class="i">node -v</code>. Deve aparecer <code class="i">v22.16</code> ou maior (v24 também serve).</p>
-      </div>
-    </section>
-
-    <!-- ================= 2 PACOTE ================= -->
-    <section class="step" id="pacote" aria-labelledby="h-pac">
-      <h2 id="h-pac"><span class="num" aria-hidden="true">2</span>Obter o pacote</h2>
-      <p class="sub">Escolha o jeito mais fácil para você.</p>
-      <div class="grid2">
-        <div class="card">
-          <h3>Com Git</h3>
-          <div class="code"><pre>git clone https://github.com/skroski/vetbots-fila-presencial.git
-cd vetbots-fila-presencial</pre><button type="button" data-copy>Copiar</button></div>
-        </div>
-        <div class="card">
-          <h3>Sem Git (ZIP ou pendrive)</h3>
-          <p>No GitHub: <strong>Code → Download ZIP</strong> e descompacte. Ou copie a pasta do pacote por pendrive para o computador servidor.</p>
-          <p class="note">Depois de descompactar, todos os comandos abaixo são executados <strong>dentro dessa pasta</strong>.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= 3 INSTALAR ================= -->
+    <!-- ================= 1 INSTALAR ================= -->
     <section class="step" id="instalar" aria-labelledby="h-ins">
-      <h2 id="h-ins"><span class="num" aria-hidden="true">3</span>Instalar e iniciar</h2>
-      <p class="sub">Escolha seu sistema. A primeira vez instala tudo; depois é só iniciar.</p>
-      <div class="card">
-        <div role="tablist" aria-label="Sistema operacional" id="os-tabs" data-open-help="instalar">
-          <button role="tab" id="tab-win" aria-controls="p-win" aria-selected="true" tabindex="0">Windows</button>
-          <button role="tab" id="tab-mac" aria-controls="p-mac" aria-selected="false" tabindex="-1">macOS</button>
-          <button role="tab" id="tab-lin" aria-controls="p-lin" aria-selected="false" tabindex="-1">Linux</button>
-          <button role="tab" id="tab-doc" aria-controls="p-doc" aria-selected="false" tabindex="-1">Docker</button>
-        </div>
-
-        <div role="tabpanel" id="p-win" aria-labelledby="tab-win">
-          <p><strong>Sem terminal:</strong> dê <strong>duplo clique em <code class="i">iniciar.bat</code></strong>. Na primeira vez ele instala tudo (1 a 2 minutos). Deixe a janela preta aberta: ela é o servidor.</p>
-          <p><strong>Pelo terminal</strong> (PowerShell ou Prompt de Comando, dentro da pasta):</p>
-          <div class="code"><pre>npm install
+      <h2 id="h-ins"><span class="num" aria-hidden="true">1</span>Instalar</h2>
+      <p class="sub">São três etapas curtas, feitas uma única vez no computador que ficará ligado na clínica (o “servidor”).</p>
+      <div class="card" data-open-help="instalar">
+        <ol class="passos">
+          <li>
+            <h3>Instale o Node.js</h3>
+            <p>É o programa que faz o sistema funcionar. Baixe a versão <strong>LTS</strong> em <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a> e instale clicando em “Avançar” até o fim.</p>
+          </li>
+          <li>
+            <h3>Coloque a pasta do sistema no computador</h3>
+            <p>Descompacte o arquivo ZIP (ou copie a pasta do pendrive) em um lugar fácil, como a Área de Trabalho.</p>
+          </li>
+          <li>
+            <h3>Inicie o sistema</h3>
+            <div role="tablist" aria-label="Sistema operacional" id="os-tabs">
+              <button role="tab" id="tab-win" aria-controls="p-win" aria-selected="true" tabindex="0">Windows</button>
+              <button role="tab" id="tab-mac" aria-controls="p-mac" aria-selected="false" tabindex="-1">macOS</button>
+              <button role="tab" id="tab-lin" aria-controls="p-lin" aria-selected="false" tabindex="-1">Linux</button>
+            </div>
+            <div role="tabpanel" id="p-win" aria-labelledby="tab-win">
+              <p>Abra a pasta e dê <strong>duplo clique em <code class="i">iniciar.bat</code></strong>. Na primeira vez ele instala tudo sozinho (1 a 2 minutos). <strong>Deixe a janela preta aberta</strong>: ela é o sistema funcionando.</p>
+              <p class="warn">Se o Windows perguntar sobre o <strong>Firewall</strong>, marque <strong>Redes privadas</strong> e clique em Permitir. Sem isso a TV não consegue abrir.</p>
+            </div>
+            <div role="tabpanel" id="p-mac" aria-labelledby="tab-mac" hidden>
+              <p>Dê <strong>duplo clique em <code class="i">iniciar.command</code></strong>. Se o macOS bloquear, clique com o botão direito no arquivo e escolha <strong>Abrir</strong>. Deixe a janela aberta.</p>
+            </div>
+            <div role="tabpanel" id="p-lin" aria-labelledby="tab-lin" hidden>
+              <p>Abra o terminal dentro da pasta e rode os dois comandos abaixo. Deixe o terminal aberto.</p>
+              <div class="code"><pre>npm install
 npm start</pre><button type="button" data-copy>Copiar</button></div>
-          <p class="warn">Na primeira execução o Windows pergunta sobre o Firewall: marque <strong>Redes privadas</strong> e permita. Sem isso a TV não consegue abrir.</p>
-        </div>
-
-        <div role="tabpanel" id="p-mac" aria-labelledby="tab-mac" hidden>
-          <div class="code"><pre>npm install
-npm start</pre><button type="button" data-copy>Copiar</button></div>
-          <p>Ou dê duplo clique em <code class="i">iniciar.command</code> (se o macOS bloquear, clique com o botão direito → Abrir).</p>
-        </div>
-
-        <div role="tabpanel" id="p-lin" aria-labelledby="tab-lin" hidden>
-          <div class="code"><pre>npm install
-npm start</pre><button type="button" data-copy>Copiar</button></div>
-          <p>Libere a porta no firewall se estiver ativo:</p>
-          <div class="code"><pre>sudo ufw allow 3000/tcp</pre><button type="button" data-copy>Copiar</button></div>
-        </div>
-
-        <div role="tabpanel" id="p-doc" aria-labelledby="tab-doc" hidden>
-          <p>Ideal para deixar fixo no computador da recepção: sobe sozinho quando o computador liga.</p>
-          <div class="code"><pre>docker compose up -d --build</pre><button type="button" data-copy>Copiar</button></div>
-          <p>Os dados ficam na pasta <code class="i">data/</code> do projeto. Para ver os endereços: <code class="i">docker compose logs</code>.</p>
-        </div>
-
-        <p class="note">Quando estiver no ar, o terminal mostra <strong>"Fila Presencial no ar!"</strong> e a lista de endereços com o IP do computador. Esse é o sinal de que deu certo.</p>
+            </div>
+            <p class="note">Deu certo quando aparecer <strong>“Fila Presencial no ar!”</strong> com uma lista de endereços. Anote o número que começa com <code class="i">192.168…</code>: é o <strong>IP do servidor</strong> e você vai usar no próximo passo.</p>
+          </li>
+        </ol>
       </div>
     </section>
 
-    <!-- ================= 4 ENDEREÇOS ================= -->
+    <!-- ================= 2 ENDEREÇOS ================= -->
     <section class="step" id="enderecos" aria-labelledby="h-end">
-      <h2 id="h-end"><span class="num" aria-hidden="true">4</span>Abrir as telas</h2>
-      <p class="sub">Digite o IP do computador servidor e a tabela monta os endereços certos para copiar.</p>
+      <h2 id="h-end"><span class="num" aria-hidden="true">2</span>Abrir as telas</h2>
+      <p class="sub">Cada tela é um endereço que você abre no navegador de qualquer aparelho ligado no mesmo Wi-Fi ou cabo do servidor.</p>
       <div class="card">
         <div class="ipbox" data-open-help="enderecos">
           <label for="ip">IP do computador servidor
             <input id="ip" inputmode="decimal" autocomplete="off" placeholder="192.168.1.50" spellcheck="false">
           </label>
-          <span class="hint" id="ip-hint">Aparece no terminal ao iniciar. Ou: Windows <code class="i">ipconfig</code> · macOS <code class="i">ipconfig getifaddr en0</code> · Linux <code class="i">hostname -I</code></span>
+          <span class="hint" id="ip-hint">Aparece na janela do sistema ao iniciar. Se perdeu: Windows <code class="i">ipconfig</code> · macOS <code class="i">ipconfig getifaddr en0</code> · Linux <code class="i">hostname -I</code></span>
         </div>
         <table class="urls">
           <thead><tr><th>Tela</th><th>Quem usa</th><th>Endereço</th><th></th></tr></thead>
           <tbody id="urls"></tbody>
         </table>
-        <p class="note">Mesma rede e mesma porta (<code class="i">3000</code>). Se a porta estiver ocupada, inicie com outra: <code class="i">PORT=3001 npm start</code> e troque <code class="i">3000</code> pelo número novo.</p>
+        <p class="note">Digite o IP acima e a tabela monta o endereço de cada tela. Toque em <strong>Copiar</strong> e cole no navegador do aparelho. No próprio servidor você também pode usar <code class="i">http://localhost:3000</code>.</p>
       </div>
     </section>
 
-    <!-- ================= 5 PERSONALIZAR ================= -->
+    <!-- ================= 3 PERSONALIZAR ================= -->
     <section class="step" id="personalizar" aria-labelledby="h-per">
-      <h2 id="h-per"><span class="num" aria-hidden="true">5</span>Cores, logotipo e vídeos</h2>
-      <p class="sub">Tudo pela tela <strong>Ajustes</strong> (<code class="i">/config</code>), sem mexer em código e sem reiniciar.</p>
-      <div class="card">
-        <div data-open-help="personalizar">
-        <h3>🎨 Cor da marca</h3>
-        <p>Escolha uma cor pronta ou use o seletor. O sistema gera sozinho os tons claros e escuros e <strong>todas as telas abertas mudam na hora</strong>. Experimente aqui (só esta página muda; no sistema, todas as telas):</p>
-        <div class="swatches" id="swatches" role="group" aria-label="Cores de exemplo"></div>
+      <h2 id="h-per"><span class="num" aria-hidden="true">3</span>Configurar a clínica</h2>
+      <p class="sub">Abra a tela <strong>Ajustes</strong> (<code class="i">/config</code>). Tudo muda na hora, em todas as telas, sem reiniciar.</p>
+      <div class="card" data-open-help="personalizar">
+        <div>
+          <h3>🎨 Cor da marca</h3>
+          <p>Escolha uma cor pronta ou use o seletor. O sistema cria sozinho os tons claros e escuros. Experimente aqui (nesta página só como exemplo):</p>
+          <div class="swatches" id="swatches" role="group" aria-label="Cores de exemplo"></div>
         </div>
-
-        <h3 style="margin-top:18px">🖼 Logotipo</h3>
-        <p>Em <strong>Ajustes → Aparência → Enviar logotipo</strong> (PNG, JPG, WebP ou SVG, até 5 MB). Aparece na recepção, na TV, no totem, na aba do navegador e, se quiser, no cupom impresso. Fundo transparente fica melhor.</p>
-
-        <h3 style="margin-top:18px">🎬 Vídeos da TV (MP4)</h3>
-        <p>Em <strong>Ajustes → TV &amp; Vídeos → Enviar vídeos (MP4)</strong>. Envie vários, reordene com as setas, pause ou exclua. A TV toca em sequência e em loop. Dois layouts:</p>
         <ul class="check">
-          <li><strong>Vídeo + painel:</strong> vídeo à esquerda, chamada sempre visível à direita.</li>
-          <li><strong>Vídeo em tela cheia:</strong> a chamada assume a tela por alguns segundos e o vídeo volta.</li>
+          <li><strong>Aparência:</strong> cor, nome da clínica e <strong>logotipo</strong> (PNG, JPG, WebP ou SVG; fundo transparente fica melhor).</li>
+          <li><strong>TV &amp; Vídeos:</strong> envie vídeos <strong>MP4</strong>, reordene com as setas e escolha o layout da TV.</li>
+          <li><strong>Consultórios &amp; Salas:</strong> cadastre cada sala onde há atendimento.</li>
+          <li><strong>Serviços &amp; Prefixos:</strong> serviços e a letra de cada senha (por exemplo A, B, C).</li>
+          <li><strong>Sistema:</strong> backup do banco de dados.</li>
         </ul>
-        <p>Formato mais compatível com Smart TVs: <strong>MP4 H.264 + AAC, 1080p</strong>. Para converter qualquer vídeo (precisa do <a href="https://ffmpeg.org" target="_blank" rel="noopener">ffmpeg</a>):</p>
-        <div class="code"><pre>ffmpeg -i entrada.mov -c:v libx264 -preset medium -crf 23 -vf "scale=1920:-2" -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart saida.mp4</pre><button type="button" data-copy>Copiar</button></div>
-        <p class="note">Os vídeos tocam <strong>mudos</strong> por padrão, para o sinal sonoro da chamada ser bem ouvido. Também em Ajustes: <strong>salas</strong>, <strong>serviços e letras</strong> das senhas (A, B, C, X...), cupom e <strong>PIN</strong> para proteger os Ajustes.</p>
+        <p class="note">Os vídeos tocam <strong>sem som</strong> de propósito, para o aviso sonoro da chamada ser bem ouvido.</p>
       </div>
     </section>
 
-    <!-- ================= 6 TV / CONSULTÓRIOS ================= -->
+    <!-- ================= 4 USAR ================= -->
+    <section class="step" id="usar" aria-labelledby="h-usar">
+      <h2 id="h-usar"><span class="num" aria-hidden="true">4</span>Aprender a usar</h2>
+      <p class="sub">Veja o caminho de uma senha e o que cada pessoa da equipe faz.</p>
+
+      <div class="card" data-open-help="usar">
+        <h3>O caminho de uma senha</h3>
+        <ol class="fluxo">
+          <li><b>1</b><span>O tutor chega e pega a senha na <strong>recepção</strong> ou no <strong>totem</strong>.</span></li>
+          <li><b>2</b><span>Ele espera no saguão e acompanha a <strong>TV</strong>.</span></li>
+          <li><b>3</b><span>O veterinário aperta <strong>Chamar Próximo da Fila</strong>.</span></li>
+          <li><b>4</b><span>A TV mostra a senha, o consultório e toca um aviso sonoro.</span></li>
+          <li><b>5</b><span>A consulta é iniciada e depois finalizada.</span></li>
+        </ol>
+      </div>
+
+      <div class="grid2" style="margin-top:14px">
+        <div class="card" data-open-help="recepcao">
+          <h3>🧾 Recepção <code class="i">/</code></h3>
+          <ol>
+            <li>Clique em <strong>Nova Senha</strong>.</li>
+            <li>Escolha o <strong>serviço</strong> e a <strong>prioridade</strong>: Normal, Preferencial ou Emergência.</li>
+            <li>Digite o <strong>nome do tutor</strong> (obrigatório) e o do pet.</li>
+            <li>Se quiser, escreva o <strong>motivo</strong> e escolha uma <strong>sala específica</strong>. Sem sala, vale a <em>Fila Geral</em>.</li>
+            <li>Clique em <strong>Emitir Nova Senha de Atendimento</strong>.</li>
+          </ol>
+          <p>No topo, quatro quadros mostram quantos <strong>aguardam no saguão</strong>, quantos estão <strong>em consulta</strong>, os <strong>atendidos hoje</strong> e os <strong>chamados na TV</strong>.</p>
+          <p>Na lista da fila há botões para <strong>chamar no telão</strong>, <strong>transferir</strong> para outra sala ou serviço e <strong>imprimir o cupom</strong>. Use a busca para achar por senha, tutor ou pet.</p>
+        </div>
+        <div class="card" data-open-help="chamador">
+          <h3>🩺 Chamador do consultório <code class="i">/chamar</code></h3>
+          <ol>
+            <li>Confira em <strong>“Você está atendendo em”</strong> se a sala é a sua.</li>
+            <li>Clique em <strong>Chamar Próximo da Fila</strong>. A TV avisa na hora.</li>
+            <li>Quando o paciente entrar, clique em <strong>Iniciar Consulta</strong>.</li>
+            <li>No fim, clique em <strong>Finalizar Consulta</strong>.</li>
+          </ol>
+          <p>Não ouviram? <strong>Repetir Chamada</strong>. Ninguém apareceu? <strong>Não Compareceu</strong>. Precisa mandar para outra sala? <strong>Transferir Atendimento</strong>.</p>
+        </div>
+        <div class="card" data-open-help="totem">
+          <h3>🖐 Totem <code class="i">/totem</code></h3>
+          <p>Tela de toque para o tutor.</p>
+          <ol>
+            <li>O tutor toca em <strong>“Toque para retirar senha”</strong> no serviço que precisa.</li>
+            <li>Digita o nome dele e do pet.</li>
+            <li>Toca em <strong>Emitir Senha Agora</strong>. A senha sai na impressora, se houver.</li>
+          </ol>
+          <p>Em um caso grave, existe o botão vermelho <strong>Emergência Veterinária</strong>.</p>
+        </div>
+        <div class="card" data-open-help="telao">
+          <h3>📺 Telão da TV <code class="i">/tv</code></h3>
+          <p>Ninguém precisa mexer: ela mostra a <strong>chamada atual</strong> bem grande, as <strong>chamadas recentes</strong> e os <strong>próximos</strong>, e passa seus vídeos entre as chamadas.</p>
+          <p>O botão de <strong>privacidade</strong> esconde os nomes dos tutores e mostra só a senha.</p>
+        </div>
+        <div class="card" data-open-help="metricas">
+          <h3>📊 Métricas <code class="i">/metricas</code></h3>
+          <p>Para o gestor ver, no dia a dia, o <strong>tempo médio da chegada até ser chamado</strong>, a <strong>duração média da consulta</strong> e o <strong>volume de atendimentos por serviço</strong>.</p>
+        </div>
+      </div>
+      <p class="note">Treine antes de abrir a clínica: emita uma senha na recepção, chame no chamador e veja a TV reagir.</p>
+    </section>
+
+    <!-- ================= 5 TV / CONSULTÓRIOS ================= -->
     <section class="step" id="tv" aria-labelledby="h-tv">
-      <h2 id="h-tv"><span class="num" aria-hidden="true">6</span>TV, consultórios e totem</h2>
-      <p class="sub">Cada aparelho só precisa abrir um endereço no navegador.</p>
+      <h2 id="h-tv"><span class="num" aria-hidden="true">5</span>TV, consultório e totem</h2>
+      <p class="sub">Cada aparelho só precisa abrir o seu endereço no navegador.</p>
       <div class="card">
         <div class="grid2">
           <div data-open-help="tv">
-            <h3>📺 Smart TV da sala de espera</h3>
+            <h3>📺 TV da sala de espera</h3>
             <ol>
-              <li>Abra o navegador da TV e digite o endereço <code class="i">/tv</code>.</li>
-              <li>Toque em <strong>tela cheia</strong>.</li>
-              <li>Dê um clique com o controle na tela: libera o som.</li>
-              <li>Salve nos favoritos e desative a proteção de tela.</li>
+              <li>Abra o navegador da TV e digite o endereço da tela <code class="i">/tv</code>.</li>
+              <li>Coloque em <strong>tela cheia</strong>.</li>
+              <li>Dê <strong>um clique</strong> na tela para liberar o som.</li>
+              <li>Salve nos favoritos e desligue a proteção de tela.</li>
             </ol>
-            <p class="note">Mais estável: um mini-PC ou Fire TV com o <em>Fully Kiosk Browser</em> abrindo <code class="i">/tv</code> sozinho ao ligar.</p>
           </div>
           <div>
             <h3>🩺 Consultórios</h3>
-            <p>Em <strong>Ajustes → Consultórios &amp; Salas</strong>, cada sala tem o botão <strong>Link do chamador</strong>. Crie um atalho desse link na área de trabalho do veterinário (Chrome: ⋮ → Transmitir, salvar e compartilhar → Criar atalho → “Abrir como janela”).</p>
+            <p>Em <strong>Ajustes → Consultórios &amp; Salas</strong>, cada sala tem o botão <strong>Link do chamador</strong>. Abra esse link no computador do veterinário e salve nos favoritos.</p>
           </div>
           <div>
-            <h3>🖐 Totem (tablet)</h3>
-            <p>Abra <code class="i">/totem</code> no tablet. iPad: ative o <strong>Acesso Guiado</strong>. Android: <em>Fully Kiosk Browser</em>.</p>
-            <p>Impressora térmica (58 ou 80 mm): defina como padrão e inicie o Chrome com <code class="i">--kiosk --kiosk-printing</code> para imprimir sem janela.</p>
+            <h3>🖐 Totem</h3>
+            <p>Abra <code class="i">/totem</code> no tablet da entrada e deixe em tela cheia. Se tiver impressora de cupom, deixe-a como padrão do computador ou tablet.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ================= 7 BACKUP ================= -->
+    <!-- ================= 6 BACKUP ================= -->
     <section class="step" id="backup" aria-labelledby="h-bkp">
-      <h2 id="h-bkp"><span class="num" aria-hidden="true">7</span>Backup, atualização e início automático</h2>
-      <p class="sub">Seus dados ficam na pasta <code class="i">data/</code>: banco, logotipo e vídeos.</p>
+      <h2 id="h-bkp"><span class="num" aria-hidden="true">6</span>Seus dados e segurança</h2>
+      <p class="sub">Tudo fica guardado na pasta <code class="i">data</code>, dentro da pasta do sistema.</p>
       <div class="card">
         <div class="grid2">
           <div data-open-help="backup">
             <h3>💾 Backup</h3>
             <ul class="check">
-              <li><strong>Automático:</strong> uma cópia por dia em <code class="i">data/backups/</code> (guarda 14 dias)</li>
-              <li><strong>Manual:</strong> Ajustes → Sistema → <em>Baixar backup do banco</em></li>
-              <li><strong>Tudo junto:</strong> copie a pasta <code class="i">data/</code> para um pendrive ou nuvem</li>
-              <li><strong>Restaurar:</strong> pare o sistema, troque <code class="i">data/fila.db</code> pelo backup e inicie</li>
+              <li><strong>Automático:</strong> o sistema faz uma cópia por dia e guarda as últimas 14.</li>
+              <li><strong>Manual:</strong> Ajustes → Sistema → <em>Baixar backup do banco</em>.</li>
+              <li><strong>Trocar de computador:</strong> copie a pasta <code class="i">data</code> para o novo.</li>
             </ul>
           </div>
           <div>
-            <h3>🔄 Atualizar</h3>
-            <div class="code"><pre>git pull
-npm install
-npm start</pre><button type="button" data-copy>Copiar</button></div>
-            <p>A pasta <code class="i">data/</code> nunca é sobrescrita.</p>
-          </div>
-          <div>
-            <h3>⚡ Iniciar com o computador</h3>
+            <h3>🔒 Segurança</h3>
             <ul class="check">
-              <li><strong>Docker:</strong> já inicia sozinho</li>
-              <li><strong>Windows:</strong> <code class="i">Win+R</code> → <code class="i">shell:startup</code> → coloque um atalho do <code class="i">iniciar.bat</code></li>
-              <li><strong>macOS:</strong> Ajustes → Geral → Itens de início → <code class="i">iniciar.command</code></li>
+              <li>Use <strong>somente na rede da clínica</strong>. Nunca abra a porta para a internet.</li>
+              <li>Para impedir que alguém mude cor, vídeos e salas, o técnico pode definir um <strong>PIN</strong> (veja “Para o técnico”).</li>
             </ul>
           </div>
         </div>
-        <p class="warn">Segurança: o sistema é feito para a <strong>rede interna</strong>. Não abra a porta na internet. Para limitar quem altera cor, vídeos e salas, defina um PIN: <code class="i">ADMIN_PIN=1234 npm start</code>.</p>
+      </div>
+    </section>
+
+    <!-- ================= APOIO ================= -->
+    <section class="step" id="apoio" aria-labelledby="h-apoio">
+      <h2 id="h-apoio">Apoio e instalação assistida</h2>
+      <p class="sub">Este projeto pode ser usado livremente e também conta com apoio para quem preferir acompanhamento.</p>
+      <div class="card">
+        <h3>💚 Quer contribuir?</h3>
+        <p>Se o sistema foi útil para sua clínica, você pode fazer uma doação de qualquer valor pela chave Pix:</p>
+        <p><strong><code class="i">554199865410</code></strong></p>
+        <h3>Precisa de ajuda?</h3>
+        <p>Podemos ajudar na instalação, configuração da rede, TV, totem e treinamento da equipe mediante um valor por hora combinado previamente.</p>
+        <p>Entre em contato pelo WhatsApp: <strong><a href="https://wa.me/554199865410" target="_blank" rel="noopener">55 41 99865-410</a></strong>.</p>
       </div>
     </section>
 
@@ -450,19 +472,59 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
       <h2 id="h-prob">Problemas comuns</h2>
       <p class="sub">Quase tudo se resolve em um destes itens.</p>
       <details><summary>A TV ou o tablet não abre o endereço</summary>
-        <p>Confira se estão na <strong>mesma rede/Wi-Fi</strong> do servidor e se o endereço tem o IP certo e <code class="i">:3000</code>. No servidor, libere a porta no firewall (Windows: marque “Redes privadas” ao permitir o Node).</p></details>
-      <details><summary>“A porta 3000 já está em uso”</summary>
-        <p>Outro programa usa essa porta. Inicie em outra: <code class="i">PORT=3001 npm start</code> (Windows cmd: <code class="i">set PORT=3001 &amp;&amp; npm start</code>).</p></details>
-      <details><summary>“A interface ainda não foi gerada”</summary>
-        <p>Rode <code class="i">npm run build</code> dentro da pasta e inicie de novo.</p></details>
-      <details><summary>Aparece “Node.js … é antigo demais”</summary>
-        <p>O sistema usa o SQLite que já vem dentro do Node, a partir da versão 22.16. Instale o Node.js LTS atual em nodejs.org (ou use o Docker).</p></details>
-      <details><summary>O vídeo não toca na TV</summary>
-        <p>Converta para <strong>MP4 H.264/AAC</strong> com o comando do passo 5. A TV mostra um aviso discreto e tenta de novo; as chamadas continuam funcionando.</p></details>
+        <p>Confira se o aparelho está no <strong>mesmo Wi-Fi</strong> do servidor, se o IP está certo e se o endereço termina com <code class="i">:3000</code>. No Windows, o Firewall precisa estar liberado para <strong>Redes privadas</strong>.</p></details>
+      <details><summary>Fechei a janela preta e o sistema parou</summary>
+        <p>Ela é o sistema. Abra o <code class="i">iniciar.bat</code> (ou <code class="i">iniciar.command</code>) de novo e deixe aberta. Seus dados continuam guardados.</p></details>
       <details><summary>Não toca som na chamada</summary>
-        <p>Navegadores só liberam áudio depois de um clique. Toque na tela da TV uma vez e confira o botão “Sinal Sonoro Ativo”.</p></details>
+        <p>Os navegadores só liberam o som depois de um clique. Dê um clique na tela da TV uma vez.</p></details>
+      <details><summary>O vídeo não toca na TV</summary>
+        <p>Converta para <strong>MP4 H.264 com áudio AAC</strong> (o técnico tem o comando abaixo, em “Para o técnico”). As chamadas continuam funcionando mesmo sem o vídeo.</p></details>
+      <details><summary>Aparece “Node.js … é antigo demais”</summary>
+        <p>Instale o Node.js LTS atual em nodejs.org (versão 22.16 ou maior) e abra o sistema de novo.</p></details>
+      <details><summary>“A porta 3000 já está em uso”</summary>
+        <p>Outro programa usa essa porta. Veja a dica em “Para o técnico”.</p></details>
       <details><summary>A numeração das senhas reinicia em horário estranho</summary>
-        <p>A virada do dia usa o fuso do computador servidor. Ajuste data/hora/fuso dele (no Docker, a variável <code class="i">TZ</code>).</p></details>
+        <p>A virada do dia usa a hora do servidor. Confira data, hora e fuso do computador.</p></details>
+    </section>
+
+    <!-- ================= PARA O TÉCNICO ================= -->
+    <section class="step" id="tecnico" aria-labelledby="h-tec">
+      <h2 id="h-tec">Para o técnico</h2>
+      <p class="sub">Opções avançadas. Quem só vai usar o sistema pode pular esta parte.</p>
+      <details><summary>Instalar com Git ou Docker</summary>
+        <p><strong>Git:</strong></p>
+        <div class="code"><pre>git clone https://github.com/skroski/vetbots-fila-presencial.git
+cd vetbots-fila-presencial
+npm install
+npm start</pre><button type="button" data-copy>Copiar</button></div>
+        <p><strong>Docker</strong> (sobe sozinho quando o computador liga; os dados ficam em <code class="i">data/</code>):</p>
+        <div class="code"><pre>docker compose up -d --build</pre><button type="button" data-copy>Copiar</button></div>
+        <p>Para ver os endereços: <code class="i">docker compose logs</code>.</p>
+      </details>
+      <details><summary>Porta, PIN dos Ajustes e fuso horário</summary>
+        <p>Outra porta: <code class="i">PORT=3001 npm start</code> (Windows cmd: <code class="i">set PORT=3001 &amp;&amp; npm start</code>). Lembre de trocar <code class="i">3000</code> pelo número novo nos endereços.</p>
+        <p>PIN para proteger os Ajustes: <code class="i">ADMIN_PIN=1234 npm start</code>. No Docker, ajuste o fuso com a variável <code class="i">TZ</code>.</p>
+        <p>Linux com firewall ativo:</p>
+        <div class="code"><pre>sudo ufw allow 3000/tcp</pre><button type="button" data-copy>Copiar</button></div>
+      </details>
+      <details><summary>Converter vídeo para a TV (ffmpeg)</summary>
+        <p>Formato mais compatível com Smart TVs: MP4 H.264 + AAC, 1080p. Com o <a href="https://ffmpeg.org" target="_blank" rel="noopener">ffmpeg</a> instalado:</p>
+        <div class="code"><pre>ffmpeg -i entrada.mov -c:v libx264 -preset medium -crf 23 -vf "scale=1920:-2" -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart saida.mp4</pre><button type="button" data-copy>Copiar</button></div>
+      </details>
+      <details><summary>Atualizar, iniciar com o computador e tela cheia fixa</summary>
+        <p><strong>Atualizar</strong> (a pasta <code class="i">data/</code> nunca é sobrescrita):</p>
+        <div class="code"><pre>git pull
+npm install
+npm start</pre><button type="button" data-copy>Copiar</button></div>
+        <ul class="check">
+          <li><strong>Windows:</strong> <code class="i">Win+R</code> → <code class="i">shell:startup</code> → coloque um atalho do <code class="i">iniciar.bat</code>.</li>
+          <li><strong>macOS:</strong> Ajustes do Sistema → Geral → Itens de início → <code class="i">iniciar.command</code>.</li>
+          <li><strong>TV estável:</strong> mini-PC ou Fire TV com o <em>Fully Kiosk Browser</em> abrindo <code class="i">/tv</code> ao ligar.</li>
+          <li><strong>Totem iPad:</strong> ative o Acesso Guiado. <strong>Android:</strong> Fully Kiosk Browser.</li>
+          <li><strong>Impressão direta:</strong> inicie o Chrome com <code class="i">--kiosk --kiosk-printing</code> e deixe a impressora térmica (58 ou 80 mm) como padrão.</li>
+        </ul>
+        <p>Se aparecer “A interface ainda não foi gerada”, rode <code class="i">npm run build</code> e inicie de novo. Restaurar backup: pare o sistema, troque <code class="i">data/fila.db</code> pelo arquivo do backup e inicie.</p>
+      </details>
     </section>
 
     <!-- ================= CHECKLIST ================= -->
@@ -480,7 +542,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
   </main>
 </div>
 
-<footer class="page">VetBots · Fila Presencial · <a href="https://github.com/skroski/vetbots-fila-presencial" target="_blank" rel="noopener">github.com/skroski/vetbots-fila-presencial</a></footer>
+<footer class="page">© 2026 VetBots · Fila Presencial · <a href="https://github.com/skroski/vetbots-fila-presencial" target="_blank" rel="noopener">github.com/skroski/vetbots-fila-presencial</a></footer>
 
 <script>
 /* =====================================================================
@@ -594,17 +656,16 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
 
   // ---- checklist ----
   const ITENS = [
-    'Node.js 22.16+ instalado (ou Docker)',
-    'Pacote baixado e instalado (npm install)',
-    'Sistema iniciado e mostrando “no ar”',
-    'Porta liberada no firewall e IP do servidor fixo no roteador',
-    'Telas abertas nos outros aparelhos (TV, recepção, consultório, totem)',
-    'Nome, cor e logotipo da clínica configurados em Ajustes',
-    'Vídeos MP4 enviados e conferidos na TV',
-    'Salas e serviços (letras das senhas) conferidos',
-    'Teste completo: emitir senha → chamar → TV tocou e pulsou',
-    'Impressora térmica testada no totem/recepção',
-    'Início automático configurado e backup conferido',
+    'Node.js instalado',
+    'Pasta do sistema no computador servidor',
+    'Sistema iniciado e mostrando “Fila Presencial no ar!”',
+    'IP do servidor anotado (e fixo no roteador, se possível)',
+    'Telas abertas na TV, na recepção, nos consultórios e no totem',
+    'Nome, cor e logotipo da clínica em Ajustes',
+    'Salas e serviços conferidos',
+    'Vídeos enviados e conferidos na TV',
+    'Teste completo: emitir senha → chamar → TV avisou',
+    'Backup conferido e início automático configurado (se desejado)',
   ];
   const lista = document.getElementById('checklist-list');
   const marcados = new Set(JSON.parse(store.get('fila-guia-checklist') || '[]'));
@@ -629,70 +690,122 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
 })();
 
 /* =====================================================================
-   2) OPEN HELP: tour guiado (motor próprio, sem dependências)
+   2) OPEN HELP: tour guiado com narração Fish Audio em MP3 (motor próprio, sem dependências)
    Separação de responsabilidades (build-open-help):
      TargetResolver · Renderer · VoiceProvider · StorageAdapter · Engine · Journey
    ===================================================================== */
 (() => {
   'use strict';
 
-  /* ---------- Journey: roteiro do tour (conteúdo separado do motor) ---------- */
+  /* ---------- Journey: roteiro do tour (conteúdo separado do motor) ----------
+     Fonte única do texto e da narração: scripts/gerar-audio-ajuda.mjs lê o bloco entre
+     JOURNEY:INICIO e JOURNEY:FIM para gerar os MP3 exclusivamente pelo Fish Audio. Ao mudar texto ou narração,
+     aumente "version", mova os MP3 para a pasta nova e rode:  npm run help:audio */
+  /* JOURNEY:INICIO */
   const JOURNEY = {
     id: 'instalacao-fila',
-    version: 2,                 // aumente ao mudar textos/narração: reinicia o "concluído"
+    version: 3,                 // aumente ao mudar textos/narração/voz: reinicia o "concluído" e a pasta de áudio
     language: 'pt-BR',
     steps: [
       {
-        id: 'requisitos',
-        title: 'Primeiro, o que você precisa',
-        body: 'Um computador que fique ligado no expediente, com Node.js 22.16 ou superior (ou Docker), e os aparelhos da clínica na mesma rede. Internet não é necessária.',
-        narration: 'Primeiro, o que você precisa. Um computador que fique ligado durante o expediente, com Node ponto jota és vinte e dois ponto dezesseis ou superior, ou Docker. E os aparelhos da clínica na mesma rede. Internet não é necessária.',
-        target: '[data-open-help="requisitos"]', placement: 'bottom',
-      },
-      {
         id: 'instalar',
-        title: 'Instale e inicie',
-        body: 'Escolha seu sistema. No Windows, dê duplo clique em iniciar.bat. Nos outros, rode npm install e npm start. Quando aparecer “Fila Presencial no ar”, deu certo.',
-        narration: 'Escolha o seu sistema. No Windows, é só dar duplo clique em iniciar ponto bat. Nos outros, rode npm install e depois npm start. Quando aparecer fila presencial no ar, deu certo.',
+        title: 'Instale em três etapas',
+        body: 'Feito uma única vez no computador que ficará ligado na clínica: instale o Node.js, coloque a pasta do sistema nele e inicie. No Windows, dê duplo clique em iniciar.bat. Quando aparecer “Fila Presencial no ar!”, deu certo.',
+        narration: 'Vamos conhecer o sistema inteiro, começando pela instalação. São só três etapas, feitas uma única vez no computador que vai ficar ligado na clínica, o nosso servidor. Primeiro, instale o Node ponto jota és, na versão L T S. Depois, coloque a pasta do sistema nesse computador. Por fim, inicie. No Windows, dê dois cliques no arquivo iniciar ponto bat. No Mac, use o iniciar ponto command. Deixe a janela que abrir sempre aberta, porque ela é o sistema funcionando. Quando aparecer fila presencial no ar, deu certo.',
         target: '[data-open-help="instalar"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/instalar.mp3',
       },
       {
         id: 'enderecos',
-        title: 'Descubra os endereços das telas',
-        body: 'Digite o IP do computador servidor (o terminal mostra ao iniciar). A tabela monta o endereço de cada tela para você copiar e abrir na TV, no tablet e nos consultórios.',
-        narration: 'Digite o I P do computador servidor. O terminal mostra esse número ao iniciar. A tabela monta o endereço de cada tela para você copiar e abrir na TV, no tablet e nos consultórios.',
+        title: 'Abra as telas nos outros aparelhos',
+        body: 'Digite o IP do computador servidor (aparece na janela do sistema). A tabela monta o endereço de cada tela para você copiar e abrir na TV, no tablet e nos consultórios.',
+        narration: 'Agora, vamos abrir as telas nos outros aparelhos. Na janela do sistema aparece um número chamado I P, que começa com cento e noventa e dois ponto cento e sessenta e oito. Digite esse número aqui. A tabela monta o endereço de cada tela: recepção, telão da TV, chamador do consultório, totem, métricas e ajustes. É só tocar em copiar e colar no navegador do aparelho. Todos precisam estar no mesmo Wi-Fi, ou no mesmo cabo, do servidor.',
         target: '[data-open-help="enderecos"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/enderecos.mp3',
       },
       {
         id: 'personalizar',
         title: 'Deixe com a cara da clínica',
-        body: 'Em Ajustes você troca a cor, envia o logotipo e sobe os vídeos MP4 da TV. Tudo muda na hora, em todas as telas, sem reiniciar. Teste as cores de exemplo aqui.',
-        narration: 'Deixe com a cara da clínica. Em Ajustes você troca a cor, envia o logotipo e sobe os vídeos da TV. Tudo muda na hora, em todas as telas, sem reiniciar.',
+        body: 'Em Ajustes você escolhe a cor, envia o logotipo, sobe os vídeos MP4 da TV e cadastra salas e serviços. Tudo muda na hora, em todas as telas, sem reiniciar.',
+        narration: 'Agora, deixe o sistema com a cara da clínica. Tudo isso é feito na tela de ajustes, e muda na hora, em todas as telas, sem reiniciar. Na aba aparência, você escolhe a cor da marca, o nome da clínica e envia o logotipo. Na aba T V e vídeos, você envia vídeos em formato M P quatro, e escolhe a ordem em que eles passam. Na aba consultórios e salas, você cadastra cada sala de atendimento. Em serviços e prefixos, você define os serviços, como consulta ou vacina, e a letra de cada senha. E na aba sistema, você baixa o backup.',
         target: '[data-open-help="personalizar"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/personalizar.mp3',
+      },
+      {
+        id: 'usar',
+        title: 'O caminho de uma senha',
+        body: 'A recepção ou o totem emite a senha. O veterinário clica em “Chamar Próximo da Fila”. A TV mostra a senha e o consultório e toca um aviso. Depois é só iniciar e finalizar a consulta.',
+        narration: 'Agora vem o dia a dia. Primeiro, veja o caminho de uma senha. O tutor chega e pega a senha na recepção ou no totem. Ele espera no saguão, acompanhando a TV. O veterinário aperta chamar próximo da fila. A TV mostra a senha, o consultório, e toca um aviso sonoro. Quando o paciente entra, o veterinário inicia a consulta e, no fim, finaliza. Nos próximos passos, vamos ver cada tela, uma por uma.',
+        target: '[data-open-help="usar"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/usar.mp3',
+      },
+      {
+        id: 'recepcao',
+        title: 'Recepção: emitir e organizar a fila',
+        body: 'Clique em “Nova Senha”, escolha serviço e prioridade, digite tutor e pet e emita. Na lista você chama no telão, transfere de sala e imprime o cupom.',
+        narration: 'Esta é a recepção. Para emitir uma senha, clique em nova senha. Escolha o serviço e a prioridade: normal, preferencial ou emergência. Digite o nome do tutor, que é obrigatório, e o nome do pet. Se quiser, escreva o motivo da visita e escolha uma sala específica. Sem sala, a senha vai para a fila geral, e qualquer consultório livre pode chamar. Depois, clique em emitir nova senha de atendimento. No topo da tela, quatro quadros mostram quantos aguardam no saguão, quantos estão em consulta, os atendidos hoje, e os chamados na TV. Na lista da fila, você pode chamar um paciente no telão, transferir para outra sala ou serviço, e imprimir o cupom. A busca encontra por senha, tutor ou pet.',
+        target: '[data-open-help="recepcao"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/recepcao.mp3',
+      },
+      {
+        id: 'chamador',
+        title: 'Chamador: o veterinário atende com poucos cliques',
+        body: 'Confirme a sala, clique em “Chamar Próximo da Fila”, depois em “Iniciar Consulta” e em “Finalizar Consulta”. Também há Repetir Chamada, Não Compareceu e Transferir.',
+        narration: 'Este é o chamador do consultório, usado pelo veterinário. Primeiro, confira em você está atendendo em, se a sala é a sua. Depois, clique em chamar próximo da fila. A TV avisa na hora. Quando o paciente entrar, clique em iniciar consulta. No fim, clique em finalizar consulta. Se o tutor não ouviu, use repetir chamada. Se ninguém apareceu, use não compareceu. E se for preciso mandar o paciente para outra sala, use transferir atendimento.',
+        target: '[data-open-help="chamador"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/chamador.mp3',
+      },
+      {
+        id: 'totem',
+        title: 'Totem: o tutor retira a senha sozinho',
+        body: 'Na tela de toque, o tutor escolhe o serviço, digita o nome dele e do pet e toca em “Emitir Senha Agora”. Há também o botão vermelho de Emergência Veterinária.',
+        narration: 'Este é o totem, uma tela de toque na entrada, para o tutor retirar a senha sozinho. Ele toca no serviço de que precisa, onde está escrito toque para retirar senha, digita o nome dele e o do pet, e toca em emitir senha agora. Se houver impressora, a senha sai impressa. Em um caso grave, existe o botão vermelho, emergência veterinária. Assim, a recepção fica livre para atender quem está no balcão.',
+        target: '[data-open-help="totem"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/totem.mp3',
+      },
+      {
+        id: 'telao',
+        title: 'Telão da TV: a chamada aparece para todos',
+        body: 'Ninguém precisa mexer: a TV mostra a chamada atual bem grande, as chamadas recentes e os próximos, e passa seus vídeos. O botão de privacidade esconde os nomes.',
+        narration: 'Este é o telão da TV, na sala de espera. Ninguém precisa mexer nele. Ele mostra a chamada atual, bem grande, com a senha e o consultório, as chamadas recentes, e os próximos a serem atendidos. Entre uma chamada e outra, ele passa os vídeos que você enviou. Quando alguém é chamado, toca um aviso sonoro. E o botão de privacidade esconde o nome dos tutores, mostrando só a senha.',
+        target: '[data-open-help="telao"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/telao.mp3',
+      },
+      {
+        id: 'metricas',
+        title: 'Métricas: acompanhe a fila',
+        body: 'O gestor vê o tempo médio da chegada até ser chamado, a duração média da consulta e o volume de atendimentos por serviço.',
+        narration: 'Esta é a tela de métricas, para o gestor. Ela mostra o tempo médio da chegada até ser chamado, a duração média da consulta, e o volume de atendimentos por serviço. Com esses números, você descobre os horários mais cheios e se a fila está andando bem.',
+        target: '[data-open-help="metricas"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/metricas.mp3',
       },
       {
         id: 'tv',
         title: 'Coloque a TV, os consultórios e o totem para funcionar',
         body: 'Na TV, abra o endereço /tv em tela cheia e clique uma vez para liberar o som. Cada consultório tem um link próprio em Ajustes. O totem é o endereço /totem em um tablet.',
-        narration: 'Na TV, abra o endereço barra T V em tela cheia e clique uma vez para liberar o som. Cada consultório tem um link próprio em Ajustes. O totem é o endereço barra totem em um tablet.',
+        narration: 'Para colocar cada aparelho para funcionar, é só abrir o endereço no navegador. Na TV da sala de espera, abra o endereço barra T V, deixe em tela cheia e dê um clique na tela para liberar o som. Salve nos favoritos e desligue a proteção de tela. Cada consultório tem o seu próprio link do chamador, no botão link do chamador, em ajustes, consultórios e salas. E o totem é o endereço barra totem, em um tablet, em tela cheia.',
         target: '[data-open-help="tv"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/tv.mp3',
       },
       {
         id: 'backup',
         title: 'Seus dados ficam seguros',
-        body: 'Tudo fica na pasta data. O sistema faz um backup por dia sozinho. Para mudar de computador, copie essa pasta. Lembre: use só na rede interna e, se quiser, proteja os Ajustes com PIN.',
-        narration: 'Seus dados ficam na pasta data, e o sistema faz um backup por dia sozinho. Para mudar de computador, copie essa pasta. Use só na rede interna e, se quiser, proteja os Ajustes com P I N.',
+        body: 'Tudo fica na pasta data e o sistema faz um backup por dia sozinho. Para trocar de computador, copie essa pasta. Use o sistema só na rede da clínica.',
+        narration: 'Seus dados ficam na pasta data, e o sistema faz um backup por dia, sozinho, guardando as últimas catorze cópias. Você também pode baixar um backup quando quiser, em ajustes, aba sistema. Para trocar de computador, é só copiar a pasta data. Use o sistema apenas na rede da clínica, e nunca abra a porta para a internet.',
         target: '[data-open-help="backup"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/backup.mp3',
       },
       {
         id: 'checklist',
         title: 'Confira tudo no checklist',
-        body: 'Marque cada item conforme concluir. Quando todos estiverem marcados, a clínica já pode usar a fila. Você pode refazer este tour quando quiser pelo botão “Tour guiado”.',
-        narration: 'Para terminar, confira tudo no checklist. Quando todos os itens estiverem marcados, a clínica já pode usar a fila. Você pode refazer este tour quando quiser pelo botão tour guiado.',
+        body: 'Marque cada item conforme concluir. Quando todos estiverem marcados, a clínica já pode usar a fila. Você pode refazer este tour quando quiser, pelo botão “Tour guiado”.',
+        narration: 'Para terminar, confira tudo no checklist. Marque cada item conforme for concluindo. Quando todos estiverem marcados, a clínica já pode usar a fila. E você pode refazer este tour quando quiser, pelo botão tour guiado.',
         target: '[data-open-help="checklist"]', placement: 'bottom',
+        audioSrc: 'open-help/v3/checklist.mp3',
       },
     ],
   };
+  /* JOURNEY:FIM */
 
   /* ---------- StorageAdapter: só a conclusão, com versão ---------- */
   const storage = {
@@ -704,31 +817,29 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
   const readMuted = () => { try { return localStorage.getItem(muteKey) === '1'; } catch { return false; } };
   const writeMuted = (m) => { try { localStorage.setItem(muteKey, m ? '1' : '0'); } catch { /* ignora */ } };
 
-  /* ---------- VoiceProvider: speechSynthesis do navegador (sem custo, sem conta) ---------- */
-  class BrowserVoice {
+  /* ---------- VoiceProvider: somente MP3 pré-gravado pelo Fish Audio ----------
+     O cliente final nunca chama um provedor: os MP3 versionados acompanham o pacote.
+     Se um arquivo faltar ou o navegador bloquear o som, o Help visual continua utilizável. */
+  class AudioVoice {
     constructor() {
-      this.supported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+      this.supported = typeof Audio !== 'undefined';
       this.muted = false;
-      this.voices = [];
-      this.onVoices = () => { this.voices = speechSynthesis.getVoices(); };
-      if (this.supported) { this.onVoices(); speechSynthesis.addEventListener('voiceschanged', this.onVoices); }
+      this.audio = null;
     }
-    pick(lang) {
-      const l = lang.toLowerCase();
-      return this.voices.find((v) => v.lang.toLowerCase() === l)
-        || this.voices.find((v) => v.lang.toLowerCase().split('-')[0] === l.split('-')[0]);
+    speak(step) {
+      if (!this.supported || this.muted || !step.audioSrc) return;
+      this.stop();                                  // nunca sobrepõe narração antiga
+      const a = new Audio(step.audioSrc);
+      this.audio = a;
+      const solta = () => { if (this.audio === a) this.audio = null; };
+      a.addEventListener('error', solta, { once: true });
+      a.addEventListener('ended', solta, { once: true });
+      const p = a.play();
+      if (p && p.catch) p.catch(solta);             // som bloqueado ou arquivo ausente: silêncio, sem tentar de novo
     }
-    speak(text, lang) {
-      if (!this.supported || this.muted || !text.trim()) return;
-      this.stop();                                  // nunca enfileira narração antiga
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = lang; u.rate = 0.97;
-      const v = this.pick(lang); if (v) u.voice = v;
-      speechSynthesis.speak(u);
-    }
-    stop() { if (this.supported) speechSynthesis.cancel(); }
+    stop() { if (this.audio) { this.audio.pause(); this.audio = null; } }
     setMuted(m) { this.muted = m; if (m) this.stop(); }
-    destroy() { this.stop(); if (this.supported) speechSynthesis.removeEventListener('voiceschanged', this.onVoices); }
+    destroy() { this.stop(); }
   }
 
   /* ---------- TargetResolver: busca limitada no tempo (alvos dedicados data-open-help) ---------- */
@@ -770,7 +881,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
 
       const foot = this.el('footer', 'oh-footer');
       const voice = this.el('div', 'oh-voice');
-      if (voiceOk && step.narration) {
+      if (voiceOk && step.audioSrc) {
         const rep = this.btn('Ouvir de novo', 'oh-btn secondary', act.repeat); rep.setAttribute('aria-label', 'Ouvir esta orientação novamente');
         const mute = this.btn(muted ? 'Ativar voz' : 'Silenciar', 'oh-btn secondary', act.toggleMute); mute.setAttribute('aria-pressed', String(muted));
         voice.append(rep, mute);
@@ -855,7 +966,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
     }
     next() { if (this.status === 'running') this.show(this.index + 1, 1); }
     back() { if (this.status === 'running' && this.index > 0) this.show(this.index - 1, -1); }
-    repeat() { const s = this.journey.steps[this.index]; if (s && !this.muted) this.voice.speak(s.narration || s.body, this.journey.language); }
+    repeat() { const s = this.journey.steps[this.index]; if (s && !this.muted) this.voice.speak(s); }
     toggleMute() {
       this.muted = !this.muted; writeMuted(this.muted); this.voice.setMuted(this.muted);
       this.show(this.index, 0, false);
@@ -913,7 +1024,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
   /* ---------- Montagem: lançadores visíveis e status ---------- */
   const status = document.getElementById('tour-status');
   const engine = new Engine(JOURNEY, {
-    voice: new BrowserVoice(),
+    voice: new AudioVoice(),
     onStatus: (s) => {
       status.textContent = s === 'completed' ? '✓ Tour concluído' : s === 'cancelled' ? 'Tour fechado. Você pode refazer quando quiser.' : '';
     },
@@ -926,7 +1037,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
   // Botão flutuante sempre visível (acessível por teclado) para reabrir a ajuda
   const flutuante = document.createElement('button');
   flutuante.type = 'button'; flutuante.className = 'btn btn-primary oh-launcher';
-  flutuante.textContent = '❓ Tour guiado'; flutuante.setAttribute('aria-label', 'Abrir o tour guiado de instalação');
+  flutuante.textContent = '🔊 Tour guiado'; flutuante.setAttribute('aria-label', 'Abrir o tour guiado de instalação');
   flutuante.addEventListener('click', () => engine.start(flutuante));
   document.body.append(flutuante);
 

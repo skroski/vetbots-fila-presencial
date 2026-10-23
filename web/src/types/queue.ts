@@ -108,20 +108,21 @@ export const QUEUE_PRIORITY_LABEL: Record<QueuePriority, string> = {
   emergencia: 'Urgente / Emergência',
 };
 
+// badge: classes do daisyUI (.badge-soft-* vêm de index.css); border/bg: realce do cartão na fila
 export const PRIORITY_STYLES: Record<QueuePriority, { badge: string; border: string; bg: string }> = {
   emergencia: {
-    badge: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30 animate-pulse',
-    border: 'border-l-4 border-l-rose-500',
-    bg: 'bg-rose-500/5',
+    badge: 'badge badge-soft-error h-auto py-0.5 animate-pulse',
+    border: 'border-l-4 border-l-error',
+    bg: 'bg-error/5',
   },
   prioridade: {
-    badge: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
-    border: 'border-l-4 border-l-amber-500',
-    bg: 'bg-amber-500/5',
+    badge: 'badge badge-soft-warning h-auto py-0.5',
+    border: 'border-l-4 border-l-warning',
+    bg: 'bg-warning/5',
   },
   normal: {
-    badge: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
-    border: 'border-l-4 border-l-brand-500',
+    badge: 'badge badge-soft-neutral h-auto py-0.5',
+    border: 'border-l-4 border-l-primary',
     bg: 'bg-transparent',
   },
 };
@@ -145,7 +146,7 @@ export interface AppConfig {
   logo_url: string | null;
   tv_sound: boolean;
   tv_privacy: boolean;
-  tv_layout: 'lateral' | 'tela_cheia';
+  tv_layout: 'lateral' | 'tela_cheia' | 'video_16_9';
   tv_video_muted: boolean;
   tv_overlay_seconds: number;
   ticket_footer: string;
@@ -157,7 +158,7 @@ export interface AppConfig {
 export const DEFAULT_CONFIG: AppConfig = {
   clinic_name: 'Clínica Veterinária',
   clinic_subtitle: 'Painel de Atendimento Presencial',
-  brand_color: '#10b981',
+  brand_color: '#2294aa',
   logo_url: null,
   tv_sound: true,
   tv_privacy: false,

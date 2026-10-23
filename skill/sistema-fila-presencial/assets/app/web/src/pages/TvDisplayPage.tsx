@@ -39,12 +39,12 @@ function CallBlock({
 }) {
   return (
     <div className="text-center flex flex-col items-center justify-center">
-      <div className="inline-flex items-center gap-2 text-brand-400 text-sm md:text-lg uppercase tracking-[.3em] font-semibold bg-brand-500/10 px-6 py-2 rounded-full border border-brand-500/20">
+      <div className="badge badge-soft-primary badge-lg h-auto gap-2 px-6 py-2 text-sm md:text-lg font-semibold">
         <Bell className="h-5 w-5 animate-bounce" />
         <span>Chamada Atual</span>
       </div>
 
-      <div className={`mt-4 transition-all duration-500 transform ${pulsing ? 'scale-110 text-brand-300' : 'text-white'}`}>
+      <div className={`mt-4 transition-all duration-500 transform ${pulsing ? 'scale-110 text-accent' : 'text-base-content'}`}>
         <span
           className={`font-mono font-black tracking-tighter leading-none drop-shadow-[0_10px_35px_rgb(var(--brand-glow)/0.25)] ${
             compact ? 'text-[clamp(4rem,9vw,9rem)]' : 'text-9xl md:text-[14rem]'
@@ -55,26 +55,26 @@ function CallBlock({
       </div>
 
       <p
-        className={`mt-4 font-extrabold tracking-tight text-white/95 max-w-4xl truncate ${
+        className={`mt-4 font-extrabold tracking-tight text-base-content max-w-4xl truncate ${
           compact ? 'text-2xl xl:text-4xl max-w-full px-2' : 'text-3xl md:text-6xl'
         }`}
       >
         {nomeExibido(current, privacy)}
       </p>
 
-      <div className={`mt-8 flex flex-wrap items-center justify-center gap-4 text-slate-300 ${compact ? 'text-lg xl:text-2xl' : 'text-xl md:text-3xl'}`}>
+      <div className={`mt-8 flex flex-wrap items-center justify-center gap-4 text-base-content/80 ${compact ? 'text-lg xl:text-2xl' : 'text-xl md:text-3xl'}`}>
         {current ? (
-          <div className="flex flex-wrap items-center justify-center gap-3 bg-slate-900/90 border border-slate-700/80 px-6 py-4 rounded-2xl shadow-xl">
-            <span className="text-brand-400 font-bold">Dirija-se ao:</span>
-            <strong className="text-white font-black">{room?.nome || 'Consultório Principal'}</strong>
+          <div className="card flex-row flex-wrap items-center justify-center gap-3 bg-base-100 border border-base-300 px-6 py-4 shadow-medium">
+            <span className="text-accent font-bold">Dirija-se ao:</span>
+            <strong className="text-base-content font-black">{room?.nome || 'Consultório Principal'}</strong>
             {current.veterinario_nome && (
-              <span className="text-slate-400 text-base md:text-xl border-l border-slate-700 pl-3">
+              <span className="text-neutral text-base md:text-xl border-l border-base-300 pl-3">
                 {/^dra?\.?\s/i.test(current.veterinario_nome) ? '' : 'Dr(a). '}{current.veterinario_nome}
               </span>
             )}
           </div>
         ) : (
-          <div className="text-slate-500 text-lg">Por favor, aguarde no saguão. Acompanhe a chamada na tela.</div>
+          <div className="text-neutral text-lg">Por favor, aguarde no saguão. Acompanhe a chamada na tela.</div>
         )}
       </div>
     </div>
@@ -98,43 +98,163 @@ function Footer({
   const cols = compact ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4';
   return (
     <div className={`grid gap-4 ${compact ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 gap-6'}`}>
-      <div className="bg-slate-900/60 rounded-2xl border border-slate-800/80 p-4">
-        <h2 className="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3 flex items-center gap-2">
-          <Monitor className="h-4 w-4 text-brand-400" />
+      <div className="card bg-base-100 border border-base-300 p-4">
+        <h2 className="text-xs text-neutral font-semibold mb-3 flex items-center gap-2">
+          <Monitor className="h-4 w-4 text-accent" />
           <span>Chamadas Recentes</span>
         </h2>
         <div className={`grid ${cols} gap-2`}>
           {recentes.slice(0, compact ? 2 : 4).map((item) => (
-            <div key={item.id} className="bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl text-center">
-              <div className="font-mono text-2xl font-bold text-slate-200">{item.senha}</div>
-              <div className="text-xs text-brand-400 font-medium truncate mt-0.5">
+            <div key={item.id} className="bg-base-200 border border-base-300 p-2.5 rounded-lg text-center">
+              <div className="font-mono text-2xl font-bold text-base-content">{item.senha}</div>
+              <div className="text-xs text-accent font-medium truncate mt-0.5">
                 {rooms.find((r) => r.id === item.sala_id)?.nome || 'Consultório'}
               </div>
             </div>
           ))}
           {recentes.length === 0 && (
-            <div className="col-span-full text-xs text-slate-500 text-center py-3">Nenhuma outra chamada recente registrada</div>
+            <div className="col-span-full text-xs text-neutral text-center py-3">Nenhuma outra chamada recente registrada</div>
           )}
         </div>
       </div>
 
-      <div className="bg-slate-900/60 rounded-2xl border border-slate-800/80 p-4">
-        <h2 className="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-amber-400" />
+      <div className="card bg-base-100 border border-base-300 p-4">
+        <h2 className="text-xs text-neutral font-semibold mb-3 flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-warning" />
           <span>Próximos a Serem Atendidos</span>
         </h2>
         <div className={`grid ${cols} gap-2`}>
           {waiting.slice(0, compact ? 2 : 4).map((item) => (
-            <div key={item.id} className="bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl text-center">
-              <div className="font-mono text-xl font-bold text-slate-300">{item.senha}</div>
-              <div className="text-xs text-slate-400 truncate mt-0.5">{privacy ? 'Aguardando' : item.pet_nome || item.tutor_nome}</div>
+            <div key={item.id} className="bg-base-200 border border-base-300 p-2.5 rounded-lg text-center">
+              <div className="font-mono text-xl font-bold text-base-content/80">{item.senha}</div>
+              <div className="text-xs text-neutral truncate mt-0.5">{privacy ? 'Aguardando' : item.pet_nome || item.tutor_nome}</div>
             </div>
           ))}
           {waiting.length === 0 && (
-            <div className="col-span-full text-xs text-slate-500 text-center py-3">Nenhum paciente aguardando no momento</div>
+            <div className="col-span-full text-xs text-neutral text-center py-3">Nenhum paciente aguardando no momento</div>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Layout "vídeo 16:9": a senha é o assunto da tela. Todos os números e nomes usam a cor de texto cheia do tema
+ * (base-content sobre base-100, bem acima de 7:1 — WCAG AAA); a chamada nova só muda a borda, nunca a cor do texto.
+ */
+function ChamadaDestaque({
+  current,
+  room,
+  privacy,
+  pulsing,
+}: {
+  current: QueueItem | null;
+  room: QueueRoom | undefined;
+  privacy: boolean;
+  pulsing: boolean;
+}) {
+  return (
+    <section
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-label="Chamada atual"
+      className={`flex h-full min-h-0 flex-col items-center justify-center gap-[2.5vh] rounded-lg border-4 bg-base-100 px-6 py-4 text-center transition-colors duration-500 ${
+        pulsing ? 'border-warning' : 'border-primary'
+      }`}
+    >
+      <div className="flex items-center gap-3 font-bold uppercase tracking-widest text-base-content" style={{ fontSize: 'clamp(1.25rem, 2.2vw, 2.5rem)' }}>
+        <Bell className="h-[1.2em] w-[1.2em]" aria-hidden="true" />
+        <span>Chamada atual</span>
+      </div>
+
+      <div
+        className={`font-mono font-black leading-none tabular-nums tracking-tight text-base-content transition-transform duration-500 ${pulsing ? 'scale-105' : ''}`}
+        style={{ fontSize: 'clamp(6rem, min(21vw, 38vh), 26rem)' }}
+      >
+        {current?.senha || '— —'}
+      </div>
+
+      <p className="max-w-full truncate font-extrabold text-base-content" style={{ fontSize: 'clamp(1.75rem, 3.6vw, 4.25rem)' }}>
+        {nomeExibido(current, privacy)}
+      </p>
+
+      {current ? (
+        <div
+          className="flex max-w-full flex-wrap items-baseline justify-center gap-x-4 gap-y-1 rounded-lg bg-base-content px-8 py-3 text-base-100"
+          style={{ fontSize: 'clamp(1.5rem, 3vw, 3.5rem)' }}
+        >
+          <span className="font-semibold">Dirija-se ao</span>
+          <strong className="font-black">{room?.nome || 'Consultório Principal'}</strong>
+          {current.veterinario_nome && (
+            <span className="font-semibold" style={{ fontSize: '0.7em' }}>
+              {/^dra?\.?\s/i.test(current.veterinario_nome) ? '' : 'Dr(a). '}
+              {current.veterinario_nome}
+            </span>
+          )}
+        </div>
+      ) : (
+        <p className="text-xl text-base-content">Por favor, aguarde no saguão. Acompanhe a chamada na tela.</p>
+      )}
+    </section>
+  );
+}
+
+/** Coluna lateral do layout 16:9: chamadas anteriores e próximos, com senhas grandes. */
+function ListasGrandes({
+  recentes,
+  waiting,
+  rooms,
+  privacy,
+}: {
+  recentes: QueueItem[];
+  waiting: QueueItem[];
+  rooms: QueueRoom[];
+  privacy: boolean;
+}) {
+  // Limitada também pela altura: em telas baixas (1366x768) as duas listas precisam caber sem cortar.
+  const senhaGrande = { fontSize: 'clamp(2rem, min(3.2vw, 5.2vh), 3.75rem)' };
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
+      <section aria-label="Chamadas anteriores" className="rounded-lg border border-base-300 bg-base-100 p-4">
+        <h2 className="mb-2 text-lg font-bold text-base-content">Chamadas anteriores</h2>
+        <ul className="space-y-1.5">
+          {recentes.slice(0, 3).map((item, i) => (
+            <li
+              key={item.id}
+              className={`flex items-baseline justify-between gap-3 rounded-lg bg-base-200 px-4 py-1 ${i === 2 ? 'hidden [@media(min-height:860px)]:flex' : ''}`}
+            >
+              <span className="font-mono font-black leading-tight tabular-nums text-base-content" style={senhaGrande}>
+                {item.senha}
+              </span>
+              <span className="truncate text-xl font-bold text-base-content">
+                {rooms.find((r) => r.id === item.sala_id)?.nome || 'Consultório'}
+              </span>
+            </li>
+          ))}
+          {recentes.length === 0 && <li className="py-2 text-lg text-base-content">Nenhuma outra chamada ainda</li>}
+        </ul>
+      </section>
+
+      <section aria-label="Próximos a serem atendidos" className="min-h-0 flex-1 rounded-lg border border-base-300 bg-base-100 p-4">
+        <h2 className="mb-2 text-lg font-bold text-base-content">Próximos</h2>
+        <ul className="grid grid-cols-2 gap-2">
+          {waiting.slice(0, 4).map((item) => (
+            <li key={item.id} className="rounded-lg bg-base-200 px-3 py-1 text-center">
+              <span className="block font-mono font-black leading-tight tabular-nums text-base-content" style={senhaGrande}>
+                {item.senha}
+              </span>
+              {!privacy && (item.pet_nome || item.tutor_nome) && (
+                <span className="hidden truncate text-base font-semibold text-base-content [@media(min-height:860px)]:block">
+                  {item.pet_nome || item.tutor_nome}
+                </span>
+              )}
+            </li>
+          ))}
+          {waiting.length === 0 && <li className="col-span-2 py-2 text-lg text-base-content">Ninguém aguardando agora</li>}
+        </ul>
+      </section>
     </div>
   );
 }
@@ -175,6 +295,7 @@ export default function TvDisplayPage() {
   const temVideo = playlist.length > 0;
   const telaCheia = temVideo && config.tv_layout === 'tela_cheia';
   const lateral = temVideo && config.tv_layout === 'lateral';
+  const compacto = temVideo && config.tv_layout === 'video_16_9';
 
   // Nova chamada: animação, aviso em tela cheia e som. A primeira leitura só "memoriza" (não toca ao abrir a TV).
   // A dependência é a CHAVE da chamada (texto), não o objeto: a cada atualização do servidor `current` é um objeto
@@ -240,7 +361,7 @@ export default function TvDisplayPage() {
   const controles = (
     <div className="flex items-center gap-3 shrink-0 whitespace-nowrap">
       {needsGesture && (
-        <div className="hidden md:block text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-full animate-bounce">
+        <div className="badge badge-soft-warning hidden md:inline-flex h-auto px-3 py-1.5 animate-bounce">
           Toque na tela para ativar o áudio
         </div>
       )}
@@ -249,30 +370,23 @@ export default function TvDisplayPage() {
           e.stopPropagation();
           tentarTelaCheia();
         }}
-        className="hidden md:flex items-center gap-1.5 rounded-full border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition"
+        className="btn btn-ghost btn-square hidden md:flex"
+        aria-label="Tela cheia"
         title="Tela cheia"
       >
-        <Maximize className="h-3.5 w-3.5" />
+        <Maximize className="h-4 w-4" />
       </button>
       <button
         onClick={togglePrivacy}
-        className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-          privacyMode
-            ? 'border-indigo-500/50 bg-indigo-500/20 text-indigo-300'
-            : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
-        }`}
+        className={`btn ${privacyMode ? 'btn-secondary btn-outline' : 'btn-ghost border-base-300'}`}
         title="Alternar privacidade de nomes"
       >
-        {privacyMode ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
+        {privacyMode ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
         <span className="hidden sm:inline">{privacyMode ? 'Apenas Senha' : 'Exibir Nomes'}</span>
       </button>
       <button
         onClick={toggleSound}
-        className={`flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
-          soundEnabled
-            ? 'border-brand-500/50 bg-brand-500/15 text-brand-300 hover:bg-brand-500/25'
-            : 'border-slate-800 bg-slate-900 text-slate-400'
-        }`}
+        className={`btn ${soundEnabled ? 'btn-primary btn-outline' : 'btn-ghost border-base-300'}`}
       >
         {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
         <span className="hidden md:inline">{soundEnabled ? 'Sinal Sonoro Ativo' : 'Mudo'}</span>
@@ -283,9 +397,9 @@ export default function TvDisplayPage() {
   const titulo = (
     <div className="flex items-center gap-4 min-w-0">
       <BrandMark size="md" />
-      <h1 className="text-xl md:text-2xl font-black tracking-tight text-white flex items-center gap-2 min-w-0">
+      <h1 className="text-xl md:text-2xl font-black tracking-tight text-base-content flex items-center gap-2 min-w-0">
         <span className="truncate">{config.clinic_name}</span>
-        <span className="hidden 2xl:inline-block rounded-full bg-brand-500/20 px-3 py-0.5 text-xs font-semibold tracking-wider text-brand-300 uppercase whitespace-nowrap">
+        <span className="badge badge-soft-primary hidden 2xl:inline-flex whitespace-nowrap">
           {config.clinic_subtitle}
         </span>
       </h1>
@@ -311,18 +425,18 @@ export default function TvDisplayPage() {
         {/* Faixa permanente com a última chamada */}
         <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent px-8 pt-16 pb-6 flex items-end justify-between gap-6">
           <div className="flex items-end gap-5 min-w-0">
-            <span className="font-mono text-6xl xl:text-8xl font-black leading-none text-white">{current?.senha || '— —'}</span>
+            <span className="font-mono text-6xl xl:text-8xl font-black leading-none text-base-content">{current?.senha || '— —'}</span>
             <div className="pb-1 min-w-0">
-              <div className="text-brand-400 text-sm uppercase tracking-[.25em] font-semibold">Chamada atual</div>
+              <div className="text-accent text-sm font-semibold">Chamada atual</div>
               <div className="text-xl xl:text-3xl font-bold truncate">
                 {current ? `${nomeExibido(current, privacyMode)} · ${currentRoom?.nome || 'Consultório'}` : 'Aguardando próxima chamada'}
               </div>
             </div>
           </div>
           <div className="hidden lg:flex items-center gap-3 pb-1">
-            <span className="text-xs uppercase tracking-wider text-slate-400">Próximos</span>
+            <span className="text-xs text-neutral">Próximos</span>
             {waiting.slice(0, 4).map((w) => (
-              <span key={w.id} className="font-mono text-2xl font-bold text-slate-200 bg-white/10 rounded-lg px-3 py-1">
+              <span key={w.id} className="font-mono text-2xl font-bold text-base-content bg-white/10 rounded-lg px-3 py-1">
                 {w.senha}
               </span>
             ))}
@@ -331,7 +445,7 @@ export default function TvDisplayPage() {
 
         {/* Aviso de nova chamada em tela cheia */}
         {overlay && current && (
-          <div className="absolute inset-0 bg-slate-950/95 flex flex-col justify-center p-10 animate-fade">
+          <div className="absolute inset-0 bg-base-200/95 flex flex-col justify-center p-10 animate-fade">
             <CallBlock current={current} room={currentRoom} privacy={privacyMode} pulsing={isPulsing} compact={false} />
           </div>
         )}
@@ -342,13 +456,13 @@ export default function TvDisplayPage() {
   // ---------- Layout 2: vídeo à esquerda, painel de chamadas à direita ----------
   if (lateral) {
     return (
-      <div onClick={aoClicar} className="h-screen bg-slate-950 text-white flex flex-col p-5 gap-4 select-none overflow-hidden">
-        <header className="flex items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div onClick={aoClicar} className="h-screen bg-base-200 text-base-content flex flex-col p-5 gap-4 select-none overflow-hidden">
+        <header className="flex items-center justify-between gap-4 border-b border-base-300 pb-4">
           {titulo}
           {controles}
         </header>
         <div className="flex-1 min-h-0 grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-5">
-          <div className="rounded-3xl overflow-hidden bg-black border border-slate-800 min-h-0">
+          <div className="rounded-lg overflow-hidden bg-black border border-base-300 min-h-0">
             <TvVideo playlist={playlist} muted={config.tv_video_muted} duck={isPulsing} className="h-full w-full" fit="contain" />
           </div>
           <div className="flex flex-col justify-between gap-4 min-h-0 overflow-hidden">
@@ -362,17 +476,38 @@ export default function TvDisplayPage() {
     );
   }
 
-  // ---------- Layout 3 (sem vídeos): chamada em destaque absoluto ----------
+  // ---------- Layout 3: vídeo pequeno (sempre 16:9) e senha gigante ----------
+  if (compacto) {
+    return (
+      <div onClick={aoClicar} className="flex min-h-screen select-none flex-col gap-4 bg-base-200 p-5 text-base-content lg:h-screen lg:overflow-hidden">
+        <header className="flex items-center justify-between gap-4 border-b border-base-300 pb-4">
+          {titulo}
+          {controles}
+        </header>
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_clamp(20rem,28vw,38rem)]">
+          <ChamadaDestaque current={current} room={currentRoom} privacy={privacyMode} pulsing={isPulsing} />
+          <div className="flex min-h-0 flex-col gap-3">
+            <div className="aspect-video w-full shrink-0 overflow-hidden rounded-lg border border-base-300 bg-black">
+              <TvVideo playlist={playlist} muted={config.tv_video_muted} duck={isPulsing} className="h-full w-full" fit="contain" />
+            </div>
+            <ListasGrandes recentes={chamados.slice(1)} waiting={waiting} rooms={rooms} privacy={privacyMode} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- Layout sem vídeos: chamada em destaque absoluto ----------
   return (
-    <div onClick={aoClicar} className="min-h-screen bg-slate-950 text-white flex flex-col justify-between p-6 md:p-10 select-none overflow-hidden">
-      <header className="flex items-center justify-between border-b border-slate-800 pb-5 gap-4">
+    <div onClick={aoClicar} className="min-h-screen bg-base-200 text-base-content flex flex-col justify-between p-6 md:p-10 select-none overflow-hidden">
+      <header className="flex items-center justify-between border-b border-base-300 pb-5 gap-4">
         {titulo}
         {controles}
       </header>
       <main className="my-auto py-8">
         <CallBlock current={current} room={currentRoom} privacy={privacyMode} pulsing={isPulsing} compact={false} />
       </main>
-      <footer className="border-t border-slate-800/80 pt-6">
+      <footer className="border-t border-base-300 pt-6">
         <Footer recentes={chamados.slice(1)} waiting={waiting} rooms={rooms} privacy={privacyMode} compact={false} />
       </footer>
     </div>

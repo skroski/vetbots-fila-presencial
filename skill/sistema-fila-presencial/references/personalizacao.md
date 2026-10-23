@@ -14,6 +14,7 @@ Ajustes → **TV & Vídeos** → *Enviar vídeos (MP4)*. Pode enviar vários de 
 **Layouts**
 - *Vídeo + painel*: vídeo à esquerda; senha atual, chamadas recentes e próximos à direita, sempre visíveis.
 - *Vídeo em tela cheia*: o vídeo ocupa tudo, com uma faixa inferior da chamada atual; ao chamar alguém, o aviso grande assume a tela por N segundos (4 a 60) e o vídeo volta.
+- *Vídeo pequeno 16:9*: vídeo menor no canto, sempre em 16:9, e a senha gigante com contraste máximo (acima de 13:1, WCAG AAA) ocupando a maior parte da tela; chamadas anteriores e próximos em números grandes ao lado.
 - Sem vídeo ativo: painel clássico de chamadas em destaque.
 
 **Som**: por padrão os vídeos tocam **mudos** (navegadores só liberam autoplay sem som, e o sinal da chamada fica bem audível). Em Ajustes dá para ligar o som do vídeo; ele abaixa o volume durante a chamada. O primeiro toque/clique do controle remoto libera o áudio.

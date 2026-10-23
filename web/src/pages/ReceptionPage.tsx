@@ -141,26 +141,26 @@ export default function ReceptionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-base-100 text-base-content flex flex-col pb-28">
       {/* Barra Superior */}
-      <header className="border-b border-slate-800 bg-slate-950 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <header className="navbar bg-base-200 border-b border-base-300 px-6 py-4 flex-wrap justify-between gap-4">
         <div className="flex items-center gap-3">
           <BrandMark size="sm" />
           <div>
-            <h1 className="text-lg font-bold text-white leading-tight">{config.clinic_name}</h1>
-            <span className="text-xs text-slate-400">Recepção &amp; Triagem · {config.clinic_subtitle}</span>
+            <h1 className="text-lg font-bold text-base-content leading-tight">{config.clinic_name}</h1>
+            <span className="text-xs text-neutral">Recepção &amp; Triagem · {config.clinic_subtitle}</span>
           </div>
         </div>
 
         {/* Links rápidos para Telão TV e Chamador */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <a
             href="/tv"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold px-3 py-2 rounded-lg text-slate-200 transition"
+            className="btn btn-outline btn-primary"
           >
-            <Tv className="h-4 w-4 text-brand-400" />
+            <Tv className="h-4 w-4" />
             <span>Abrir Telão da TV</span>
           </a>
 
@@ -168,15 +168,15 @@ export default function ReceptionPage() {
             href="/chamar"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold px-3 py-2 rounded-lg text-slate-200 transition"
+            className="btn btn-outline btn-primary"
           >
-            <DoorOpen className="h-4 w-4 text-brand-400" />
+            <DoorOpen className="h-4 w-4" />
             <span>Chamador de Consultório</span>
           </a>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-lg shadow-brand-900/30 transition"
+            className="btn btn-primary"
           >
             <Plus className="h-4 w-4" />
             <span>Nova Senha</span>
@@ -187,38 +187,38 @@ export default function ReceptionPage() {
       {/* Cartões de Indicadores Rápidos */}
       <div className="max-w-7xl w-full mx-auto p-6 space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
-            <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
-              Aguardando no Saguão
-            </span>
-            <div className="text-3xl font-black text-amber-400 mt-1">{stats.aguardando}</div>
+          <div className="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-soft">
+            <div className="stat">
+              <div className="stat-title">Aguardando no Saguão</div>
+              <div className="stat-value text-3xl text-warning">{stats.aguardando}</div>
+            </div>
           </div>
 
-          <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
-            <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
-              Chamados na TV
-            </span>
-            <div className="text-3xl font-black text-brand-400 mt-1">{stats.chamados}</div>
+          <div className="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-soft">
+            <div className="stat">
+              <div className="stat-title">Chamados na TV</div>
+              <div className="stat-value text-3xl text-accent">{stats.chamados}</div>
+            </div>
           </div>
 
-          <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
-            <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
-              Em Consulta
-            </span>
-            <div className="text-3xl font-black text-blue-400 mt-1">{stats.emAtendimento}</div>
+          <div className="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-soft">
+            <div className="stat">
+              <div className="stat-title">Em Consulta</div>
+              <div className="stat-value text-3xl text-info">{stats.emAtendimento}</div>
+            </div>
           </div>
 
-          <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
-            <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
-              Atendidos Hoje
-            </span>
-            <div className="text-3xl font-black text-slate-300 mt-1">{stats.finalizados}</div>
+          <div className="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-soft">
+            <div className="stat">
+              <div className="stat-title">Atendidos Hoje</div>
+              <div className="stat-value text-3xl text-base-content/80">{stats.finalizados}</div>
+            </div>
           </div>
         </div>
 
         {/* Barra de Filtros e Busca */}
-        <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-          <div className="flex flex-wrap gap-2">
+        <div className="card bg-base-100 border border-base-300 shadow-soft p-4 flex-row flex-wrap items-center justify-between gap-4">
+          <div role="tablist" className="tabs tabs-boxed !flex max-w-full flex-wrap">
             {[
               { id: 'todos_ativos', label: 'Em Andamento' },
               { id: 'aguardando', label: 'Aguardando' },
@@ -229,35 +229,32 @@ export default function ReceptionPage() {
             ].map((tab) => (
               <button
                 key={tab.id}
+                role="tab"
                 onClick={() => setStatusFilter(tab.id)}
-                className={`text-xs px-3 py-1.5 rounded-lg font-medium transition ${
-                  statusFilter === tab.id
-                    ? 'bg-brand-600 text-white'
-                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
-                }`}
+                className={`tab h-auto whitespace-nowrap py-1.5 ${statusFilter === tab.id ? 'tab-active' : ''}`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
 
-          <div className="relative min-w-[260px]">
-            <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
+          <label className="input input-bordered flex w-full max-w-xs items-center gap-2">
+            <Search className="h-4 w-4 text-neutral" />
             <input
               type="text"
               placeholder="Buscar por senha, tutor ou pet..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="grow"
             />
-          </div>
+          </label>
         </div>
 
         {/* Tabela de Senhas / Pacientes */}
-        <div className="bg-slate-950/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-          <table className="w-full text-left border-collapse">
+        <div className="card bg-base-100 border border-base-300 overflow-x-auto shadow-soft">
+          <table className="table">
             <thead>
-              <tr className="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider bg-slate-900/60">
+              <tr className="bg-base-200 text-neutral">
                 <th className="py-3 px-4">Senha</th>
                 <th className="py-3 px-4">Tutor & Pet</th>
                 <th className="py-3 px-4">Serviço</th>
@@ -267,50 +264,46 @@ export default function ReceptionPage() {
                 <th className="py-3 px-4 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80 text-sm">
+            <tbody className="text-sm">
               {filteredItems.map((item) => {
                 const srv = services.find((s) => s.id === item.servico_id);
                 const rm = rooms.find((r) => r.id === item.sala_id);
 
                 return (
-                  <tr key={item.id} className="hover:bg-slate-900/40 transition">
+                  <tr key={item.id} className="hover">
                     <td className="py-3.5 px-4">
-                      <span className="font-mono font-black text-lg text-white">{item.senha}</span>
+                      <span className="font-mono font-black text-lg text-base-content">{item.senha}</span>
                     </td>
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-slate-100">
+                      <div className="font-bold text-base-content">
                         {item.pet_nome ? `${item.pet_nome} 🐾` : '—'}
                       </div>
-                      <span className="text-xs text-slate-400">{item.tutor_nome}</span>
+                      <span className="text-xs text-neutral">{item.tutor_nome}</span>
                     </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-slate-300">
+                    <td className="py-3.5 px-4 text-xs font-semibold text-base-content/80">
                       {srv?.nome || 'Geral'}
                     </td>
                     <td className="py-3.5 px-4">
-                      <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
-                          PRIORITY_STYLES[item.prioridade].badge
-                        }`}
-                      >
+                      <span className={`${PRIORITY_STYLES[item.prioridade].badge} badge-sm font-semibold`}>
                         {QUEUE_PRIORITY_LABEL[item.prioridade]}
                       </span>
                     </td>
                     <td className="py-3.5 px-4">
                       <span
-                        className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
+                        className={`badge font-semibold ${
                           item.status === 'chamado'
-                            ? 'bg-amber-500/20 text-amber-300'
+                            ? 'badge-soft-warning'
                             : item.status === 'em_atendimento'
-                            ? 'bg-brand-500/20 text-brand-300'
+                            ? 'badge-soft-primary'
                             : item.status === 'finalizado'
-                            ? 'bg-slate-800 text-slate-400'
-                            : 'bg-slate-800 text-slate-200'
+                            ? 'badge-soft-neutral text-neutral'
+                            : 'badge-soft-neutral'
                         }`}
                       >
                         {QUEUE_STATUS_LABEL[item.status]}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-slate-300">
+                    <td className="py-3.5 px-4 text-xs font-semibold text-base-content/80">
                       {rm?.nome || '—'}
                     </td>
                     <td className="py-3.5 px-4 text-right">
@@ -321,7 +314,7 @@ export default function ReceptionPage() {
                               alterarStatus(item.id, 'chamar', { salaId: item.sala_id || rooms.find((r) => r.ativa)?.id });
                               tocarChimeFila();
                             }}
-                            className="p-1.5 rounded-lg bg-brand-600/20 text-brand-400 hover:bg-brand-600 hover:text-white transition"
+                            className="btn btn-primary btn-square btn-sm"
                             title="Chamar no Telão"
                           >
                             <Megaphone className="h-4 w-4" />
@@ -334,7 +327,7 @@ export default function ReceptionPage() {
                             setTargetRoom(item.sala_id || '');
                             setTargetService(item.servico_id || '');
                           }}
-                          className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition"
+                          className="btn btn-ghost btn-square btn-sm"
                           title="Transferir Sala ou Fila"
                         >
                           <ArrowRightLeft className="h-4 w-4" />
@@ -351,7 +344,7 @@ export default function ReceptionPage() {
                               ...opcoesTicket(config),
                             })
                           }
-                          className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition"
+                          className="btn btn-ghost btn-square btn-sm"
                           title="Imprimir Cupom Térmico"
                         >
                           <Printer className="h-4 w-4" />
@@ -364,7 +357,7 @@ export default function ReceptionPage() {
 
               {filteredItems.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-500 text-xs">
+                  <td colSpan={7} className="py-8 text-center text-neutral text-xs">
                     Nenhum paciente encontrado para os filtros selecionados.
                   </td>
                 </tr>
@@ -376,20 +369,18 @@ export default function ReceptionPage() {
 
       {/* Modal de Nova Senha */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
-          <form
-            onSubmit={handleCreateTicket}
-            className="bg-slate-900 border border-slate-700 rounded-3xl p-6 md:p-8 max-w-lg w-full space-y-4 shadow-2xl"
-          >
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Plus className="h-5 w-5 text-brand-400" />
+        <div className="modal modal-open">
+          <form onSubmit={handleCreateTicket} className="modal-box max-w-lg space-y-4 p-8">
+            <div className="flex items-center justify-between border-b border-base-300 pb-3">
+              <h3 className="text-lg font-bold text-base-content flex items-center gap-2">
+                <Plus className="h-5 w-5 text-accent" />
                 <span>Emitir Nova Senha de Atendimento</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="btn btn-ghost btn-sm btn-circle"
+                aria-label="Fechar"
               >
                 ✕
               </button>
@@ -397,13 +388,13 @@ export default function ReceptionPage() {
 
             <div className="space-y-3.5">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Tipo de Serviço / Fila *
                 </label>
                 <select
                   value={serviceId}
                   onChange={(e) => setServiceId(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-sm text-white"
+                  className="select select-bordered w-full"
                 >
                   {services.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -414,7 +405,7 @@ export default function ReceptionPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Prioridade do Atendimento
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -423,14 +414,14 @@ export default function ReceptionPage() {
                       key={p}
                       type="button"
                       onClick={() => setPriority(p)}
-                      className={`text-xs py-2 px-3 rounded-lg font-bold border transition ${
+                      className={`btn btn-sm ${
                         priority === p
                           ? p === 'emergencia'
-                            ? 'bg-rose-600 text-white border-rose-500'
+                            ? 'btn-error'
                             : p === 'prioridade'
-                            ? 'bg-amber-600 text-white border-amber-500'
-                            : 'bg-brand-600 text-white border-brand-500'
-                          : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-750'
+                            ? 'btn-warning'
+                            : 'btn-primary'
+                          : 'btn-ghost border-base-300'
                       }`}
                     >
                       {p === 'emergencia' ? 'Emergência' : p === 'prioridade' ? 'Preferencial' : 'Normal'}
@@ -441,7 +432,7 @@ export default function ReceptionPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  <label className="label-text mb-1 block font-semibold">
                     Nome do Tutor *
                   </label>
                   <input
@@ -450,12 +441,12 @@ export default function ReceptionPage() {
                     placeholder="Ex: Carlos Alberto"
                     value={tutorName}
                     onChange={(e) => setTutorName(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-sm text-white"
+                    className="input input-bordered w-full"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  <label className="label-text mb-1 block font-semibold">
                     Nome do Pet
                   </label>
                   <input
@@ -463,13 +454,13 @@ export default function ReceptionPage() {
                     placeholder="Ex: Thor"
                     value={petName}
                     onChange={(e) => setPetName(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-sm text-white"
+                    className="input input-bordered w-full"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Motivo Resumido (Opcional)
                 </label>
                 <input
@@ -477,18 +468,18 @@ export default function ReceptionPage() {
                   placeholder="Ex: Vômito há 2 dias, vacina anual, retorno de cirurgia"
                   value={motivo}
                   onChange={(e) => setMotivo(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-sm text-white"
+                  className="input input-bordered w-full"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Direcionar para Sala Específica (Opcional)
                 </label>
                 <select
                   value={initialRoomId}
                   onChange={(e) => setInitialRoomId(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-sm text-white"
+                  className="select select-bordered w-full"
                 >
                   <option value="">Fila Geral (Qualquer consultório disponível)</option>
                   {rooms.map((r) => (
@@ -500,17 +491,17 @@ export default function ReceptionPage() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+            <div className="flex justify-end gap-2 pt-3 border-t border-base-300">
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-sm hover:bg-slate-750"
+                className="btn btn-ghost"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-lg shadow-brand-900/30"
+                className="btn btn-primary"
               >
                 Gerar Senha e Imprimir
               </button>
@@ -521,25 +512,25 @@ export default function ReceptionPage() {
 
       {/* Modal de Transferência */}
       {transferTarget && (
-        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full space-y-4">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <ArrowRightLeft className="h-5 w-5 text-brand-400" />
+        <div className="modal modal-open">
+          <div className="modal-box max-w-md space-y-4 p-8">
+            <h3 className="text-lg font-bold text-base-content flex items-center gap-2">
+              <ArrowRightLeft className="h-5 w-5 text-accent" />
               <span>Transferir Atendimento</span>
             </h3>
-            <p className="text-xs text-slate-400">
-              Transferindo senha <strong className="text-white">{transferTarget.senha}</strong> ({transferTarget.pet_nome || transferTarget.tutor_nome}). O tempo original de chegada é mantido.
+            <p className="text-xs text-neutral">
+              Transferindo senha <strong className="text-base-content">{transferTarget.senha}</strong> ({transferTarget.pet_nome || transferTarget.tutor_nome}). O tempo original de chegada é mantido.
             </p>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Nova Sala / Consultório:
                 </label>
                 <select
                   value={targetRoom}
                   onChange={(e) => setTargetRoom(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white"
+                  className="select select-bordered w-full"
                 >
                   <option value="">Manter sala atual / Fila geral</option>
                   {rooms.map((r) => (
@@ -551,13 +542,13 @@ export default function ReceptionPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Novo Serviço / Tipo de Fila:
                 </label>
                 <select
                   value={targetService}
                   onChange={(e) => setTargetService(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white"
+                  className="select select-bordered w-full"
                 >
                   <option value="">Manter serviço atual</option>
                   {services.map((s) => (
@@ -569,7 +560,7 @@ export default function ReceptionPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Motivo da Transferência:
                 </label>
                 <textarea
@@ -577,7 +568,7 @@ export default function ReceptionPage() {
                   onChange={(e) => setTransferReason(e.target.value)}
                   rows={2}
                   placeholder="Ex: Encaminhado para exame de raio-x ou procedimento"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white"
+                  className="textarea textarea-bordered w-full"
                 />
               </div>
             </div>
@@ -585,13 +576,13 @@ export default function ReceptionPage() {
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setTransferTarget(null)}
-                className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm hover:bg-slate-700"
+                className="btn btn-ghost"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmTransfer}
-                className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-bold hover:bg-brand-500"
+                className="btn btn-primary"
               >
                 Confirmar Transferência
               </button>

@@ -32,6 +32,8 @@ import type { AppConfig, Media } from '@/types/queue';
 type Aba = 'marca' | 'tv' | 'rooms' | 'services' | 'sistema';
 
 const CORES_PRONTAS = [
+  { nome: 'VetBots', hex: '#2294aa' },
+  { nome: 'Marrom', hex: '#93551f' },
   { nome: 'Esmeralda', hex: '#10b981' },
   { nome: 'Azul', hex: '#2563eb' },
   { nome: 'Turquesa', hex: '#0d9488' },
@@ -42,13 +44,10 @@ const CORES_PRONTAS = [
   { nome: 'Dourado', hex: '#ca8a04' },
 ];
 
-const campo =
-  'w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-500';
-const cartao = 'bg-slate-950/60 border border-slate-800 rounded-2xl p-5 space-y-4';
-const botaoPrimario =
-  'bg-brand-600 hover:bg-brand-500 disabled:opacity-50 text-white text-xs font-bold px-5 py-2 rounded-xl inline-flex items-center gap-2 transition';
-const botaoDiscreto =
-  'bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl inline-flex items-center gap-2 transition';
+const campo = 'input input-bordered w-full';
+const cartao = 'card bg-base-100 border border-base-300 shadow-soft p-6 space-y-4';
+const botaoPrimario = 'btn btn-primary';
+const botaoDiscreto = 'btn btn-ghost btn-sm';
 
 const erroDe = (e: unknown) => (e instanceof Error ? e.message : 'Algo deu errado.');
 
@@ -79,24 +78,24 @@ function PortaPin({ onLiberado }: { onLiberado: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-base-100 text-base-content flex items-center justify-center p-6">
       <form onSubmit={entrar} className={`${cartao} w-full max-w-sm text-center`}>
-        <Lock className="h-8 w-8 mx-auto text-brand-400" />
-        <h1 className="text-lg font-bold text-white">Ajustes protegidos</h1>
-        <p className="text-xs text-slate-400">Digite o PIN de administrador definido para este sistema.</p>
+        <Lock className="h-8 w-8 mx-auto text-accent" />
+        <h1 className="text-lg font-bold text-base-content">Ajustes protegidos</h1>
+        <p className="text-xs text-neutral">Digite o PIN de administrador definido para este sistema.</p>
         <input
           type="password"
           inputMode="numeric"
           autoFocus
           value={pin}
           onChange={(e) => setPin(e.target.value)}
-          className={`${campo} text-center tracking-widest`}
+          className={`${campo} text-center `}
           placeholder="PIN"
         />
         <button type="submit" disabled={!pin || carregando} className={`${botaoPrimario} w-full justify-center`}>
           Entrar
         </button>
-        <a href="/" className="block text-xs text-slate-500 hover:text-slate-300">
+        <a href="/" className="block text-xs text-neutral hover:text-base-content/80">
           Voltar à recepção
         </a>
       </form>
@@ -165,24 +164,24 @@ function AbaMarca({ config }: { config: AppConfig }) {
   return (
     <div className="space-y-6">
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-white">Identidade da clínica</h2>
+        <h2 className="text-sm font-bold text-base-content">Identidade da clínica</h2>
         <div className="grid sm:grid-cols-2 gap-3">
-          <label className="space-y-1 text-xs text-slate-400">
+          <label className="space-y-1 text-xs text-neutral">
             Nome da clínica
             <input className={campo} maxLength={80} value={nome} onChange={(e) => setNome(e.target.value)} />
           </label>
-          <label className="space-y-1 text-xs text-slate-400">
+          <label className="space-y-1 text-xs text-neutral">
             Subtítulo (aparece na TV)
             <input className={campo} maxLength={80} value={subtitulo} onChange={(e) => setSubtitulo(e.target.value)} />
           </label>
         </div>
 
         <div className="flex flex-wrap items-center gap-4 pt-1">
-          <div className="h-24 min-w-24 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center px-4">
+          <div className="card h-24 min-w-24 bg-base-100 border border-base-300 flex-row items-center justify-center px-4">
             <BrandMark size="lg" />
           </div>
           <div className="space-y-2">
-            <p className="text-xs text-slate-400">Logotipo: PNG, JPG, WebP ou SVG, até 5 MB. Fundo transparente fica melhor na TV.</p>
+            <p className="text-xs text-neutral">Logotipo: PNG, JPG, WebP ou SVG, até 5 MB. Fundo transparente fica melhor na TV.</p>
             <div className="flex gap-2">
               <input
                 ref={arquivoRef}
@@ -207,8 +206,8 @@ function AbaMarca({ config }: { config: AppConfig }) {
       </div>
 
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-white">Cor da marca</h2>
-        <p className="text-xs text-slate-400">
+        <h2 className="text-sm font-bold text-base-content">Cor da marca</h2>
+        <p className="text-xs text-neutral">
           Escolha uma cor: botões, destaques, senha da TV e totem se ajustam sozinhos (tons claros e escuros são gerados).
         </p>
         <div className="flex flex-wrap gap-2">
@@ -217,31 +216,31 @@ function AbaMarca({ config }: { config: AppConfig }) {
               key={c.hex}
               title={c.nome}
               onClick={() => setCor(c.hex)}
-              className={`h-9 w-9 rounded-full border-2 transition ${cor.toLowerCase() === c.hex ? 'border-white scale-110' : 'border-transparent hover:scale-105'}`}
+              className={`h-9 w-9 rounded-full border-2 transition ${cor.toLowerCase() === c.hex ? 'border-base-content scale-110' : 'border-transparent hover:scale-105'}`}
               style={{ background: c.hex }}
             >
-              {cor.toLowerCase() === c.hex && <Check className="h-4 w-4 mx-auto text-white" />}
+              {cor.toLowerCase() === c.hex && <Check className="h-4 w-4 mx-auto text-base-content" />}
             </button>
           ))}
-          <label className="flex items-center gap-2 text-xs text-slate-400 ml-2">
+          <label className="flex items-center gap-2 text-xs text-neutral ml-2">
             Personalizada
             <input
               type="color"
               value={cor}
               onChange={(e) => setCor(e.target.value)}
-              className="h-9 w-12 rounded-lg bg-transparent border border-slate-700 cursor-pointer"
+              className="h-9 w-12 rounded bg-transparent border border-base-300 cursor-pointer"
             />
-            <code className="font-mono text-slate-300">{cor}</code>
+            <code className="font-mono text-base-content/80">{cor}</code>
           </label>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 flex flex-wrap items-center gap-4">
-          <span className="font-mono text-4xl font-black text-brand-400">A014</span>
-          <span className="text-xs px-3 py-1 rounded-full bg-brand-500/15 text-brand-300 border border-brand-500/30 font-semibold">
+        <div className="card border border-base-300 bg-base-100 p-4 flex-row flex-wrap items-center gap-4">
+          <span className="font-mono text-4xl font-black text-accent">A014</span>
+          <span className="badge badge-soft-primary font-semibold">
             Chamada atual
           </span>
-          <button className="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2 rounded-xl">Chamar Próximo</button>
-          <span className="text-xs text-slate-500">Pré-visualização</span>
+          <button className="btn btn-primary">Chamar Próximo</button>
+          <span className="text-xs text-neutral">Pré-visualização</span>
         </div>
       </div>
 
@@ -281,21 +280,19 @@ function Interruptor({
   detalhe: string;
 }) {
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={ativo}
-      onClick={() => onChange(!ativo)}
-      className="w-full flex items-center justify-between gap-4 text-left rounded-xl px-1 py-2 hover:bg-slate-900/50 transition"
-    >
+    <label className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-lg px-1 py-2 text-left transition duration-200 hover:bg-base-200">
       <span>
-        <span className="block text-sm font-semibold text-white">{titulo}</span>
-        <span className="block text-xs text-slate-400">{detalhe}</span>
+        <span className="block text-sm font-semibold text-base-content">{titulo}</span>
+        <span className="block text-xs text-neutral">{detalhe}</span>
       </span>
-      <span className={`h-6 w-11 rounded-full p-0.5 transition shrink-0 ${ativo ? 'bg-brand-600' : 'bg-slate-700'}`}>
-        <span className={`block h-5 w-5 rounded-full bg-white transition ${ativo ? 'translate-x-5' : ''}`} />
-      </span>
-    </button>
+      <input
+        type="checkbox"
+        role="switch"
+        className="toggle toggle-primary shrink-0"
+        checked={ativo}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+    </label>
   );
 }
 
@@ -368,15 +365,15 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
     <div className="space-y-6">
       <div className={cartao}>
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-bold text-white">Vídeos da sala de espera</h2>
+          <h2 className="text-sm font-bold text-base-content">Vídeos da sala de espera</h2>
           <a href="/tv" target="_blank" rel="noreferrer" className={botaoDiscreto}>
             <Tv className="h-4 w-4" />
             Abrir a TV
           </a>
         </div>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-neutral">
           Os vídeos tocam em sequência e em loop na TV, sem parar. Formato mais compatível com Smart TVs:{' '}
-          <strong className="text-slate-200">MP4 (H.264 + AAC), 1080p</strong>. Sem vídeos ativos, a TV mostra só o painel de chamadas.
+          <strong className="text-base-content">MP4 (H.264 + AAC), 1080p</strong>. Sem vídeos ativos, a TV mostra só o painel de chamadas.
         </p>
 
         <input
@@ -394,26 +391,24 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
 
         {progresso && (
           <div className="space-y-1">
-            <div className="flex justify-between text-xs text-slate-400">
+            <div className="flex justify-between text-xs text-neutral">
               <span className="truncate">Enviando {progresso.nome}</span>
               <span>{progresso.pct}%</span>
             </div>
-            <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
-              <div className="h-full bg-brand-500 transition-all" style={{ width: `${progresso.pct}%` }} />
-            </div>
+            <progress className="progress progress-primary w-full" value={progresso.pct} max={100} />
           </div>
         )}
 
         {midias.length === 0 ? (
-          <div className="text-center text-sm text-slate-500 py-8 border border-dashed border-slate-800 rounded-2xl">
-            <Film className="h-8 w-8 mx-auto mb-2 text-slate-600" />
+          <div className="text-center text-sm text-neutral py-8 border border-dashed border-base-300 rounded-2xl">
+            <Film className="h-8 w-8 mx-auto mb-2 text-neutral/70" />
             Nenhum vídeo ainda.
           </div>
         ) : (
-          <ul className="divide-y divide-slate-800 border border-slate-800 rounded-2xl overflow-hidden">
+          <ul className="divide-y divide-base-300 border border-base-300 rounded-2xl overflow-hidden">
             {midias.map((m, i) => (
               <li key={m.id} className={`flex items-center gap-3 p-3 ${m.ativo ? '' : 'opacity-50'}`}>
-                <span className="w-5 text-center text-xs font-mono text-slate-500">{i + 1}</span>
+                <span className="w-5 text-center text-xs font-mono text-neutral">{i + 1}</span>
                 <video
                   src={`${m.url}#t=0.5`}
                   muted
@@ -421,8 +416,8 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
                   className="h-14 w-24 object-cover rounded-lg bg-black shrink-0"
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm font-semibold text-white truncate">{m.nome}</div>
-                  <div className="text-xs text-slate-500">{formatarTamanho(m.tamanho)}</div>
+                  <div className="text-sm font-semibold text-base-content truncate">{m.nome}</div>
+                  <div className="text-xs text-neutral">{formatarTamanho(m.tamanho)}</div>
                 </div>
                 <div className="flex items-center gap-1">
                   <button className={botaoDiscreto} disabled={i === 0} onClick={() => mover(i, -1)} title="Subir">
@@ -434,7 +429,7 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
                   <button className={botaoDiscreto} onClick={() => alternar(m)} title={m.ativo ? 'Pausar na playlist' : 'Ativar'}>
                     {m.ativo ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
-                  <button className={`${botaoDiscreto} hover:!bg-rose-600`} onClick={() => excluir(m)} title="Excluir">
+                  <button className={`${botaoDiscreto} hover:!bg-error hover:!text-error-content`} onClick={() => excluir(m)} title="Excluir">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
@@ -442,44 +437,45 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
             ))}
           </ul>
         )}
-        {midias.length > 0 && <p className="text-xs text-slate-500">{ativos} de {midias.length} ativo(s) na playlist.</p>}
+        {midias.length > 0 && <p className="text-xs text-neutral">{ativos} de {midias.length} ativo(s) na playlist.</p>}
       </div>
 
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-white">Como a TV se comporta</h2>
-        <div className="grid sm:grid-cols-2 gap-3">
+        <h2 className="text-sm font-bold text-base-content">Como a TV se comporta</h2>
+        <div className="grid sm:grid-cols-3 gap-3">
           {(
             [
               ['lateral', 'Vídeo + painel', 'Vídeo à esquerda e a chamada sempre visível à direita.'],
               ['tela_cheia', 'Vídeo em tela cheia', 'O vídeo ocupa a tela; a chamada assume tudo por alguns segundos e depois o vídeo volta.'],
+              ['video_16_9', 'Vídeo pequeno 16:9', 'Vídeo menor, sempre em 16:9, e a senha gigante em alto contraste para o cliente ler de longe.'],
             ] as const
           ).map(([valor, titulo, detalhe]) => (
             <button
               key={valor}
               onClick={() => salvarConfig({ tv_layout: valor })}
-              className={`text-left p-4 rounded-2xl border transition ${
-                config.tv_layout === valor ? 'border-brand-500 bg-brand-500/10' : 'border-slate-800 hover:border-slate-600'
+              className={`card text-left p-4 border transition duration-200 ${
+                config.tv_layout === valor ? 'border-primary bg-primary/10' : 'border-base-300 bg-base-100 hover:border-primary/50'
               }`}
             >
-              <div className="text-sm font-bold text-white flex items-center gap-2">
-                {config.tv_layout === valor && <Check className="h-4 w-4 text-brand-400" />}
+              <div className="text-sm font-bold text-base-content flex items-center gap-2">
+                {config.tv_layout === valor && <Check className="h-4 w-4 text-accent" />}
                 {titulo}
               </div>
-              <div className="text-xs text-slate-400 mt-1">{detalhe}</div>
+              <div className="text-xs text-neutral mt-1">{detalhe}</div>
             </button>
           ))}
         </div>
 
         {config.tv_layout === 'tela_cheia' && (
-          <label className="block text-xs text-slate-400 space-y-1">
-            Tempo da chamada em tela cheia: <strong className="text-slate-200">{config.tv_overlay_seconds} s</strong>
+          <label className="block text-xs text-neutral space-y-1">
+            Tempo da chamada em tela cheia: <strong className="text-base-content">{config.tv_overlay_seconds} s</strong>
             <input
               type="range"
               min={4}
               max={60}
               value={config.tv_overlay_seconds}
               onChange={(e) => void salvarConfig({ tv_overlay_seconds: Number(e.target.value) })}
-              className="w-full accent-brand-500"
+              className="range range-primary range-sm w-full"
             />
           </label>
         )}
@@ -545,7 +541,7 @@ function AbaSalas() {
           if (!novo.trim()) return;
           void executar(() => api('POST', '/api/salas', { nome: novo }), 'Sala adicionada.').then(() => setNovo(''));
         }}
-        className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl flex gap-3"
+        className="card bg-base-100 border border-base-300 shadow-soft p-4 flex-row gap-3"
       >
         <input
           type="text"
@@ -561,11 +557,11 @@ function AbaSalas() {
         </button>
       </form>
 
-      <div className="bg-slate-950/60 border border-slate-800 rounded-2xl overflow-hidden divide-y divide-slate-800">
+      <div className="card bg-base-100 border border-base-300 shadow-soft overflow-hidden divide-y divide-base-300">
         {rooms.map((room) => (
-          <div key={room.id} className="p-4 flex flex-wrap items-center justify-between gap-3 hover:bg-slate-900/40 transition">
+          <div key={room.id} className="p-4 flex flex-wrap items-center justify-between gap-3 hover:bg-base-200 transition">
             <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className={`h-3 w-3 rounded-full shrink-0 ${room.ativa ? 'bg-brand-400' : 'bg-slate-600'}`} />
+              <div className={`h-3 w-3 rounded-full shrink-0 ${room.ativa ? 'bg-success' : 'bg-base-300'}`} />
               {editando?.id === room.id ? (
                 <form
                   className="flex gap-2 flex-1"
@@ -585,7 +581,7 @@ function AbaSalas() {
                   </button>
                 </form>
               ) : (
-                <span className="font-semibold text-white text-sm truncate">{room.nome}</span>
+                <span className="font-semibold text-base-content text-sm truncate">{room.nome}</span>
               )}
             </div>
 
@@ -599,16 +595,12 @@ function AbaSalas() {
               </button>
               <button
                 onClick={() => executar(() => api('PATCH', `/api/salas/${room.id}`, { ativa: !room.ativa }))}
-                className={`text-xs px-3 py-2 rounded-xl font-semibold border transition ${
-                  room.ativa
-                    ? 'border-brand-500/30 bg-brand-500/10 text-brand-400 hover:bg-brand-500/20'
-                    : 'border-slate-700 bg-slate-800 text-slate-400'
-                }`}
+                className={`btn btn-sm ${room.ativa ? 'btn-primary btn-outline' : 'btn-ghost text-neutral'}`}
               >
                 {room.ativa ? 'Ativa' : 'Desativada'}
               </button>
               <button
-                className={`${botaoDiscreto} hover:!bg-rose-600`}
+                className={`${botaoDiscreto} hover:!bg-error hover:!text-error-content`}
                 title="Excluir (só se nunca foi usada)"
                 onClick={() => confirm(`Excluir a sala "${room.nome}"?`) && executar(() => api('DELETE', `/api/salas/${room.id}`), 'Sala excluída.')}
               >
@@ -640,7 +632,7 @@ function AbaServicos() {
             setPrefixo('A');
           });
         }}
-        className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl flex flex-wrap sm:flex-nowrap gap-3"
+        className="card bg-base-100 border border-base-300 shadow-soft p-4 flex-row flex-wrap sm:flex-nowrap gap-3"
       >
         <input
           type="text"
@@ -656,7 +648,7 @@ function AbaServicos() {
           placeholder="Letra (ex: B)"
           value={prefixo}
           onChange={(e) => setPrefixo(e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))}
-          className={`${campo} w-24 text-center font-mono font-bold text-brand-400`}
+          className={`${campo} w-24 text-center font-mono font-bold text-accent`}
         />
         <button type="submit" className={botaoPrimario}>
           <Plus className="h-4 w-4" />
@@ -664,9 +656,9 @@ function AbaServicos() {
         </button>
       </form>
 
-      <div className="bg-slate-950/60 border border-slate-800 rounded-2xl overflow-hidden divide-y divide-slate-800">
+      <div className="card bg-base-100 border border-base-300 shadow-soft overflow-hidden divide-y divide-base-300">
         {services.map((s) => (
-          <div key={s.id} className="p-4 flex flex-wrap items-center justify-between gap-3 hover:bg-slate-900/40 transition">
+          <div key={s.id} className="p-4 flex flex-wrap items-center justify-between gap-3 hover:bg-base-200 transition">
             {editando?.id === s.id ? (
               <form
                 className="flex gap-2 flex-1"
@@ -693,10 +685,10 @@ function AbaServicos() {
               </form>
             ) : (
               <div className="flex items-center gap-3">
-                <span className="font-mono text-xs font-black px-2.5 py-1 rounded-md bg-brand-500/20 text-brand-400 border border-brand-500/30">
+                <span className="badge badge-soft-primary font-mono font-bold">
                   {s.prefixo}
                 </span>
-                <span className="font-semibold text-white text-sm">{s.nome}</span>
+                <span className="font-semibold text-base-content text-sm">{s.nome}</span>
               </div>
             )}
 
@@ -707,16 +699,12 @@ function AbaServicos() {
                 </button>
                 <button
                   onClick={() => executar(() => api('PATCH', `/api/servicos/${s.id}`, { ativo: !s.ativo }))}
-                  className={`text-xs px-3 py-2 rounded-xl font-semibold border transition ${
-                    s.ativo
-                      ? 'border-brand-500/30 bg-brand-500/10 text-brand-400 hover:bg-brand-500/20'
-                      : 'border-slate-700 bg-slate-800 text-slate-400'
-                  }`}
+                  className={`btn btn-sm ${s.ativo ? 'btn-primary btn-outline' : 'btn-ghost text-neutral'}`}
                 >
                   {s.ativo ? 'Ativo' : 'Desativado'}
                 </button>
                 <button
-                  className={`${botaoDiscreto} hover:!bg-rose-600`}
+                  className={`${botaoDiscreto} hover:!bg-error hover:!text-error-content`}
                   title="Excluir (só se nunca foi usado)"
                   onClick={() => confirm(`Excluir o serviço "${s.nome}"?`) && executar(() => api('DELETE', `/api/servicos/${s.id}`), 'Serviço excluído.')}
                 >
@@ -773,21 +761,21 @@ function AbaSistema({ config }: { config: AppConfig }) {
   return (
     <div className="space-y-6">
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-white">Endereços das telas</h2>
-        <p className="text-xs text-slate-400">
+        <h2 className="text-sm font-bold text-base-content">Endereços das telas</h2>
+        <p className="text-xs text-neutral">
           Digite estes endereços no navegador da TV, do tablet do totem e dos computadores. Eles precisam estar na mesma rede
           (Wi-Fi ou cabo) deste computador.
           {usandoLocalhost && !ip && ' Descubra o IP deste computador (veja a documentação de instalação) e troque "localhost" por ele.'}
         </p>
         <ul className="space-y-2">
           {telas.map(([nome, rota]) => (
-            <li key={rota} className="flex items-center justify-between gap-3 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5">
-              <span className="text-xs text-slate-400">{nome}</span>
+            <li key={rota} className="flex items-center justify-between gap-3 bg-base-100 border border-base-300 rounded-lg px-4 py-2.5">
+              <span className="text-xs text-neutral">{nome}</span>
               <span className="flex items-center gap-2 min-w-0">
-                <code className="font-mono text-xs text-brand-300 truncate">{base}{rota}</code>
+                <code className="font-mono text-xs text-accent truncate">{base}{rota}</code>
                 <button
-                  className="text-slate-400 hover:text-white"
-                  title="Copiar"
+                  className="btn btn-ghost btn-square btn-xs"
+                  title="Copiar" aria-label="Copiar endereço"
                   onClick={() => navigator.clipboard?.writeText(`${base}${rota}`).then(() => toast.success('Endereço copiado.'))}
                 >
                   <Copy className="h-4 w-4" />
@@ -799,12 +787,12 @@ function AbaSistema({ config }: { config: AppConfig }) {
       </div>
 
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-white">Cupom da senha (impressora térmica)</h2>
+        <h2 className="text-sm font-bold text-base-content">Cupom da senha (impressora térmica)</h2>
         <div className="grid sm:grid-cols-2 gap-3">
-          <label className="space-y-1 text-xs text-slate-400">
+          <label className="space-y-1 text-xs text-neutral">
             Largura do papel
             <select
-              className={campo}
+              className="select select-bordered w-full"
               value={config.ticket_width_mm}
               onChange={(e) => void salvarConfig({ ticket_width_mm: e.target.value as '58' | '80' })}
             >
@@ -812,7 +800,7 @@ function AbaSistema({ config }: { config: AppConfig }) {
               <option value="80">80 mm</option>
             </select>
           </label>
-          <label className="space-y-1 text-xs text-slate-400">
+          <label className="space-y-1 text-xs text-neutral">
             Mensagem no rodapé
             <input
               className={campo}
@@ -832,7 +820,7 @@ function AbaSistema({ config }: { config: AppConfig }) {
       </div>
 
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-white">Numeração das senhas</h2>
+        <h2 className="text-sm font-bold text-base-content">Numeração das senhas</h2>
         <Interruptor
           ativo={config.reset_daily}
           onChange={(v) => salvarConfig({ reset_daily: v })}
@@ -842,10 +830,10 @@ function AbaSistema({ config }: { config: AppConfig }) {
       </div>
 
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-white">Backup</h2>
-        <p className="text-xs text-slate-400">
-          Todos os dados ficam no arquivo <code className="text-slate-200">data/fila.db</code> (e os vídeos em{' '}
-          <code className="text-slate-200">data/uploads</code>) na pasta do sistema. Baixe uma cópia segura do banco quando quiser.
+        <h2 className="text-sm font-bold text-base-content">Backup</h2>
+        <p className="text-xs text-neutral">
+          Todos os dados ficam no arquivo <code className="text-base-content">data/fila.db</code> (e os vídeos em{' '}
+          <code className="text-base-content">data/uploads</code>) na pasta do sistema. Baixe uma cópia segura do banco quando quiser.
         </p>
         <button className={botaoPrimario} onClick={baixarBackup}>
           <Download className="h-4 w-4" />
@@ -889,30 +877,29 @@ export default function SettingsPage() {
       .catch(() => setLiberado(true));
   }, []);
 
-  if (liberado === null || loading) return <div className="min-h-screen bg-slate-900" />;
+  if (liberado === null || loading) return <div className="min-h-screen bg-base-100" />;
   if (!liberado) return <PortaPin onLiberado={() => setLiberado(true)} />;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col pb-20">
-      <header className="border-b border-slate-800 bg-slate-950 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+    <div className="min-h-screen bg-base-100 text-base-content flex flex-col pb-28">
+      <header className="navbar bg-base-200 border-b border-base-300 px-6 py-4 flex-wrap justify-between gap-4">
         <div className="flex items-center gap-3">
-          <a href="/" className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Voltar à recepção">
+          <a href="/" className="btn btn-ghost btn-square" title="Voltar à recepção" aria-label="Voltar à recepção">
             <ArrowLeft className="h-5 w-5" />
           </a>
           <div>
-            <h1 className="text-lg font-bold text-white">Ajustes</h1>
-            <p className="text-xs text-slate-400">Cores, logotipo, vídeos da TV, salas e serviços</p>
+            <h1 className="text-lg font-bold text-base-content">Ajustes</h1>
+            <p className="text-xs text-neutral">Cores, logotipo, vídeos da TV, salas e serviços</p>
           </div>
         </div>
 
-        <nav className="flex flex-wrap gap-2">
+        <nav role="tablist" className="tabs tabs-boxed !flex max-w-full flex-wrap">
           {ABAS.map(({ id, rotulo, icone: Icone }) => (
             <button
               key={id}
+              role="tab"
               onClick={() => setAba(id)}
-              className={`text-xs px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-2 ${
-                aba === id ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'
-              }`}
+              className={`tab h-auto gap-2 whitespace-nowrap py-1.5 ${aba === id ? 'tab-active' : ''}`}
             >
               <Icone className="h-4 w-4" />
               <span>{rotulo}</span>

@@ -171,6 +171,7 @@ test('config: valida cor, grava e devolve logo_url nulo', async () => {
   assert.equal(r.body.brand_color, '#2563eb');
   assert.equal(r.body.tv_layout, 'tela_cheia');
   assert.equal(r.body.logo_url, null);
+  assert.equal((await api('PUT', '/api/config', { tv_layout: 'video_16_9' })).body.tv_layout, 'video_16_9');
   assert.equal((await api('PUT', '/api/config', { tv_layout: 'cinema' })).status, 400);
 });
 

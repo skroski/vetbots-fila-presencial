@@ -28,7 +28,7 @@ export function contraste(a, b) {
   return (l1 + 0.05) / (l2 + 0.05);
 }
 
-const FUNDO_ESCURO = [2, 6, 23]; // slate-950: fundo da TV e dos painéis
+const FUNDO_ESCURO = [44, 38, 33]; // base-100 do tema escuro VetBots: fundo da TV e dos painéis
 const BRANCO = [255, 255, 255];
 
 export function escalaDaCor(hex) {
@@ -59,10 +59,45 @@ export function escalaDaCor(hex) {
   return escala;
 }
 
-// ":root{--brand-50:236 253 245;...}"
+// sRGB -> OKLCH ("L C H", o formato que o daisyUI 4 usa nas variáveis --p, --a...)
+function oklch([r, g, b]) {
+  const lin = (c) => {
+    const v = c / 255;
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  const [R, G, B] = [lin(r), lin(g), lin(b)];
+  const l = Math.cbrt(0.4122214708 * R + 0.5363325363 * G + 0.0514459929 * B);
+  const m = Math.cbrt(0.2119034982 * R + 0.6806995451 * G + 0.1073969566 * B);
+  const s = Math.cbrt(0.0883024619 * R + 0.2817188376 * G + 0.6299787005 * B);
+  const L = 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s;
+  const A = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s;
+  const Bb = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s;
+  const C = Math.hypot(A, Bb);
+  const H = ((Math.atan2(Bb, A) * 180) / Math.PI + 360) % 360;
+  return `${L.toFixed(4)} ${C.toFixed(4)} ${H.toFixed(2)}`;
+}
+
+const TEXTO_ESCURO = [11, 42, 48];
+
+// Texto sobre a cor: branco ou escuro, o que tiver mais contraste
+const conteudoSobre = (rgb) => (contraste(rgb, BRANCO) >= contraste(rgb, TEXTO_ESCURO) ? BRANCO : TEXTO_ESCURO);
+
+// Cor da marca nos temas do daisyUI: botões (--p) e texto/ícones de destaque (--a).
+// Claro: 600 nos botões e 700 no texto. Escuro: 400 (mais viva) nos botões e 300 no texto.
+function temaDaisy(nome, primaria, destaque) {
+  const pc = conteudoSobre(primaria);
+  const ac = conteudoSobre(destaque);
+  return `:root[data-theme=${nome}]{--p:${oklch(primaria)};--pc:${oklch(pc)};--a:${oklch(destaque)};--ac:${oklch(ac)}}`;
+}
+
+// ":root{--brand-50:236 253 245;...}" + variáveis dos temas vetbots / vetbots-dark
 export function cssDaCor(hex) {
   const escala = escalaDaCor(hex);
   const vars = TONS.map((t) => `--brand-${t}:${escala[t].join(' ')}`).join(';');
   const [r, g, b] = escala[500];
-  return `:root{${vars};--brand-glow:${r} ${g} ${b}}`;
+  return [
+    `:root{${vars};--brand-glow:${r} ${g} ${b}}`,
+    temaDaisy('vetbots', escala[600], escala[700]),
+    temaDaisy('vetbots-dark', escala[400], escala[300]),
+  ].join('');
 }

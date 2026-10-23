@@ -26,7 +26,7 @@ node scripts/install.mjs --uninstall
 
 ## Pedidos típicos e o que fazer
 
-- *"Instale o sistema de fila na pasta X"* → `node scripts/criar-projeto.mjs X --install`, depois `npm start` e informe os endereços impressos.
+- *"Instale o sistema de fila"* → `node scripts/criar-projeto.mjs ~/fila-clinica --install` (a pasta padrão é `~/fila-clinica`; outra pasta só se pedirem), depois `npm start` em segundo plano e informe os endereços impressos. Fluxo completo em `SKILL.md`, seção "Instalar para um cliente".
 - *"Troque a cor/logo/vídeos"* → é pela tela `/config`; oriente o caminho. Só mexa em código se pedirem comportamento novo.
 - *"Atualize o sistema da clínica"* → `criar-projeto.mjs <pasta> --atualizar` (preserva `data/` e `.env`) ou `git pull`.
 - *"Quero um campo/tela/regra nova"* → leia `references/banco-sqlite-e-api.md`; altere `server/queue.js` + `web/src/pages/*`, acrescente migração em `server/db.js` se mexer em tabelas, rode `npm test` e `npm run build`.

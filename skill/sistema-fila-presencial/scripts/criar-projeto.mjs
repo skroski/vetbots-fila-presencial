@@ -2,13 +2,15 @@
 // criar-projeto.mjs: cria (ou atualiza) o projeto da Fila Presencial a partir do pacote desta skill.
 //
 // Uso:
-//   node scripts/criar-projeto.mjs <pasta-destino> [--install] [--git] [--atualizar]
+//   node scripts/criar-projeto.mjs [pasta-destino] [--install] [--git] [--atualizar]
 //
+//   pasta-destino sem informar = ~/fila-clinica  ("~" é a pasta do usuário, também no Windows)
 //   --install     roda "npm install" (instala e gera a interface) depois de copiar
 //   --git         inicia um repositório git na pasta (se ainda não for um) e faz o primeiro commit
 //   --atualizar   projeto já instalado: troca só o código, preservando data/ (banco, logo, vídeos) e .env
 
 import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -18,18 +20,16 @@ const APP = join(SKILL, 'assets', 'app');
 
 const args = process.argv.slice(2);
 const flags = new Set(args.filter((a) => a.startsWith('--')));
-const alvo = args.find((a) => !a.startsWith('--'));
+const alvo = args.find((a) => !a.startsWith('--')) ?? join('~', 'fila-clinica');
 
-if (!alvo) {
-  console.error('Uso: node scripts/criar-projeto.mjs <pasta-destino> [--install] [--git] [--atualizar]');
-  process.exit(1);
-}
 if (!existsSync(join(APP, 'package.json'))) {
   console.error(`Pacote do aplicativo não encontrado em ${APP}. Reinstale a skill.`);
   process.exit(1);
 }
 
-const destino = resolve(alvo);
+// "~" não é expandido pelo cmd/PowerShell do Windows (nem entre aspas em outros shells).
+const expandir = (p) => (p === '~' ? homedir() : /^~[\\/]/.test(p) ? join(homedir(), p.slice(2)) : p);
+const destino = resolve(expandir(alvo));
 const atualizando = flags.has('--atualizar');
 const run = (cmd, cmdArgs) =>
   spawnSync(cmd, cmdArgs, { cwd: destino, stdio: 'inherit', shell: process.platform === 'win32' }).status === 0;
@@ -80,6 +80,7 @@ console.log(`
 Próximos passos:
   cd "${destino}"
   ${flags.has('--install') ? '' : 'npm install\n  '}npm start
-Depois abra o endereço mostrado no terminal e vá em /config para personalizar cores, logotipo e vídeos.
+Para usar no dia a dia, dê duplo clique em iniciar.bat (Windows) ou iniciar.command (macOS).
+Depois abra o endereço mostrado na janela e vá em /config para personalizar cores, logotipo e vídeos.
 Guia completo: docs/instalacao.html
 `);

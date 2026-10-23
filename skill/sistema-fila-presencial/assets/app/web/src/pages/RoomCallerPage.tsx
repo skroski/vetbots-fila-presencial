@@ -116,20 +116,20 @@ export default function RoomCallerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-base-100 text-base-content flex flex-col pb-28">
       {/* Barra de Seleção de Sala */}
-      <header className="border-b border-slate-800 bg-slate-950/80 px-4 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <header className="navbar bg-base-200 border-b border-base-300 px-4 py-3 flex-wrap justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20">
+          <div className="p-2 rounded-lg bg-primary/10 text-accent border border-primary/20">
             <DoorOpen className="h-5 w-5" />
           </div>
           <div>
-            <span className="text-xs text-slate-400 font-medium">Você está atendendo em:</span>
+            <span className="text-xs text-neutral font-medium">Você está atendendo em:</span>
             <div className="flex items-center gap-2">
               <select
                 value={currentRoom?.id || ''}
                 onChange={(e) => handleSelectRoom(e.target.value)}
-                className="bg-slate-900 border border-slate-700 text-white font-bold text-base rounded-lg px-3 py-1 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                className="select select-bordered select-sm font-bold text-base"
               >
                 {rooms.filter((r) => r.ativa).map((r) => (
                   <option key={r.id} value={r.id}>
@@ -147,7 +147,7 @@ export default function RoomCallerPage() {
             href="/tv"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-brand-400 transition"
+            className="btn btn-ghost btn-sm"
           >
             <Share2 className="h-4 w-4" />
             <span>Abrir Telão da TV</span>
@@ -159,18 +159,14 @@ export default function RoomCallerPage() {
       <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Coluna 1 & 2: Atendimento Atual e Painel de Controle */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-slate-950/60 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-6">
-              <span className="text-xs uppercase tracking-wider text-slate-400 font-bold flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-brand-400 animate-ping" />
+          <div className="card bg-base-100 border border-base-300 shadow-soft p-6 md:p-8">
+            <div className="flex items-center justify-between border-b border-base-300 pb-4 mb-6">
+              <span className="text-xs text-neutral font-bold flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-primary animate-ping" />
                 Paciente na Sala
               </span>
               {currentPatient && (
-                <span
-                  className={`text-xs px-3 py-1 rounded-full font-semibold border ${
-                    PRIORITY_STYLES[currentPatient.prioridade].badge
-                  }`}
-                >
+                <span className={`${PRIORITY_STYLES[currentPatient.prioridade].badge} font-semibold`}>
                   {QUEUE_PRIORITY_LABEL[currentPatient.prioridade]}
                 </span>
               )}
@@ -180,22 +176,20 @@ export default function RoomCallerPage() {
               <div className="space-y-6">
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="font-mono text-6xl md:text-7xl font-black text-white">
+                    <span className="font-mono text-6xl md:text-7xl font-black text-base-content">
                       {currentPatient.senha}
                     </span>
-                    <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-1">
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-base-content mt-1">
                       {currentPatient.pet_nome || 'Paciente sem nome'}
                     </h2>
-                    <p className="text-slate-400 text-sm mt-0.5">
-                      Tutor(a): <strong className="text-slate-200">{currentPatient.tutor_nome}</strong>
+                    <p className="text-neutral text-sm mt-0.5">
+                      Tutor(a): <strong className="text-base-content">{currentPatient.tutor_nome}</strong>
                     </p>
                   </div>
                   <div className="text-right">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                        currentPatient.status === 'em_atendimento'
-                          ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
-                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                      className={`badge font-semibold ${
+                        currentPatient.status === 'em_atendimento' ? 'badge-soft-primary' : 'badge-soft-warning'
                       }`}
                     >
                       {currentPatient.status === 'em_atendimento' ? 'Em Consulta' : 'Chamado no Telão'}
@@ -204,26 +198,26 @@ export default function RoomCallerPage() {
                 </div>
 
                 {currentPatient.motivo_resumido && (
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-300">
-                    <strong className="text-slate-400 text-xs block mb-1">Motivo do Atendimento:</strong>
+                  <div className="alert bg-base-200 border border-base-300 text-sm text-base-content/80 block">
+                    <strong className="text-neutral text-xs block mb-1">Motivo do Atendimento:</strong>
                     {currentPatient.motivo_resumido}
                   </div>
                 )}
 
                 {/* Grade de Botões de Ação do Médico */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-slate-800/80">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-base-300">
                   <button
                     onClick={handleRepeatCall}
-                    className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3.5 px-4 rounded-xl transition"
+                    className="btn btn-outline btn-primary"
                   >
-                    <Volume2 className="h-4 w-4 text-brand-400" />
+                    <Volume2 className="h-4 w-4" />
                     <span>Repetir Chamada</span>
                   </button>
 
                   {currentPatient.status === 'chamado' ? (
                     <button
                       onClick={handleStart}
-                      className="flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-brand-900/30 transition col-span-1 sm:col-span-2"
+                      className="btn btn-primary col-span-1 sm:col-span-2"
                     >
                       <UserCheck className="h-5 w-5" />
                       <span>Iniciar Consulta</span>
@@ -231,7 +225,7 @@ export default function RoomCallerPage() {
                   ) : (
                     <button
                       onClick={handleFinish}
-                      className="flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-brand-900/30 transition col-span-1 sm:col-span-2"
+                      className="btn btn-primary col-span-1 sm:col-span-2"
                     >
                       <CheckCircle2 className="h-5 w-5" />
                       <span>Finalizar Consulta</span>
@@ -240,7 +234,7 @@ export default function RoomCallerPage() {
 
                   <button
                     onClick={handleNoShow}
-                    className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-800 rounded-xl py-3 px-3 text-xs transition"
+                    className="btn btn-ghost border-base-300 hover:bg-error/10 hover:text-error"
                   >
                     <UserX className="h-4 w-4" />
                     <span>Não Compareceu</span>
@@ -248,7 +242,7 @@ export default function RoomCallerPage() {
 
                   <button
                     onClick={handleReturnToQueue}
-                    className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 rounded-xl py-3 px-3 text-xs transition"
+                    className="btn btn-ghost border-base-300"
                   >
                     <RotateCcw className="h-4 w-4" />
                     <span>Retornar à Fila</span>
@@ -256,7 +250,7 @@ export default function RoomCallerPage() {
 
                   <button
                     onClick={() => setTransferTarget(currentPatient)}
-                    className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-indigo-950/40 text-slate-400 hover:text-indigo-400 border border-slate-800 rounded-xl py-3 px-3 text-xs transition"
+                    className="btn btn-ghost border-base-300 hover:bg-secondary/10 hover:text-secondary"
                   >
                     <ArrowRightLeft className="h-4 w-4" />
                     <span>Transferir Sala</span>
@@ -265,12 +259,12 @@ export default function RoomCallerPage() {
               </div>
             ) : (
               <div className="text-center py-12 space-y-4">
-                <div className="h-16 w-16 mx-auto rounded-full bg-slate-900 flex items-center justify-center text-slate-600 border border-slate-800">
-                  <DoorOpen className="h-8 w-8 text-slate-500" />
+                <div className="h-16 w-16 mx-auto rounded-full bg-base-100 flex items-center justify-center text-neutral/70 border border-base-300">
+                  <DoorOpen className="h-8 w-8 text-neutral" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Consultório Livre</h3>
-                  <p className="text-slate-400 text-sm mt-1">
+                  <h3 className="text-xl font-bold text-base-content">Consultório Livre</h3>
+                  <p className="text-neutral text-sm mt-1">
                     Nenhum paciente está sendo atendido nesta sala no momento.
                   </p>
                 </div>
@@ -279,11 +273,7 @@ export default function RoomCallerPage() {
                   <button
                     disabled={waitingQueue.length === 0}
                     onClick={() => handleCallNext()}
-                    className={`inline-flex items-center gap-3 font-black text-lg py-4 px-8 rounded-2xl shadow-xl transition transform active:scale-95 ${
-                      waitingQueue.length > 0
-                        ? 'bg-brand-600 hover:bg-brand-500 text-white shadow-brand-900/40'
-                        : 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                    }`}
+                    className="btn btn-primary btn-lg gap-3"
                   >
                     <Megaphone className="h-6 w-6" />
                     <span>Chamar Próximo da Fila</span>
@@ -296,13 +286,13 @@ export default function RoomCallerPage() {
 
         {/* Coluna 3: Próximos na Fila de Espera */}
         <div className="space-y-4">
-          <div className="bg-slate-950/60 border border-slate-800 rounded-3xl p-5 shadow-lg">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Clock className="h-4 w-4 text-brand-400" />
+          <div className="card bg-base-100 border border-base-300 shadow-soft p-6">
+            <div className="flex items-center justify-between border-b border-base-300 pb-3 mb-4">
+              <h3 className="text-sm font-bold text-base-content flex items-center gap-2">
+                <Clock className="h-4 w-4 text-accent" />
                 <span>Aguardando Chamada</span>
               </h3>
-              <span className="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full font-bold">
+              <span className="badge badge-soft-neutral font-semibold">
                 {waitingQueue.length}
               </span>
             </div>
@@ -311,34 +301,30 @@ export default function RoomCallerPage() {
               {waitingQueue.map((item, idx) => (
                 <div
                   key={item.id}
-                  className={`p-3.5 rounded-2xl border transition bg-slate-900/80 hover:bg-slate-850 flex items-center justify-between ${
+                  className={`p-3.5 rounded-lg border border-base-300 transition bg-base-100 hover:bg-base-200 flex items-center justify-between ${
                     PRIORITY_STYLES[item.prioridade].border
                   }`}
                 >
                   <div className="min-w-0 pr-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-base text-white">{item.senha}</span>
+                      <span className="font-mono font-bold text-base text-base-content">{item.senha}</span>
                       {item.prioridade !== 'normal' && (
-                        <span
-                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
-                            PRIORITY_STYLES[item.prioridade].badge
-                          }`}
-                        >
+                        <span className={`${PRIORITY_STYLES[item.prioridade].badge} badge-sm font-semibold`}>
                           {QUEUE_PRIORITY_LABEL[item.prioridade]}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm font-semibold text-slate-200 truncate mt-0.5">
+                    <p className="text-sm font-semibold text-base-content truncate mt-0.5">
                       {item.pet_nome || item.tutor_nome}
                     </p>
-                    <span className="text-xs text-slate-400 block truncate">
+                    <span className="text-xs text-neutral block truncate">
                       {services.find((s) => s.id === item.servico_id)?.nome || 'Consulta'}
                     </span>
                   </div>
 
                   <button
                     onClick={() => handleCallNext(item)}
-                    className="p-2.5 rounded-xl bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white transition flex-shrink-0"
+                    className="btn btn-ghost btn-square btn-sm shrink-0 hover:bg-primary hover:text-primary-content"
                     title="Chamar este paciente diretamente"
                   >
                     <Megaphone className="h-4 w-4" />
@@ -347,7 +333,7 @@ export default function RoomCallerPage() {
               ))}
 
               {waitingQueue.length === 0 && (
-                <div className="text-center py-8 text-slate-500 text-xs">
+                <div className="text-center py-8 text-neutral text-xs">
                   Nenhum paciente aguardando para esta sala.
                 </div>
               )}
@@ -358,25 +344,25 @@ export default function RoomCallerPage() {
 
       {/* Modal de Transferência */}
       {transferTarget && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full space-y-4">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <ArrowRightLeft className="h-5 w-5 text-brand-400" />
+        <div className="modal modal-open">
+          <div className="modal-box max-w-md space-y-4 p-8">
+            <h3 className="text-lg font-bold text-base-content flex items-center gap-2">
+              <ArrowRightLeft className="h-5 w-5 text-accent" />
               <span>Transferir Atendimento</span>
             </h3>
-            <p className="text-xs text-slate-400">
-              Encaminhando a senha <strong className="text-white">{transferTarget.senha}</strong> ({transferTarget.pet_nome || transferTarget.tutor_nome}). O horário original de chegada será mantido na nova fila.
+            <p className="text-xs text-neutral">
+              Encaminhando a senha <strong className="text-base-content">{transferTarget.senha}</strong> ({transferTarget.pet_nome || transferTarget.tutor_nome}). O horário original de chegada será mantido na nova fila.
             </p>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Sala de Destino:
                 </label>
                 <select
                   value={transferRoom}
                   onChange={(e) => setTransferRoom(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white"
+                  className="select select-bordered w-full"
                 >
                   <option value="">Selecione a sala de destino...</option>
                   {rooms
@@ -390,7 +376,7 @@ export default function RoomCallerPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                <label className="label-text mb-1 block font-semibold">
                   Motivo da Transferência:
                 </label>
                 <textarea
@@ -398,7 +384,7 @@ export default function RoomCallerPage() {
                   onChange={(e) => setTransferReason(e.target.value)}
                   rows={2}
                   placeholder="Ex: Encaminhado para exame de imagem ou sala de vacinas"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white"
+                  className="textarea textarea-bordered w-full"
                 />
               </div>
             </div>
@@ -406,13 +392,13 @@ export default function RoomCallerPage() {
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setTransferTarget(null)}
-                className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm hover:bg-slate-700"
+                className="btn btn-ghost"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmTransfer}
-                className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-bold hover:bg-brand-500"
+                className="btn btn-primary"
               >
                 Confirmar Transferência
               </button>

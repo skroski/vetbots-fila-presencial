@@ -4,7 +4,40 @@
 
 @layer base {
   body {
-    @apply m-0 p-0 overflow-x-hidden font-sans;
+    @apply m-0 p-0 overflow-x-hidden font-sans text-sm leading-relaxed;
+  }
+
+  h1, h2, h3, h4, h5, h6, .title, .display, .card-title {
+    font-family: theme('fontFamily.title');
+  }
+  h1 { @apply text-[2rem] font-bold leading-tight; }
+  h2 { @apply text-[1.625rem] font-semibold leading-snug; }
+  h3 { @apply text-xl font-semibold leading-snug; }
+
+  /* Campos de formulário: cantos mais secos que os cards (design.md); o foco vem do daisyUI */
+  .input, .select, .textarea {
+    border-radius: 0.25rem;
+  }
+}
+
+/* Títulos e descrições dos indicadores quebram linha em telas estreitas */
+.stat-title, .stat-desc { white-space: normal; }
+
+/* Badges suaves (design.md): fundo da cor a 10% + texto na cor. Complementam .badge do daisyUI. */
+@layer components {
+  .badge-soft-primary { @apply border-0 bg-primary/10 text-accent; }
+  .badge-soft-success { @apply border-0 bg-success/10 text-success; }
+  .badge-soft-warning { @apply border-0 bg-warning/10 text-warning; }
+  .badge-soft-error { @apply border-0 bg-error/10 text-error; }
+  .badge-soft-info { @apply border-0 bg-info/10 text-info; }
+  .badge-soft-neutral { @apply border-0 bg-base-200 text-base-content; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

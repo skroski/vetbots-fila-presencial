@@ -71,8 +71,8 @@ function aplicarTema(cfg: AppConfig) {
     icon.rel = 'icon';
     document.head.appendChild(icon);
   }
-  const href = cfg.logo_url || '';
-  if (href && icon.getAttribute('href') !== href) icon.setAttribute('href', href);
+  const href = cfg.logo_url || '/logo-vetbots-simbolo.png';
+  if (icon.getAttribute('href') !== href) icon.setAttribute('href', href);
 }
 
 /** Pré-visualização ao vivo (tela de Ajustes) antes de salvar. */

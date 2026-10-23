@@ -3,7 +3,7 @@
 import { db, transacao } from './db.js';
 import { HttpError } from './http-error.js';
 
-export const COR_PADRAO = '#10b981';
+export const COR_PADRAO = '#2294aa';
 
 // tipo: 'texto' | 'bool' | 'int' | 'cor' | 'enum'
 const SCHEMA = {
@@ -13,7 +13,7 @@ const SCHEMA = {
   logo_file: { tipo: 'texto', padrao: '', max: 120, interno: true },
   tv_sound: { tipo: 'bool', padrao: true },
   tv_privacy: { tipo: 'bool', padrao: false },
-  tv_layout: { tipo: 'enum', padrao: 'lateral', opcoes: ['lateral', 'tela_cheia'] },
+  tv_layout: { tipo: 'enum', padrao: 'lateral', opcoes: ['lateral', 'tela_cheia', 'video_16_9'] },
   tv_video_muted: { tipo: 'bool', padrao: true },
   tv_overlay_seconds: { tipo: 'int', padrao: 12, min: 4, max: 60 },
   ticket_footer: { tipo: 'texto', padrao: 'Acompanhe pelo telão da sala de espera.', max: 120 },

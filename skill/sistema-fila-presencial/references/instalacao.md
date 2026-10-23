@@ -1,19 +1,29 @@
 # Instalação passo a passo
 
-Requisitos: **Node.js 22.16 ou superior** (https://nodejs.org, versão LTS) **ou** Docker. Nenhum banco de dados para instalar.
+Requisitos: **Node.js 22.16 ou superior** (https://nodejs.org, versão LTS) **ou** Docker. Nenhum banco de dados para instalar, nenhuma chave de API.
 
-O guia visual com tour guiado está em `docs/instalacao.html` (abra no navegador).
+O guia visual com tour guiado (com voz) está em `docs/instalacao.html` (abra no navegador).
 
-## 1. Obter o pacote
+## 1. O jeito mais fácil: peça ao agente
+
+Com a skill instalada (`node scripts/install.mjs`), abra o Claude Code, Codex ou Antigravity/Gemini CLI e escreva:
+
+```text
+Instale o sistema de fila presencial da clínica e me mostre os endereços.
+```
+
+O agente instala em `~/fila-clinica`, liga o servidor e entrega os endereços. Ele confirma a pasta apenas se ela já tiver conteúdo, e nunca apaga `data/`.
+
+Sem agente, direto pelo terminal (cria `~/fila-clinica`; informe outra pasta como argumento, se quiser):
 
 ```bash
-git clone https://github.com/skroski/vetbots-fila-presencial.git
-cd vetbots-fila-presencial
+node scripts/criar-projeto.mjs --install
+cd ~/fila-clinica && npm start
 ```
-Sem git: baixe o ZIP do repositório (botão *Code → Download ZIP*) e descompacte, ou copie a pasta do pacote por pendrive.
-Pelo agente de IA: `node $SKILL/scripts/criar-projeto.mjs <pasta> --install`.
 
-## 2. Instalar e iniciar
+Quem tem o repositório pode também rodar `npm install` e `npm start` na própria pasta, ou receber o ZIP do sistema e seguir o passo 2.
+
+## 2. Instalar e iniciar sem agente
 
 ### Windows
 1. Instale o Node.js LTS (instalador `.msi`, avançar até o fim).
@@ -80,10 +90,14 @@ git pull
 npm install
 npm start
 ```
-A pasta `data/` (seus dados) nunca é sobrescrita. Sem git: `node $SKILL/scripts/criar-projeto.mjs <pasta> --atualizar`.
+A pasta `data/` (seus dados) nunca é sobrescrita. Com a skill: `node $SKILL/scripts/criar-projeto.mjs <pasta> --atualizar` (troca só o código; `data/` e `.env` ficam intactos).
 O banco evolui sozinho (migrações automáticas no início).
 
-## 8. Problemas comuns
+## 8. Help guiado
+
+Abra `docs/instalacao.html` no navegador e clique em **Tour guiado**: ele percorre instalação, endereços, personalização, recepção, chamador, totem, telão, métricas, TV, backup e checklist. A voz vem de MP3 já incluídos no pacote (`docs/open-help/`): não precisa de internet, chave ou configuração. Se um áudio não tocar, o texto na tela continua disponível.
+
+## 9. Problemas comuns
 
 | Sintoma | Causa / solução |
 | :--- | :--- |

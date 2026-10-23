@@ -67,7 +67,7 @@ export default function TvVideo({
   if (!atual) return null;
 
   return pausado ? (
-    <div className={`${className} bg-black flex items-center justify-center text-slate-500 text-sm`}>
+    <div className={`${className} bg-black flex items-center justify-center text-neutral text-sm`}>
       Não foi possível reproduzir os vídeos. Use MP4 (H.264/AAC).
     </div>
   ) : (

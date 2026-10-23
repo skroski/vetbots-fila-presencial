@@ -24,7 +24,7 @@ const itens = [
   'iniciar.bat',
   'iniciar.command',
   'iniciar.sh',
-  'README.md',
+  'LICENSE.md',
 ];
 
 // Fora do pacote: dependências, build, dados reais e o que só serve ao desenvolvimento desta skill.
@@ -33,6 +33,7 @@ const ignorar = (origem) => {
   return !(
     /(^|\/)(node_modules|dist|\.DS_Store)(\/|$)/.test(rel) ||
     rel === 'scripts/sync-skill.mjs' ||
+    rel === 'scripts/readme-app.md' ||
     rel.startsWith('server/test/tmp')
   );
 };
@@ -49,4 +50,6 @@ for (const item of itens) {
   }
   cpSync(origem, join(destino, item), { recursive: true, filter: ignorar });
 }
+// O README da raiz fala de skill e desenvolvimento; a cópia instalada leva o README do dia a dia da clínica.
+cpSync(join(raiz, 'scripts', 'readme-app.md'), join(destino, 'README.md'));
 console.log(`Aplicativo copiado para ${destino}`);

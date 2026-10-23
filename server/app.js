@@ -247,7 +247,7 @@ function paginaInicial() {
   const cabeca = [
     `<style id="tema-marca">${cssDaCor(cfg.brand_color)}</style>`,
     `<script>window.__FILA_CONFIG__=${JSON.stringify(cfg).replace(/</g, '\\u003c')}</script>`,
-    cfg.logo_url ? `<link rel="icon" href="${esc(cfg.logo_url)}">` : '',
+    `<link rel="icon" type="image/png" href="${esc(cfg.logo_url || '/logo-vetbots-simbolo.png')}">`,
   ].join('');
   return readFileSync(indexPath, 'utf8')
     .replace(/<title>.*?<\/title>/, `<title>${esc(cfg.clinic_name)} · Fila</title>`)
