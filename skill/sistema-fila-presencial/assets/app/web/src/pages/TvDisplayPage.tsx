@@ -398,10 +398,16 @@ export default function TvDisplayPage() {
     <div className="flex items-center gap-4 min-w-0">
       <BrandMark size="md" />
       <h1 className="text-xl md:text-2xl font-black tracking-tight text-base-content flex items-center gap-2 min-w-0">
-        <span className="sr-only">{config.clinic_name}</span>
-        <span className="badge badge-soft-primary hidden xl:inline-flex whitespace-nowrap">
-          {config.clinic_subtitle}
-        </span>
+        {config.show_brand_text ? (
+          <>
+            <span className="truncate">{config.clinic_name}</span>
+            <span className="badge badge-soft-primary hidden 2xl:inline-flex whitespace-nowrap">
+              {config.clinic_subtitle}
+            </span>
+          </>
+        ) : (
+          <span className="sr-only">{config.clinic_name}</span>
+        )}
       </h1>
     </div>
   );

@@ -15,8 +15,8 @@ export default function BrandMark({ size = 'sm', className = '' }: { size?: keyo
   }
   return (
     <>
-      <img src="/logo-vetbots-claro.svg" alt="VetBots" className={`${t.padrao} w-auto dark:hidden ${className}`} />
-      <img src="/logo-vetbots-escuro.svg" alt="VetBots" className={`${t.padrao} hidden w-auto dark:block ${className}`} />
+      <img src="/logo-vetbots-claro.webp" alt="VetBots" className={`${t.padrao} w-auto dark:hidden ${className}`} />
+      <img src="/logo-vetbots-escuro.webp" alt="VetBots" className={`${t.padrao} hidden w-auto dark:block ${className}`} />
     </>
   );
 }

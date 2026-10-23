@@ -416,7 +416,7 @@ const prefixoValido = (p: unknown) => {
 function validarConfig(e: Estado, parcial: Record<string, unknown>) {
   const cfg = e.config as unknown as Record<string, unknown>;
   const tipos: Record<string, 'texto' | 'bool' | 'int' | 'cor' | string[]> = {
-    clinic_name: 'texto', clinic_subtitle: 'texto', brand_color: 'cor', tv_sound: 'bool', tv_privacy: 'bool',
+    clinic_name: 'texto', clinic_subtitle: 'texto', brand_color: 'cor', show_brand_text: 'bool', tv_sound: 'bool', tv_privacy: 'bool',
     tv_layout: ['lateral', 'tela_cheia', 'video_16_9'], tv_video_muted: 'bool', tv_overlay_seconds: 'int',
     ticket_footer: 'texto', ticket_show_logo: 'bool', ticket_width_mm: ['58', '80'], reset_daily: 'bool',
   };

@@ -152,10 +152,14 @@ export default function ReceptionPage() {
       <header className="navbar bg-base-200 border-b border-base-300 px-6 py-4 flex-wrap justify-between gap-4">
         <div className="flex items-center gap-3">
           <BrandMark size="sm" />
-          <div>
-            <h1 className="text-lg font-bold text-base-content leading-tight">Recepção &amp; Triagem</h1>
-            <span className="text-xs text-neutral">{config.clinic_subtitle}</span>
-          </div>
+          {config.show_brand_text ? (
+            <div>
+              <h1 className="text-lg font-bold text-base-content leading-tight">{config.clinic_name}</h1>
+              <span className="text-xs text-neutral">Recepção &amp; Triagem · {config.clinic_subtitle}</span>
+            </div>
+          ) : (
+            <h1 className="sr-only">Recepção &amp; Triagem</h1>
+          )}
         </div>
 
         {/* Links rápidos para Telão TV e Chamador */}

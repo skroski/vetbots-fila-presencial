@@ -171,7 +171,7 @@ function AbaMarca({ config }: { config: AppConfig }) {
             <input className={campo} maxLength={80} value={nome} onChange={(e) => setNome(e.target.value)} />
           </label>
           <label className="space-y-1 text-xs text-neutral">
-            Subtítulo (aparece na TV)
+            Subtítulo (usado nos textos ao lado do logotipo)
             <input className={campo} maxLength={80} value={subtitulo} onChange={(e) => setSubtitulo(e.target.value)} />
           </label>
         </div>
@@ -203,6 +203,13 @@ function AbaMarca({ config }: { config: AppConfig }) {
             </div>
           </div>
         </div>
+
+        <Interruptor
+          ativo={config.show_brand_text}
+          onChange={(v) => salvarConfig({ show_brand_text: v })}
+          titulo="Mostrar textos ao lado do logotipo"
+          detalhe="Recepção e TV exibem o nome e o subtítulo da clínica junto ao logotipo. Desligado, aparece só o logotipo."
+        />
       </div>
 
       <div className={cartao}>

@@ -143,6 +143,8 @@ export interface AppConfig {
   clinic_name: string;
   clinic_subtitle: string;
   brand_color: string;
+  /** Mostra nome e subtítulo ao lado do logotipo (recepção e TV); por padrão aparece só o logotipo */
+  show_brand_text: boolean;
   logo_url: string | null;
   tv_sound: boolean;
   tv_privacy: boolean;
@@ -159,6 +161,7 @@ export const DEFAULT_CONFIG: AppConfig = {
   clinic_name: 'Clínica Veterinária',
   clinic_subtitle: 'Painel de Atendimento Presencial',
   brand_color: '#2294aa',
+  show_brand_text: false,
   logo_url: null,
   tv_sound: true,
   tv_privacy: false,

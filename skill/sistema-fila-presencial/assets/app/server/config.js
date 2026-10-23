@@ -11,6 +11,7 @@ const SCHEMA = {
   clinic_subtitle: { tipo: 'texto', padrao: 'Painel de Atendimento Presencial', max: 80 },
   brand_color: { tipo: 'cor', padrao: COR_PADRAO },
   logo_file: { tipo: 'texto', padrao: '', max: 120, interno: true },
+  show_brand_text: { tipo: 'bool', padrao: false },
   tv_sound: { tipo: 'bool', padrao: true },
   tv_privacy: { tipo: 'bool', padrao: false },
   tv_layout: { tipo: 'enum', padrao: 'lateral', opcoes: ['lateral', 'tela_cheia', 'video_16_9'] },
