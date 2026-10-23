@@ -36,6 +36,7 @@ export function opcoesTicket(cfg: {
  * Dispara a impressão do cupom térmico da senha
  */
 export function imprimirSenhaTermica(data: TicketPrintData): void {
+  if (import.meta.env.MODE === 'demo') return; // demonstração: sem impressora, não abre a janela de impressão
   const clinic = esc(data.clinicName || 'CLÍNICA VETERINÁRIA');
   const width = data.widthMm || 58;
   const now = data.arrivedAt ? new Date(data.arrivedAt) : new Date();

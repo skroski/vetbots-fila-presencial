@@ -16,6 +16,7 @@ import {
   Volume2,
 } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
+import { agoraServidor } from '@/lib/store';
 import {
   QUEUE_PRIORITY_LABEL,
   QUEUE_STATUS_LABEL,
@@ -54,11 +55,16 @@ export default function ReceptionPage() {
 
   // Métricas rápidas no topo
   const stats = useMemo(() => {
+    const inicioDoDia = new Date(agoraServidor());
+    inicioDoDia.setHours(0, 0, 0, 0);
     return {
       aguardando: items.filter((i) => i.status === 'aguardando').length,
       chamados: items.filter((i) => i.status === 'chamado').length,
       emAtendimento: items.filter((i) => i.status === 'em_atendimento').length,
-      finalizados: items.filter((i) => i.status === 'finalizado').length,
+      // `items` traz até 30 dias de histórico: "hoje" conta só o que terminou desde a meia-noite local
+      finalizados: items.filter(
+        (i) => i.status === 'finalizado' && i.finalizado_em && new Date(i.finalizado_em) >= inicioDoDia,
+      ).length,
       total: items.length,
     };
   }, [items]);
@@ -147,8 +153,8 @@ export default function ReceptionPage() {
         <div className="flex items-center gap-3">
           <BrandMark size="sm" />
           <div>
-            <h1 className="text-lg font-bold text-base-content leading-tight">{config.clinic_name}</h1>
-            <span className="text-xs text-neutral">Recepção &amp; Triagem · {config.clinic_subtitle}</span>
+            <h1 className="text-lg font-bold text-base-content leading-tight">Recepção &amp; Triagem</h1>
+            <span className="text-xs text-neutral">{config.clinic_subtitle}</span>
           </div>
         </div>
 

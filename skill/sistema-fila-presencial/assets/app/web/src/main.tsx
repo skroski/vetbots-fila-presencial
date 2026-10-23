@@ -8,8 +8,21 @@ import '@fontsource-variable/jetbrains-mono';
 import App from './App';
 import './index.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+function montar() {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}
+
+// Demonstração (vite build --mode demo): troca o servidor por uma API simulada no navegador.
+// Fora do modo demo este trecho é removido do build.
+if (import.meta.env.MODE === 'demo') {
+  void import('./demo/demoApi').then(({ instalarDemo }) => {
+    instalarDemo();
+    montar();
+  });
+} else {
+  montar();
+}

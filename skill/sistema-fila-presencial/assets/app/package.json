@@ -12,6 +12,7 @@
     "start": "node server/index.js",
     "dev": "concurrently -k -n api,web -c blue,green \"node --watch server/index.js\" \"vite --config web/vite.config.ts\"",
     "build": "tsc -p web/tsconfig.json && vite build --config web/vite.config.ts",
+    "build:demo": "tsc -p web/tsconfig.json && vite build --mode demo --config web/vite.config.ts",
     "postinstall": "node scripts/postinstall.mjs",
     "backup": "node scripts/backup.mjs",
     "test": "node --test server/test/fila.test.js server/test/pin.test.js",
