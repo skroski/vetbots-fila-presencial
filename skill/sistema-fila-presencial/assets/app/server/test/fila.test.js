@@ -238,11 +238,13 @@ test('YouTube: aceita os links comuns, rejeita o resto e convive com os MP4', as
 });
 
 test('config: tamanho da TV e lista de chamadas', async () => {
-  assert.equal((await api('PUT', '/api/config', { tv_video_size: '1_2', tv_show_lists: false })).body.tv_video_size, '1_2');
-  assert.equal((await api('PUT', '/api/config', { tv_video_size: '2_3' })).body.tv_video_size, '2_3');
+  assert.equal((await api('PUT', '/api/config', { tv_video_size: '1_2', tv_show_lists: false, tv_theme: 'light' })).body.tv_video_size, '1_2');
+  assert.equal((await api('PUT', '/api/config', { tv_video_size: '2_3', tv_theme: 'dark' })).body.tv_video_size, '2_3');
   assert.equal((await estado()).config.tv_show_lists, false);
+  assert.equal((await estado()).config.tv_theme, 'dark');
   assert.equal((await api('PUT', '/api/config', { tv_video_size: '3_4' })).status, 400);
-  await api('PUT', '/api/config', { tv_video_size: '1_3', tv_show_lists: true });
+  assert.equal((await api('PUT', '/api/config', { tv_theme: 'invalido' })).status, 400);
+  await api('PUT', '/api/config', { tv_video_size: '1_3', tv_show_lists: true, tv_theme: 'dark' });
 });
 
 test('upload de logo: aceita PNG, rejeita arquivo disfarçado e remove', async () => {

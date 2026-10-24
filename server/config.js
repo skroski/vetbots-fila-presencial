@@ -15,6 +15,7 @@ const SCHEMA = {
   tv_sound: { tipo: 'bool', padrao: true },
   tv_privacy: { tipo: 'bool', padrao: false },
   tv_layout: { tipo: 'enum', padrao: 'video_16_9', opcoes: ['lateral', 'tela_cheia', 'video_16_9'] },
+  tv_theme: { tipo: 'enum', padrao: 'dark', opcoes: ['dark', 'light'] },
   tv_video_size: { tipo: 'enum', padrao: '1_3', opcoes: ['1_3', '1_2', '2_3'] },
   tv_show_lists: { tipo: 'bool', padrao: true },
   tv_video_muted: { tipo: 'bool', padrao: true },

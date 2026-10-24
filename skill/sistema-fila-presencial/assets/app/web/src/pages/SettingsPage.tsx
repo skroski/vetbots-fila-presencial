@@ -8,6 +8,7 @@ import {
   Copy,
   Download,
   DoorOpen,
+  ExternalLink,
   Eye,
   EyeOff,
   Film,
@@ -645,6 +646,34 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
           })}
         </div>
 
+        <div className="space-y-3 rounded-lg border border-base-300 bg-base-200/50 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span id="tema-tv" className="text-xs font-semibold text-base-content block">Visual da TV (Tema)</span>
+              <span className="text-xs text-neutral">Escolha entre o visual claro (fundo suave) ou escuro (alto contraste para salas de espera).</span>
+            </div>
+            <div role="radiogroup" aria-labelledby="tema-tv" className="join">
+              {(
+                [
+                  ['dark', 'Escuro'],
+                  ['light', 'Claro'],
+                ] as const
+              ).map(([valor, rotulo]) => (
+                <button
+                  key={valor}
+                  type="button"
+                  role="radio"
+                  aria-checked={config.tv_theme === valor}
+                  onClick={() => salvarConfig({ tv_theme: valor })}
+                  className={`btn btn-sm join-item ${config.tv_theme === valor ? 'btn-primary' : 'btn-ghost border-base-300'}`}
+                >
+                  {rotulo}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {config.tv_layout === 'video_16_9' && (
           <div className="space-y-3 rounded-lg border border-base-300 bg-base-200/50 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1123,6 +1152,16 @@ function AbaSistema({ config }: { config: AppConfig }) {
               <span className="text-xs text-neutral">{nome}</span>
               <span className="flex items-center gap-2 min-w-0">
                 <code className="font-mono text-xs text-accent truncate">{base}{rota}</code>
+                <a
+                  href={rota}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-ghost btn-square btn-xs"
+                  title={`Abrir ${nome} em nova aba`}
+                  aria-label={`Abrir ${nome} em nova aba`}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
                 <button
                   className="btn btn-ghost btn-square btn-xs"
                   title="Copiar" aria-label="Copiar endereço"

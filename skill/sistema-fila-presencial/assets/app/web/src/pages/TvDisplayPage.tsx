@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Volume2, VolumeX, Bell, Monitor, Lock, Unlock, Sparkles, Maximize } from 'lucide-react';
+import { Volume2, VolumeX, Bell, Monitor, Lock, Unlock, Sparkles, Maximize, Moon, Sun } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
 import { tocarChimeFila, desbloquearAudio } from '@/lib/audioChime';
 import BrandMark from '@/components/BrandMark';
@@ -296,6 +296,14 @@ export default function TvDisplayPage() {
   const { items, rooms, midias, config, loading } = useQueueSystem();
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => lerPreferencia('vet_tv_sound', config.tv_sound));
   const [privacyMode, setPrivacyMode] = useState<boolean>(() => lerPreferencia('vet_tv_privacy', config.tv_privacy));
+  const [temaTvLocal, setTemaTvLocal] = useState<'light' | 'dark' | null>(() => {
+    try {
+      const salvo = localStorage.getItem('vet_tv_theme');
+      return salvo === 'light' || salvo === 'dark' ? salvo : null;
+    } catch {
+      return null;
+    }
+  });
   const [isPulsing, setIsPulsing] = useState(false);
   const [overlay, setOverlay] = useState(false);
   const [needsGesture, setNeedsGesture] = useState(true);
@@ -390,6 +398,23 @@ export default function TvDisplayPage() {
     });
   };
 
+  const temaTv = temaTvLocal || config.tv_theme || 'dark';
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', temaTv === 'light' ? 'vetbots' : 'vetbots-dark');
+  }, [temaTv]);
+
+  const alternarTemaTv = () => {
+    const proximo = temaTv === 'light' ? 'dark' : 'light';
+    setTemaTvLocal(proximo);
+    document.documentElement.setAttribute('data-theme', proximo === 'light' ? 'vetbots' : 'vetbots-dark');
+    try {
+      localStorage.setItem('vet_tv_theme', proximo);
+    } catch {
+      /* sem armazenamento */
+    }
+  };
+
   const tentarTelaCheia = () => {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
   };
@@ -411,6 +436,14 @@ export default function TvDisplayPage() {
         title="Tela cheia"
       >
         <Maximize className="h-4 w-4" />
+      </button>
+      <button
+        onClick={alternarTemaTv}
+        className="btn btn-ghost border-base-300"
+        title={temaTv === 'light' ? 'Mudar para tema escuro' : 'Mudar para tema claro'}
+      >
+        {temaTv === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+        <span className="hidden sm:inline">{temaTv === 'light' ? 'Escuro' : 'Claro'}</span>
       </button>
       <button
         onClick={togglePrivacy}

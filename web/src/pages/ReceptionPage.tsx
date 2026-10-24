@@ -8,6 +8,7 @@ import {
   Printer,
   Search,
   Stethoscope,
+  Touchpad,
   Tv,
 } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
@@ -178,6 +179,16 @@ export default function ReceptionPage() {
           >
             <Tv className="h-4 w-4" />
             <span>Abrir Telão da TV</span>
+          </a>
+
+          <a
+            href="/totem"
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-outline btn-primary"
+          >
+            <Touchpad className="h-4 w-4" />
+            <span>Totem Touch</span>
           </a>
 
           <a

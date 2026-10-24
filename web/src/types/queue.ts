@@ -160,6 +160,7 @@ export interface AppConfig {
   tv_sound: boolean;
   tv_privacy: boolean;
   tv_layout: 'lateral' | 'tela_cheia' | 'video_16_9';
+  tv_theme: 'dark' | 'light';
   /** Parte da largura da tela ocupada pelo vídeo no layout "TV menor" */
   tv_video_size: '1_3' | '1_2' | '2_3';
   /** No layout "TV menor": mostrar também chamadas anteriores e próximos (desligado = só a chamada atual) */
@@ -181,6 +182,7 @@ export const DEFAULT_CONFIG: AppConfig = {
   tv_sound: true,
   tv_privacy: false,
   tv_layout: 'video_16_9',
+  tv_theme: 'dark',
   tv_video_size: '1_3',
   tv_show_lists: true,
   tv_video_muted: true,

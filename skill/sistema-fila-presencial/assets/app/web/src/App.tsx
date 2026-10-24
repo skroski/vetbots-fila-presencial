@@ -58,11 +58,16 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // O telão da TV é sempre escuro (sala de espera, vídeos); as demais telas seguem o tema escolhido
+  // O telão da TV segue o tema configurado em /config (ou escuro por padrão); as demais telas seguem o tema escolhido no app
   const ehTv = currentPath.startsWith('/tv');
+  const { config } = useStore();
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', ehTv || tema === 'dark' ? 'vetbots-dark' : 'vetbots');
-  }, [tema, ehTv]);
+    if (ehTv) {
+      document.documentElement.setAttribute('data-theme', config.tv_theme === 'light' ? 'vetbots' : 'vetbots-dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', tema === 'dark' ? 'vetbots-dark' : 'vetbots');
+    }
+  }, [tema, ehTv, config.tv_theme]);
 
   const alternarTema = () => {
     const novo: Tema = tema === 'dark' ? 'light' : 'dark';
@@ -116,6 +121,24 @@ export default function App() {
         >
           {ROTAS.map(({ caminho, exato, rotulo, Icone }) => {
             const ativa = exato ? currentPath === '/' || currentPath === '/recepcao' : currentPath.startsWith(caminho);
+            const abreEmNovaAba = caminho === '/tv' || caminho === '/totem';
+
+            if (abreEmNovaAba) {
+              return (
+                <a
+                  key={caminho}
+                  href={caminho}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={`${rotulo} (abre em nova aba)`}
+                  className="btn btn-ghost h-12 min-h-12 min-w-12 whitespace-nowrap rounded-full border-0 px-2 font-medium text-neutral sm:px-3"
+                >
+                  <Icone className="h-4 w-4" />
+                  <span className="hidden sm:inline">{rotulo}</span>
+                </a>
+              );
+            }
+
             return (
               <button
                 key={caminho}
