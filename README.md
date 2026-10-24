@@ -12,21 +12,38 @@ Roda **na rede local** (Node.js + SQLite). Sem conta em nuvem, sem banco externo
 
 ## Instalar
 
-Você só precisa do **Node.js 22.16 ou mais novo** (versão LTS, em [nodejs.org](https://nodejs.org)). Escolha **um** caminho:
+Escolha **um** caminho. O sistema precisa do **Node.js 22.16 ou mais novo** (versão LTS), mas no caminho A o agente confere isso por você.
 
-### A) Com o Claude Code, Codex ou Gemini (o mais simples)
+### A) Peça a um agente de IA (o mais simples)
 
-1. Instale o Node.js (link acima).
-2. Abra o seu agente de IA **dentro desta pasta**.
-3. Escreva:
+Funciona com **Claude Code**, **Codex** e **Antigravity com Gemini**. Você escreve em português e o agente faz o resto.
+
+1. Abra o agente **dentro da pasta deste projeto**:
+
+   | Agente | Como abrir |
+   | --- | --- |
+   | Claude Code | No terminal, dentro da pasta, digite `claude` |
+   | Codex | No terminal, dentro da pasta, digite `codex` |
+   | Antigravity (Gemini) | Abra a pasta no Antigravity e use o chat do agente (ou `gemini` no terminal) |
+
+2. Peça assim, em português (copie e cole no chat do agente):
 
    ```text
    Instale o sistema de fila presencial e me mostre os endereços.
    ```
 
-O agente instala, liga o sistema e entrega os endereços de cada tela. Ele só pergunta o que não conseguir descobrir sozinho (por exemplo, em qual pasta instalar; o padrão é `fila-clinica` na sua pasta de usuário). Seus dados nunca são apagados.
+   Se o agente estiver aberto em outra pasta e a skill já estiver instalada nele, peça:
 
-### B) Sem agente de IA
+   ```text
+   Use a skill sistema-fila-presencial e instale a fila na clínica.
+   ```
+
+O agente confere o Node.js, instala, liga o sistema e entrega o endereço de cada tela. Ele só pergunta o que não conseguir descobrir sozinho (por exemplo, em qual pasta instalar; o padrão é `fila-clinica` na sua pasta de usuário). Se faltar o Node.js, ele avisa e explica como instalar (caminho B, passo 1). Seus dados nunca são apagados.
+
+### B) Instalar com Node.js (sem agente de IA)
+
+1. Instale o **Node.js 22.16 ou mais novo**, versão LTS, em [nodejs.org](https://nodejs.org).
+2. Inicie o sistema:
 
 | Sistema | Como iniciar |
 | --- | --- |

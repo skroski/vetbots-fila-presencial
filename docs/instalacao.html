@@ -159,6 +159,9 @@
   ol.passos > li { counter-increment: p; position: relative; padding-left: 52px; }
   ol.passos > li::before { content: counter(p); position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-strong); font-weight: 800; }
   ol.passos h3 { margin: 4px 0 6px; }
+  ol.passos > li { min-width: 0; }
+  .code.prompt pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .alt-title { margin: 26px 0 10px; font-size: 1.05rem; }
   ol.fluxo { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
   ol.fluxo li { display: flex; gap: 10px; align-items: flex-start; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 15px; }
   ol.fluxo b { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; font-size: 13px; }
@@ -263,7 +266,31 @@
     <!-- ================= 1 INSTALAR ================= -->
     <section class="step" id="instalar" aria-labelledby="h-ins">
       <h2 id="h-ins"><span class="num" aria-hidden="true">1</span>Instalar</h2>
-      <p class="sub">São três etapas curtas, feitas uma única vez no computador que ficará ligado na clínica (o “servidor”).</p>
+      <p class="sub">Feito uma única vez no computador que ficará ligado na clínica (o “servidor”). Escolha o caminho mais fácil para você: pedir a um agente de IA ou instalar com o Node.js.</p>
+      <div class="card" id="instalar-ia">
+        <h3>Opção A · Peça a um agente de IA (o mais simples)</h3>
+        <p>Funciona com <strong>Claude Code</strong>, <strong>Codex</strong> e <strong>Antigravity com Gemini</strong>. Você escreve em português e o agente confere o Node.js, instala, liga o sistema e mostra o endereço de cada tela.</p>
+        <ol class="passos">
+          <li>
+            <h3>Abra o agente dentro da pasta do sistema</h3>
+            <ul>
+              <li><strong>Claude Code:</strong> no terminal, dentro da pasta, digite <code class="i">claude</code>.</li>
+              <li><strong>Codex:</strong> no terminal, dentro da pasta, digite <code class="i">codex</code>.</li>
+              <li><strong>Antigravity (Gemini):</strong> abra a pasta no Antigravity e use o chat do agente (ou digite <code class="i">gemini</code> no terminal).</li>
+            </ul>
+          </li>
+          <li>
+            <h3>Peça assim, em português</h3>
+            <p>Copie e cole este pedido no chat do agente e aperte Enter:</p>
+            <div class="code prompt"><pre>Instale o sistema de fila presencial e me mostre os endereços.</pre><button type="button" data-copy>Copiar</button></div>
+            <p>Se o agente estiver aberto em outra pasta e a skill do sistema já estiver instalada nele, peça assim:</p>
+            <div class="code prompt"><pre>Use a skill sistema-fila-presencial e instale a fila na clínica.</pre><button type="button" data-copy>Copiar</button></div>
+            <p>Depois é só responder às perguntas dele. Pedidos úteis a qualquer momento: <em>“Faça um backup agora.”</em> · <em>“A TV não abre o endereço.”</em> · <em>“Faça o sistema ligar junto com o computador.”</em></p>
+            <p class="note">Se faltar o Node.js, o agente avisa e explica como instalar (Opção B, passo 1). Seus dados nunca são apagados. Quando ele mostrar a lista de endereços, pule para o passo <a href="#enderecos">2 · Abrir as telas</a>.</p>
+          </li>
+        </ol>
+      </div>
+      <h3 class="alt-title" id="instalar-node">Opção B · Instale você mesmo com o Node.js</h3>
       <div class="card" data-open-help="instalar">
         <ol class="passos">
           <li>
@@ -596,8 +623,8 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
       if (e.key === 'End') { e.preventDefault(); ativarAba(abas[abas.length - 1], true); }
     });
   });
-  const ua = navigator.userAgent;
-  ativarAba(/Mac/i.test(ua) && !/iPhone|iPad/i.test(ua) ? abas[1] : /Linux|X11/i.test(ua) && !/Android/i.test(ua) ? abas[2] : abas[0], false);
+  // Windows é o padrão (maioria das clínicas); a pessoa troca para macOS ou Linux pela aba.
+  ativarAba(abas[0], false);
 
   // ---- endereços das telas ----
   const TELAS = [
