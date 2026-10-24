@@ -482,7 +482,7 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
     }
     if (caminho === '/api/config') return { corpo: configPublica(e) };
     if (caminho === '/api/health') return { corpo: { ok: true, hora: agora() } };
-    if (caminho === '/api/info') return { corpo: { ips: [], porta: 0, versao: 'demo' } };
+    if (caminho === '/api/info') return { corpo: { ips: [], hostname: 'clinica.local', porta: 0, versao: 'demo' } };
     if (caminho === '/api/auth') return { corpo: { pinRequired: false } };
     if (caminho === '/api/backup') throw new ErroHttp(403, INDISPONIVEL);
   }

@@ -4,7 +4,7 @@ import express from 'express';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { networkInterfaces, tmpdir } from 'node:os';
+import os, { networkInterfaces, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { db, copiarBanco, ROOT, BRAND_DIR, VIDEOS_DIR } from './db.js';
 import { lerConfig, validarEGravar } from './config.js';
@@ -94,13 +94,19 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, hora: new Date().toIS
 
 app.get('/api/config', (_req, res) => res.json(configPublica()));
 
-// IPs deste computador na rede (para montar os endereços das telas na TV, tablet e consultórios).
+// IPs e nome da máquina na rede (para montar os endereços amigáveis das telas na TV, tablet e consultórios).
 app.get('/api/info', (_req, res) => {
   const ips = Object.values(networkInterfaces())
     .flat()
     .filter((i) => i && i.family === 'IPv4' && !i.internal)
     .map((i) => i.address);
-  res.json({ ips, porta: Number(process.env.PORT) || 3000, versao: process.env.npm_package_version || null });
+  const hostname = os.hostname();
+  res.json({
+    ips,
+    hostname,
+    porta: Number(process.env.PORT) || 3000,
+    versao: process.env.npm_package_version || null,
+  });
 });
 
 app.get('/api/state', (_req, res) => {

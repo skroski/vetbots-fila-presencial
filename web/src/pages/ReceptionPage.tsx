@@ -6,6 +6,7 @@ import {
   Pencil,
   Plus,
   Printer,
+  QrCode,
   Search,
   Stethoscope,
   Touchpad,
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
 import { agoraServidor } from '@/lib/store';
+import { qrCodeParaSvg } from '@/lib/qrcode';
 import {
   QUEUE_PRIORITY_LABEL,
   QUEUE_STATUS_LABEL,
@@ -56,6 +58,9 @@ export default function ReceptionPage() {
   const [editVet, setEditVet] = useState('');
   const [editPriority, setEditPriority] = useState<QueuePriority>('normal');
   const [editMotivo, setEditMotivo] = useState('');
+
+  // Modal de Conexão Rápida / QR Code para Telão e Totem
+  const [qrModal, setQrModal] = useState<{ nome: string; rota: string } | null>(null);
   const [editServiceId, setEditServiceId] = useState('');
   const [editRoomId, setEditRoomId] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
@@ -202,6 +207,15 @@ export default function ReceptionPage() {
           </a>
 
           <button
+            onClick={() => setQrModal({ nome: 'Conectar Telão ou Tablet', rota: '/tv' })}
+            className="btn btn-outline btn-primary gap-2"
+            title="Conectar Smart TVs, tablets ou outros computadores na rede da clínica"
+          >
+            <QrCode className="h-4 w-4" />
+            <span>Conectar TV / Tablet</span>
+          </button>
+
+          <button
             onClick={() => setShowAddModal(true)}
             className="btn btn-primary"
           >
@@ -210,6 +224,70 @@ export default function ReceptionPage() {
           </button>
         </div>
       </header>
+
+      {/* Modal Conectar TV / Tablet com QR Code */}
+      {qrModal && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-md p-6 space-y-5 text-center">
+            <h3 className="text-lg font-bold text-base-content">Conectar Aparelho na Clínica</h3>
+            <p className="text-xs text-neutral">
+              Aponte a câmera do celular, tablet ou o leitor da TV para abrir sem digitar nenhum endereço:
+            </p>
+
+            <div className="flex justify-center gap-2">
+              <button
+                className={`btn btn-sm ${qrModal.rota === '/tv' ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => setQrModal({ nome: 'Telão da TV', rota: '/tv' })}
+              >
+                <Tv className="h-4 w-4" /> Telão TV
+              </button>
+              <button
+                className={`btn btn-sm ${qrModal.rota === '/totem' ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => setQrModal({ nome: 'Totem Touch', rota: '/totem' })}
+              >
+                <Touchpad className="h-4 w-4" /> Totem
+              </button>
+              <button
+                className={`btn btn-sm ${qrModal.rota === '/chamar' ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => setQrModal({ nome: 'Chamador de Consultório', rota: '/chamar' })}
+              >
+                <DoorOpen className="h-4 w-4" /> Consultório
+              </button>
+            </div>
+
+            <div
+              className="mx-auto flex items-center justify-center p-3 bg-white rounded-xl shadow-inner border border-base-300 w-fit"
+              dangerouslySetInnerHTML={{
+                __html: qrCodeParaSvg(`${window.location.origin}${qrModal.rota}`, 220),
+              }}
+            />
+
+            <div className="bg-base-200 rounded-lg p-3 text-left space-y-1">
+              <div className="text-[11px] font-semibold text-neutral">Ou digite no navegador do aparelho:</div>
+              <code className="font-mono text-xs text-accent break-all select-all block">
+                {window.location.origin}{qrModal.rota}
+              </code>
+            </div>
+
+            <div className="modal-action justify-center">
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() =>
+                  navigator.clipboard
+                    ?.writeText(`${window.location.origin}${qrModal.rota}`)
+                    .then(() => toast.success('Link copiado.'))
+                }
+              >
+                Copiar link
+              </button>
+              <button className="btn btn-primary btn-sm" onClick={() => setQrModal(null)}>
+                Fechar
+              </button>
+            </div>
+          </div>
+          <div className="modal-backdrop" onClick={() => setQrModal(null)} />
+        </div>
+      )}
 
       {/* Cartões de Indicadores Rápidos */}
       <div className="max-w-7xl w-full mx-auto p-6 space-y-6">

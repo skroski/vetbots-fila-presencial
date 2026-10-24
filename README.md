@@ -10,49 +10,36 @@ Roda **na rede local** (Node.js + SQLite). Sem conta em nuvem, sem banco externo
 
 ---
 
-## Instalar
+## Como Iniciar (O Jeito Mais Fácil)
 
-Escolha **um** caminho. O sistema precisa do **Node.js 22.16 ou mais novo** (versão LTS), mas no caminho A o agente confere isso por você.
-
-### A) Peça a um agente de IA (o mais simples)
-
-Funciona com **Claude Code**, **Codex** e **Antigravity com Gemini**. Você escreve em português e o agente faz o resto.
-
-1. Abra o agente **dentro da pasta deste projeto**:
-
-   | Agente | Como abrir |
-   | --- | --- |
-   | Claude Code | No terminal, dentro da pasta, digite `claude` |
-   | Codex | No terminal, dentro da pasta, digite `codex` |
-   | Antigravity (Gemini) | Abra a pasta no Antigravity e use o chat do agente (ou `gemini` no terminal) |
-
-2. Peça assim, em português (copie e cole no chat do agente):
-
-   ```text
-   Instale o sistema de fila presencial e me mostre os endereços.
-   ```
-
-   Se o agente estiver aberto em outra pasta e a skill já estiver instalada nele, peça:
-
-   ```text
-   Use a skill sistema-fila-presencial e instale a fila na clínica.
-   ```
-
-O agente confere o Node.js, instala, liga o sistema e entrega o endereço de cada tela. Ele só pergunta o que não conseguir descobrir sozinho (por exemplo, em qual pasta instalar; o padrão é `fila-clinica` na sua pasta de usuário). Se faltar o Node.js, ele avisa e explica como instalar (caminho B, passo 1). Seus dados nunca são apagados.
-
-### B) Instalar com Node.js (sem agente de IA)
-
-1. Instale o **Node.js 22.16 ou mais novo**, versão LTS, em [nodejs.org](https://nodejs.org).
-2. Inicie o sistema:
+### 1. Duplo clique (Recomendado para o dia a dia na clínica)
+Não precisa digitar comandos nem usar terminal:
 
 | Sistema | Como iniciar |
 | --- | --- |
-| Windows | Dê **duplo clique em `iniciar.bat`** |
-| macOS | Dê **duplo clique em `iniciar.command`** |
-| Linux | `npm install` e depois `npm start` |
-| Docker | `docker compose up -d --build` (liga sozinho com o computador) |
+| **Windows** | Dê **duplo clique em `iniciar.bat`** (ou `npm run electron` para janela de app) |
+| **macOS** | Dê **duplo clique em `iniciar.command`** (ou execute `./iniciar.sh`) |
+| **Desktop Nativo** | `npm run electron` (abre a janela do app sem navegador e com servidor interno) |
 
-Na primeira vez a instalação leva 1 a 2 minutos. Deixe a janela aberta: ela é o servidor, e mostra o endereço de cada tela.
+Na primeira vez, a instalação é automática. Deixe a janela aberta: o servidor da clínica estará ativo e pronto.
+
+---
+
+## Conectar Aparelhos sem Digitar IP
+
+Para não precisar digitar números de IP difíceis nos tablets ou na Smart TV:
+
+1. **Pelo QR Code (Mais rápido)**:
+   - Na Recepção (`/`), clique no botão **"Conectar TV / Tablet"**.
+   - Aponte a câmera do celular, tablet ou o leitor da TV para o **QR Code** e a tela abre conectada na hora.
+2. **Pelo Nome Amigável (`.local` via mDNS)**:
+   - Em vez de IP, digite direto no navegador de qualquer aparelho:
+     - `http://<nome-do-computador>.local:3000/tv` (ex: `http://fila.local:3000/tv`)
+   - O endereço exato da sua clínica fica sempre visível em **Ajustes (`/config`) → Sistema**.
+
+---
+
+### Instalação via Agente de IA (Claude Code, Codex, Antigravity)
 
 ---
 

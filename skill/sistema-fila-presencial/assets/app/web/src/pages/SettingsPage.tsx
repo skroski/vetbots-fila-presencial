@@ -17,6 +17,7 @@ import {
   Palette,
   Pencil,
   Plus,
+  QrCode,
   Server,
   Stethoscope,
   Tag,
@@ -29,6 +30,7 @@ import {
 import { useQueueSystem } from '@/hooks/useQueueSystem';
 import { api, ApiError, enviarArquivo, getAdminPin, setAdminPin } from '@/lib/api';
 import { aplicarTemaTemporario, refresh } from '@/lib/store';
+import { qrCodeParaSvg } from '@/lib/qrcode';
 import BrandMark from '@/components/BrandMark';
 import type { AppConfig, Media } from '@/types/queue';
 
@@ -1102,10 +1104,11 @@ function AbaVeterinarios() {
 
 function AbaSistema({ config }: { config: AppConfig }) {
   const [rodape, setRodape] = useState(config.ticket_footer);
-  const [info, setInfo] = useState<{ ips: string[]; porta: number } | null>(null);
+  const [info, setInfo] = useState<{ ips: string[]; hostname?: string; porta: number } | null>(null);
+  const [qrModal, setQrModal] = useState<{ nome: string; url: string } | null>(null);
 
   useEffect(() => {
-    api<{ ips: string[]; porta: number }>('GET', '/api/info').then(setInfo).catch(() => {});
+    api<{ ips: string[]; hostname?: string; porta: number }>('GET', '/api/info').then(setInfo).catch(() => {});
   }, []);
 
   const baixarBackup = async () => {
@@ -1127,7 +1130,13 @@ function AbaSistema({ config }: { config: AppConfig }) {
   const host = window.location.hostname;
   const usandoLocalhost = host === 'localhost' || host === '127.0.0.1';
   const ip = info?.ips[0];
-  const base = usandoLocalhost && ip ? `http://${ip}:${info?.porta ?? window.location.port}` : window.location.origin;
+  const porta = info?.porta ?? (window.location.port ? Number(window.location.port) : 3000);
+  const baseIp = usandoLocalhost && ip ? `http://${ip}:${porta}` : window.location.origin;
+
+  // Nome de rede amigável (.local via mDNS / Bonjour)
+  const hostnameLimpo = (info?.hostname || '').replace(/\.local$/i, '');
+  const nomeLocal = hostnameLimpo ? `${hostnameLimpo}.local` : 'fila.local';
+  const baseLocal = `http://${nomeLocal}:${porta}`;
 
   const telas = [
     ['Recepção / triagem', '/'],
@@ -1140,40 +1149,112 @@ function AbaSistema({ config }: { config: AppConfig }) {
   return (
     <div className="space-y-6">
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-base-content">Endereços das telas</h2>
-        <p className="text-xs text-neutral">
-          Digite estes endereços no navegador da TV, do tablet do totem e dos computadores. Eles precisam estar na mesma rede
-          (Wi-Fi ou cabo) deste computador.
-          {usandoLocalhost && !ip && ' Descubra o IP deste computador (veja a documentação de instalação) e troque "localhost" por ele.'}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-bold text-base-content">Endereços fáceis das telas</h2>
+            <p className="text-xs text-neutral">
+              Acesse nos aparelhos da clínica (TVs, tablets, computadores na mesma rede Wi-Fi). Use o nome amigável ou escaneie o QR Code.
+            </p>
+          </div>
+        </div>
+
+        {/* Destaque do endereço amigável */}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/30 bg-primary/10 p-4">
+          <div className="space-y-0.5">
+            <span className="text-xs font-bold text-primary uppercase tracking-wide">Nome Amigável na Rede Local (mDNS)</span>
+            <div className="font-mono text-sm font-bold text-base-content">
+              {baseLocal}
+            </div>
+            <p className="text-[11px] text-neutral">
+              Funciona sem precisar decorar ou digitar números de IP no navegador de Smart TVs, tablets e celulares.
+            </p>
+          </div>
+          <button
+            className="btn btn-sm btn-outline btn-primary"
+            onClick={() => navigator.clipboard?.writeText(baseLocal).then(() => toast.success('Endereço amigável copiado.'))}
+          >
+            <Copy className="h-4 w-4" />
+            Copiar
+          </button>
+        </div>
+
         <ul className="space-y-2">
-          {telas.map(([nome, rota]) => (
-            <li key={rota} className="flex items-center justify-between gap-3 bg-base-100 border border-base-300 rounded-lg px-4 py-2.5">
-              <span className="text-xs text-neutral">{nome}</span>
-              <span className="flex items-center gap-2 min-w-0">
-                <code className="font-mono text-xs text-accent truncate">{base}{rota}</code>
-                <a
-                  href={rota}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn btn-ghost btn-square btn-xs"
-                  title={`Abrir ${nome} em nova aba`}
-                  aria-label={`Abrir ${nome} em nova aba`}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-                <button
-                  className="btn btn-ghost btn-square btn-xs"
-                  title="Copiar" aria-label="Copiar endereço"
-                  onClick={() => navigator.clipboard?.writeText(`${base}${rota}`).then(() => toast.success('Endereço copiado.'))}
-                >
-                  <Copy className="h-4 w-4" />
-                </button>
-              </span>
-            </li>
-          ))}
+          {telas.map(([nome, rota]) => {
+            const urlFinal = `${baseIp}${rota}`;
+            const urlAmigavel = `${baseLocal}${rota}`;
+            return (
+              <li key={rota} className="flex flex-wrap items-center justify-between gap-3 bg-base-100 border border-base-300 rounded-lg px-4 py-3">
+                <div className="min-w-0">
+                  <div className="text-xs font-semibold text-base-content">{nome}</div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <code className="font-mono text-xs text-accent truncate">{urlAmigavel}</code>
+                    <span className="text-[10px] text-neutral/70">ou IP: {urlFinal}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    className="btn btn-primary btn-sm gap-1.5"
+                    title="Exibir QR Code para escanear com celular ou tablet"
+                    onClick={() => setQrModal({ nome, url: urlFinal })}
+                  >
+                    <QrCode className="h-4 w-4" />
+                    <span>QR Code</span>
+                  </button>
+                  <a
+                    href={rota}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-ghost btn-square btn-sm"
+                    title={`Abrir ${nome} em nova aba`}
+                    aria-label={`Abrir ${nome} em nova aba`}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                  <button
+                    className="btn btn-ghost btn-square btn-sm"
+                    title="Copiar endereço"
+                    aria-label="Copiar endereço"
+                    onClick={() => navigator.clipboard?.writeText(urlFinal).then(() => toast.success('Endereço copiado.'))}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
+
+      {/* Modal interativo com o QR Code */}
+      {qrModal && (
+        <div className="modal modal-open">
+          <div className="modal-box text-center max-w-sm p-6 space-y-4">
+            <h3 className="font-bold text-lg text-base-content">{qrModal.nome}</h3>
+            <p className="text-xs text-neutral">
+              Aponte a câmera do celular, tablet ou leitor da TV para abrir direto:
+            </p>
+            <div
+              className="mx-auto flex items-center justify-center p-3 bg-white rounded-xl shadow-inner border border-base-300"
+              dangerouslySetInnerHTML={{ __html: qrCodeParaSvg(qrModal.url, 220) }}
+            />
+            <div className="bg-base-200 rounded-lg p-2.5">
+              <code className="font-mono text-xs text-accent break-all">{qrModal.url}</code>
+            </div>
+            <div className="modal-action justify-center">
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => navigator.clipboard?.writeText(qrModal.url).then(() => toast.success('Link copiado.'))}
+              >
+                <Copy className="h-4 w-4" /> Copiar link
+              </button>
+              <button className="btn btn-primary btn-sm" onClick={() => setQrModal(null)}>
+                Fechar
+              </button>
+            </div>
+          </div>
+          <div className="modal-backdrop" onClick={() => setQrModal(null)} />
+        </div>
+      )}
 
       <div className={cartao}>
         <h2 className="text-sm font-bold text-base-content">Cupom da senha (impressora térmica)</h2>

@@ -32,8 +32,20 @@ O sistema escuta em `0.0.0.0` (toda a rede). Libere a porta (padrão 3000):
 
 **Não abra essa porta na internet** (roteador/port forwarding). O sistema foi feito para a rede interna.
 
-## 3. Smart TV (sala de espera)
-1. TV na mesma rede. Abra o navegador da TV e digite `http://IP-DO-SERVIDOR:3000/tv`.
+## 3. Conexão sem digitar IP (QR Code e Nome Amigável)
+
+Não é necessário digitar sequências de números de IP no controle da TV nem nos tablets:
+
+1. **Pelo QR Code (Recomendado)**:
+   - Na Recepção (`/`), clique no botão **"Conectar TV / Tablet"**.
+   - No celular ou tablet, aponte a câmera e abra a tela instantaneamente.
+   - Em **Ajustes (`/config`) → Sistema**, cada tela possui seu botão individual com QR Code gerado em alta resolução.
+2. **Pelo Nome Amigável (`.local` via mDNS)**:
+   - Digite no navegador de qualquer aparelho: `http://<nome-do-computador>.local:3000/tv` (ex: `http://fila.local:3000/tv`).
+   - O endereço amigável exato é exibido no console ao iniciar o servidor e na tela de Ajustes.
+
+## 4. Smart TV (sala de espera)
+1. TV na mesma rede. Abra o navegador da TV e acesse pelo nome amigável ou IP.
 2. Toque no botão de tela cheia (ou use o modo tela cheia do navegador da TV).
 3. Dê um clique na tela com o controle: libera o áudio.
 4. Salve nos favoritos.
@@ -41,19 +53,16 @@ O sistema escuta em `0.0.0.0` (toda a rede). Libere a porta (padrão 3000):
 Dicas:
 - **Samsung (Tizen) / LG (webOS)**: o navegador nativo funciona; vídeos devem ser MP4 H.264/AAC.
 - **Fire TV Stick / Android TV / Chromecast com Google TV**: use o *Fully Kiosk Browser* apontando para `/tv`: abre sozinho em tela cheia quando a TV liga e não deixa a tela apagar.
-- **Mini-PC ou notebook ligado na TV (HDMI)**: Chrome com `--kiosk http://IP:3000/tv`. É a opção mais estável.
+- **Mini-PC ou notebook ligado na TV (HDMI)**: Chrome com `--kiosk http://<nome>.local:3000/tv`. É a opção mais estável.
 - Desative a economia de energia/proteção de tela da TV.
 
-## 4. Consultórios
+## 5. Consultórios
 Cada sala tem um link próprio em `/config → Consultórios & Salas → Link do chamador` (`/chamar/<id>`). No Chrome/Edge: ⋮ → *Transmitir, salvar e compartilhar* → *Criar atalho* → marque *Abrir como janela*. O ícone abre direto na sala certa.
 
-## 5. Totem
-`http://IP:3000/totem` em tablet com Acesso Guiado (iPad) ou Fully Kiosk (Android). Impressão: ver `totem-e-impressao.md`.
+## 6. Totem
+Acesse `/totem` em tablet com Acesso Guiado (iPad) ou Fully Kiosk (Android). Impressão: ver `totem-e-impressao.md`.
 
-## 6. Quando a rede falha
+## 7. Quando a rede falha
 - Wi-Fi caiu um instante: as telas mostram a faixa vermelha e voltam sozinhas (SSE reconecta + consulta a cada 10 s).
 - Servidor desligado/reiniciado: nada se perde (SQLite em disco); as telas voltam quando ele subir.
 - Sem internet externa: **sem problema**. Nada depende dela.
-
-## 7. Domínio amigável (opcional)
-Dá para usar `http://fila.local:3000` configurando um nome no roteador (DNS local). Não é necessário.

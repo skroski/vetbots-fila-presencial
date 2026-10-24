@@ -25,7 +25,10 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`  Dados/uploads:  ${DATA_DIR}`);
   console.log(`  Backup diário:  ${DATA_DIR}/backups (automático)`);
   if (ADMIN_PIN) console.log('  Ajustes protegidos por PIN (ADMIN_PIN).');
-  console.log('\n  Abra nos aparelhos da clínica (mesma rede Wi-Fi/cabo):\n');
+  const hostLocal = (process.env.HOSTNAME || '').replace(/\.local$/i, '') || 'fila';
+  console.log(`\n  Endereço amigável (sem IP):    http://${hostLocal}.local:${PORT}`);
+  console.log(`  Endereço por IP na rede:       http://${base}:${PORT}\n`);
+  console.log('  Abra nos aparelhos da clínica (mesma rede Wi-Fi/cabo):\n');
   const telas = [
     ['Recepção / triagem', '/'],
     ['Telão da TV', '/tv'],
