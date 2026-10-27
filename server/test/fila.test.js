@@ -330,3 +330,69 @@ test('crud de veterinários e edição de informações de senha', async () => {
   assert.equal(del.status, 204);
 });
 
+test('persistência local: estatísticas, backups manuais, restauração e exportação/importação JSON', async () => {
+  // 1. Estatísticas do banco local
+  const stats = await api('GET', '/api/dados/estatisticas');
+  assert.equal(stats.status, 200);
+  assert.equal(typeof stats.body.tamanhoBancoBytes, 'number');
+  assert.ok(stats.body.tamanhoBancoBytes > 0);
+  assert.equal(typeof stats.body.totalItens, 'number');
+  assert.equal(typeof stats.body.totalSalas, 'number');
+  assert.equal(typeof stats.body.totalServicos, 'number');
+
+  // 2. Criar backup manual
+  const novoBackup = await api('POST', '/api/backups');
+  assert.equal(novoBackup.status, 201);
+  assert.ok(novoBackup.body.arquivo.startsWith('manual-'));
+  assert.ok(novoBackup.body.arquivo.endsWith('.db'));
+
+  // 3. Listar backups
+  const lista = await api('GET', '/api/backups');
+  assert.equal(lista.status, 200);
+  assert.ok(Array.isArray(lista.body));
+  assert.ok(lista.body.some((b) => b.arquivo === novoBackup.body.arquivo));
+
+  // 4. Exportar dados em JSON
+  const exp = await api('GET', '/api/dados/exportar');
+  assert.equal(exp.status, 200);
+  assert.equal(exp.body.sistema, 'vetbots-fila-presencial');
+  assert.ok(Array.isArray(exp.body.servicos));
+  assert.ok(Array.isArray(exp.body.salas));
+  assert.ok(exp.body.config);
+
+  // 5. Importar dados JSON (adicionando um serviço personalizado)
+  const copiaExport = JSON.parse(JSON.stringify(exp.body));
+  copiaExport.servicos.push({
+    id: 'srv-teste-import',
+    nome: 'Fisioterapia Veterinária',
+    prefixo: 'F',
+    ativo: 1,
+    ordem: 99,
+  });
+  copiaExport.config.clinic_subtitle = 'Subtítulo Importado com Sucesso';
+
+  const imp = await api('POST', '/api/dados/importar', { dados: copiaExport, modo: 'tudo' });
+  assert.equal(imp.status, 200);
+  assert.equal(imp.body.ok, true);
+
+  // Confere se o serviço importado e o subtítulo existem
+  const posImport = await estado();
+  assert.ok(posImport.servicos.some((s) => s.id === 'srv-teste-import'));
+  assert.equal(posImport.config.clinic_subtitle, 'Subtítulo Importado com Sucesso');
+
+  // 6. Restaurar backup manual (volta ao estado antes da importação do novo serviço)
+  const rest = await api('POST', '/api/backups/restaurar', { arquivo: novoBackup.body.arquivo });
+  assert.equal(rest.status, 200);
+  assert.equal(rest.body.ok, true);
+
+  // Confere se restaurou (srv-teste-import não deve existir no backup original)
+  const posRestauracao = await estado();
+  assert.equal(posRestauracao.servicos.some((s) => s.id === 'srv-teste-import'), false);
+
+  // 7. Excluir o backup manual criado no teste
+  const delBackup = await api('DELETE', `/api/backups/${novoBackup.body.arquivo}`);
+  assert.equal(delBackup.status, 200);
+  assert.equal(delBackup.body.ok, true);
+});
+
+

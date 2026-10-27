@@ -21,12 +21,16 @@ export const db = new DatabaseSync(DB_FILE);
 // WAL: leitura (TV, recepção) não bloqueia escrita (chamador). busy_timeout evita "database is locked".
 db.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
 
+let nivelTransacao = 0;
+
 /**
  * Executa `fn` dentro de uma transação (confirma ao terminar, desfaz se der erro).
  * `imediata: true` trava a escrita já no início (BEGIN IMMEDIATE): é o que serializa a geração de senhas
- * e o "Chamar Próximo".
+ * e o "Chamar Próximo". Suporta chamadas aninhadas (reentrância).
  */
 export function transacao(fn, { imediata = false } = {}) {
+  if (nivelTransacao > 0) return fn();
+  nivelTransacao++;
   db.exec(imediata ? 'BEGIN IMMEDIATE' : 'BEGIN');
   try {
     const resultado = fn();
@@ -35,6 +39,8 @@ export function transacao(fn, { imediata = false } = {}) {
   } catch (e) {
     db.exec('ROLLBACK');
     throw e;
+  } finally {
+    nivelTransacao--;
   }
 }
 

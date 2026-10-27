@@ -1,16 +1,27 @@
 // Aplicação Express da Fila Presencial: API + tempo real (SSE) + uploads + interface web.
 // (index.js sobe o servidor; os testes importam este arquivo.)
 import express from 'express';
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, statSync, createWriteStream, mkdirSync, rmSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import os, { networkInterfaces, tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, basename } from 'node:path';
 import { db, copiarBanco, ROOT, BRAND_DIR, VIDEOS_DIR } from './db.js';
 import { lerConfig, validarEGravar } from './config.js';
 import { HttpError } from './http-error.js';
 import * as fila from './queue.js';
 import * as media from './media.js';
+import {
+  fazerBackup,
+  listarBackups,
+  obterEstatisticasBanco,
+  restaurarBackupLocal,
+  excluirBackupLocal,
+  substituirBanco,
+  exportarDadosJson,
+  importarDadosJson,
+  BACKUPS_DIR,
+} from './backup.js';
 import { cssDaCor } from '../shared/cores.js';
 
 export const ADMIN_PIN = process.env.ADMIN_PIN || '';
@@ -245,12 +256,95 @@ app.delete('/api/midias/:id', admin, ass(async (req, res) => {
   res.status(204).end();
 }));
 
-// Cópia consistente do banco (mesmo com o sistema em uso) para guardar como backup.
+// ---------- persistência e gerenciamento de backups locais (SQLite) ----------
+
+const jsonGrande = express.json({ limit: '20mb' });
+
+// Métricas de saúde e tamanho do banco local
+app.get('/api/dados/estatisticas', (_req, res) => {
+  res.json(obterEstatisticasBanco());
+});
+
+// Cópia consistente do banco para download imediato
 app.get('/api/backup', admin, ass(async (_req, res) => {
   const tmp = join(tmpdir(), `fila-backup-${Date.now()}.db`);
   await copiarBanco(tmp);
   const dia = new Date().toISOString().slice(0, 10);
   res.download(tmp, `fila-presencial-${dia}.db`, () => rm(tmp, { force: true }));
+}));
+
+// Lista os backups salvos em data/backups/
+app.get('/api/backups', admin, (_req, res) => {
+  res.json(listarBackups());
+});
+
+// Cria um backup manual imediato
+app.post('/api/backups', admin, ass(async (_req, res) => {
+  const b = await fazerBackup({ prefixo: 'manual', manter: 30, comHora: true });
+  res.status(201).json(b);
+}));
+
+// Restaura um backup local existente em data/backups/
+app.post('/api/backups/restaurar', admin, json, ass(async (req, res) => {
+  const r = await restaurarBackupLocal(req.body?.arquivo);
+  emitir();
+  res.json(r);
+}));
+
+// Baixa um backup local específico
+app.get('/api/backups/:arquivo', admin, (req, res) => {
+  const seguro = basename(req.params.arquivo || '');
+  if (!seguro || !seguro.endsWith('.db') || !/^[a-zA-Z0-9_.-]+$/.test(seguro)) {
+    throw new HttpError(400, 'Nome de arquivo de backup inválido.');
+  }
+  const caminho = join(BACKUPS_DIR, seguro);
+  if (!existsSync(caminho)) throw new HttpError(404, 'Arquivo de backup não encontrado.');
+  res.download(caminho, seguro);
+});
+
+// Exclui um backup local
+app.delete('/api/backups/:arquivo', admin, (req, res) => {
+  const r = excluirBackupLocal(req.params.arquivo);
+  res.json(r);
+});
+
+// Restaura banco enviado pelo navegador via upload de arquivo .db
+app.post('/api/backup/upload', admin, ass(async (req, res) => {
+  mkdirSync(BACKUPS_DIR, { recursive: true });
+  const tmp = join(BACKUPS_DIR, `upload-temp-${Date.now()}.db`);
+  await new Promise((resolve, reject) => {
+    const out = createWriteStream(tmp);
+    req.pipe(out);
+    out.on('finish', resolve);
+    out.on('error', reject);
+    req.on('error', reject);
+  });
+  try {
+    await substituirBanco(tmp);
+    emitir();
+    res.json({ ok: true, mensagem: 'Banco de dados restaurado com sucesso.' });
+  } finally {
+    rmSync(tmp, { force: true });
+  }
+}));
+
+// Exporta dados em formato JSON estruturado
+app.get('/api/dados/exportar', admin, (req, res) => {
+  const dados = exportarDadosJson();
+  if (req.query.download === '1' || req.query.download === 'true') {
+    const dia = new Date().toISOString().slice(0, 10);
+    res.set('Content-Disposition', `attachment; filename="fila-dados-${dia}.json"`);
+    res.type('json').send(JSON.stringify(dados, null, 2));
+  } else {
+    res.json(dados);
+  }
+});
+
+// Importa dados a partir de arquivo JSON estruturado
+app.post('/api/dados/importar', admin, jsonGrande, ass(async (req, res) => {
+  const r = await importarDadosJson(req.body?.dados || req.body, { modo: req.body?.modo || 'tudo' });
+  emitir();
+  res.json(r);
 }));
 
 // ---------- arquivos enviados (com suporte a Range: obrigatório para vídeo em TVs e Safari) ----------

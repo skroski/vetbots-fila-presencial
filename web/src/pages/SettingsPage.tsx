@@ -12,6 +12,7 @@ import {
   Eye,
   EyeOff,
   Film,
+  Heart,
   ImagePlus,
   Lock,
   Palette,
@@ -26,9 +27,11 @@ import {
   Upload,
   X,
   Youtube,
+  Database,
+  FileText,
 } from 'lucide-react';
 import { useQueueSystem } from '@/hooks/useQueueSystem';
-import { api, ApiError, enviarArquivo, getAdminPin, setAdminPin } from '@/lib/api';
+import { api, ApiError, enviarArquivo, getAdminPin, setAdminPin, baixarArquivoComPin } from '@/lib/api';
 import { aplicarTemaTemporario, refresh } from '@/lib/store';
 import { qrCodeParaSvg } from '@/lib/qrcode';
 import BrandMark from '@/components/BrandMark';
@@ -1300,15 +1303,117 @@ function AbaSistema({ config }: { config: AppConfig }) {
       </div>
 
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-base-content">Backup</h2>
-        <p className="text-xs text-neutral">
-          Todos os dados ficam no arquivo <code className="text-base-content">data/fila.db</code> (e os vídeos em{' '}
-          <code className="text-base-content">data/uploads</code>) na pasta do sistema. Baixe uma cópia segura do banco quando quiser.
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Database className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-bold text-base-content">Persistência & Backup de Dados</h2>
+          </div>
+          <span className="badge badge-success badge-sm text-[11px] font-semibold">100% Local (SQLite)</span>
+        </div>
+        <p className="text-xs text-neutral leading-relaxed">
+          Todos os dados e configurações ficam armazenados localmente no arquivo <code className="text-base-content font-mono font-bold">data/fila.db</code> sem depender de bancos em nuvem ou internet. Você pode exportar, importar ou restaurar pontos no tempo a qualquer momento.
         </p>
-        <button className={botaoPrimario} onClick={baixarBackup}>
-          <Download className="h-4 w-4" />
-          Baixar backup do banco
-        </button>
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <button
+            type="button"
+            className={botaoPrimario}
+            onClick={() => window.dispatchEvent(new CustomEvent('abrir-dados-backup'))}
+          >
+            <Database className="h-4 w-4" />
+            Abrir Gerenciador de Dados & Backups
+          </button>
+          <button type="button" className="btn btn-outline btn-sm" onClick={baixarBackup}>
+            <Download className="h-4 w-4" />
+            Baixar Banco (.db)
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={async () => {
+              try {
+                const dia = new Date().toISOString().slice(0, 10);
+                await baixarArquivoComPin('/api/dados/exportar?download=1', `fila-dados-${dia}.json`);
+                toast.success('Arquivo JSON baixado.');
+              } catch (e) {
+                toast.error(e instanceof Error ? e.message : 'Erro ao exportar JSON.');
+              }
+            }}
+          >
+            <FileText className="h-4 w-4" />
+            Exportar JSON (.json)
+          </button>
+        </div>
+      </div>
+
+      <div className={`${cartao} border-brand-200 dark:border-brand-900/40 bg-gradient-to-br from-base-100 to-base-200/50`}>
+        <div className="flex items-center gap-2">
+          <Heart className="h-5 w-5 text-rose-500 fill-rose-500/20" />
+          <h2 className="text-sm font-bold text-base-content">Apoio ao Projeto, Doações & Consultoria</h2>
+        </div>
+
+        <div className="space-y-2 text-xs text-neutral leading-relaxed">
+          <p className="font-semibold text-base-content">💚 Conseguiu instalar e usar com sucesso?</p>
+          <p>
+            Se este sistema organizou o atendimento da sua clínica e está rodando bem no dia a dia,{' '}
+            <strong className="text-base-content">considere colaborar com o projeto!</strong> Sua ajuda mantém o software vivo,
+            livre e em constante evolução.
+          </p>
+          <p>
+            Você também pode criar novas funcionalidades ou{' '}
+            <strong className="text-base-content">apadrinhar funcionalidades</strong> sob medida para a sua clínica.
+          </p>
+        </div>
+
+        <div className="bg-base-200/80 border border-base-300 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span className="text-[11px] uppercase tracking-wider font-bold text-neutral block">Chave Pix para doação</span>
+            <code className="text-sm font-mono font-bold text-brand-600 dark:text-brand-400">4199865410</code>
+          </div>
+          <button
+            type="button"
+            className="btn btn-sm btn-outline gap-1.5"
+            onClick={() => {
+              void navigator.clipboard?.writeText('4199865410');
+              toast.success('Chave Pix 4199865410 copiada!');
+            }}
+          >
+            <Copy className="h-4 w-4" />
+            Copiar Pix
+          </button>
+        </div>
+
+        <div className="pt-2 border-t border-base-300/80 space-y-2 text-xs text-neutral">
+          <p className="font-semibold text-base-content">🛠️ Precisa de ajuda para instalar e botar em prática?</p>
+          <p>
+            Podemos ser contratados para prestar <strong className="text-base-content">consultoria por hora</strong> para instalar,
+            configurar a rede local (Wi-Fi/LAN), conectar a TV, o totem touch, a impressora térmica e treinar sua equipe.
+          </p>
+          <a
+            href="https://wa.me/554199865410"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-sm btn-primary inline-flex gap-2"
+          >
+            Falar no WhatsApp: (41) 99865-410
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+
+        <div className="pt-2 border-t border-base-300/80 text-xs text-neutral">
+          <p>
+            💻 Se for um desenvolvedor, <strong className="text-base-content">colabore com o projeto Open Source, não seja mala!</strong>{' '}
+            Envie pull requests, relate ideias construtivas e contribua com melhorias no{' '}
+            <a
+              href="https://github.com/skroski/vetbots-fila-presencial"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-600 hover:underline font-semibold inline-flex items-center gap-1"
+            >
+              GitHub <ExternalLink className="h-3 w-3" />
+            </a>
+            .
+          </p>
+        </div>
       </div>
     </div>
   );

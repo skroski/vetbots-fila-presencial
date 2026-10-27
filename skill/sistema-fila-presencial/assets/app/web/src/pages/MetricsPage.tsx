@@ -110,15 +110,17 @@ export default function MetricsPage() {
 
         {/* Seletor de Período */}
         <div role="tablist" className="tabs tabs-boxed !flex max-w-full flex-wrap">
-          {[
-            { id: 'today', label: 'Hoje' },
-            { id: '7d', label: 'Últimos 7 dias' },
-            { id: '30d', label: 'Últimos 30 dias' },
-          ].map((p) => (
+          {(
+            [
+              { id: 'today', label: 'Hoje' },
+              { id: '7d', label: 'Últimos 7 dias' },
+              { id: '30d', label: 'Últimos 30 dias' },
+            ] as const
+          ).map((p) => (
             <button
               key={p.id}
               role="tab"
-              onClick={() => setPeriod(p.id as any)}
+              onClick={() => setPeriod(p.id)}
               className={`tab h-auto whitespace-nowrap py-1.5 ${period === p.id ? 'tab-active' : ''}`}
             >
               {p.label}

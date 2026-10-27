@@ -91,3 +91,50 @@ export function enviarArquivo<T = unknown>(
     xhr.send(file);
   });
 }
+
+// Envio de arquivo .db para restaurar o banco de dados SQLite local
+export function enviarBackupBanco(
+  file: File,
+  onProgress?: (pct: number) => void,
+): Promise<{ ok: boolean; mensagem: string }> {
+  return new Promise((resolve, reject) => {
+    if (import.meta.env.MODE === 'demo') {
+      reject(new ApiError(403, 'Restauração de banco via upload indisponível no modo demonstração.'));
+      return;
+    }
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/backup/upload');
+    const pin = getAdminPin();
+    if (pin) xhr.setRequestHeader('x-admin-pin', pin);
+    xhr.setRequestHeader('content-type', 'application/octet-stream');
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress?.(Math.round((e.loaded / e.total) * 100));
+    };
+    xhr.onerror = () => reject(new ApiError(0, 'Falha na conexão durante o envio do backup.'));
+    xhr.onload = () => {
+      let corpo: { erro?: string; ok?: boolean; mensagem?: string } | null = null;
+      try {
+        corpo = JSON.parse(xhr.responseText);
+      } catch {
+        /* sem corpo */
+      }
+      if (xhr.status >= 200 && xhr.status < 300) resolve(corpo as { ok: boolean; mensagem: string });
+      else reject(new ApiError(xhr.status, corpo?.erro || `Erro ${xhr.status}`));
+    };
+    xhr.send(file);
+  });
+}
+
+// Faz o download de um arquivo da API autenticando com o PIN de admin se necessário
+export async function baixarArquivoComPin(url: string, nomeArquivoPadrao: string): Promise<void> {
+  const pin = getAdminPin();
+  const res = await fetch(url, { headers: pin ? { 'x-admin-pin': pin } : {} });
+  if (!res.ok) throw new ApiError(res.status, 'Não foi possível baixar o arquivo.');
+  const blob = await res.blob();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = nomeArquivoPadrao;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+

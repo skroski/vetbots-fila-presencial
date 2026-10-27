@@ -75,10 +75,25 @@ Copie `.env.example` para `.env` só se precisar mudar algo:
 | Vídeo não toca na TV | Use MP4 H.264/AAC com `+faststart` |
 | Senhas viram o dia no horário errado | Corrija o fuso do computador ou defina `TZ` |
 
-## Ajuda para instalar
+## Apoio, Doações e Consultoria
 
-Se este projeto foi útil, você pode contribuir com qualquer valor pela chave Pix:
+### 💚 Conseguiu instalar e usar com sucesso?
+Se este sistema organizou a fila do seu atendimento e está rodando bem no dia a dia da clínica, **considere colaborar com o projeto!** Sua colaboração ajuda a manter o software livre, atualizado e independente.
 
-**554199865410**
+Você também pode contribuir sugerindo melhorias, criando novas funcionalidades ou **apadrinhando funcionalidades** (patrocinando o desenvolvimento de recursos sob medida que a sua clínica precisa).
 
-Precisa de ajuda para instalar, configurar a rede, preparar a TV, o totem ou treinar a equipe? Fale pelo WhatsApp **55 41 99865-410**. Fazemos a instalação e o acompanhamento por um valor por hora combinado previamente.
+Faça sua doação de qualquer valor pela chave Pix:
+- **Chave Pix:** `4199865410`
+
+---
+
+### 🛠️ Precisa de ajuda para instalar e botar em prática?
+Precisa de suporte especializado para instalar, configurar a rede local (Wi-Fi/LAN), conectar Smart TVs, tablets, totem touch com impressora térmica ou treinar sua equipe?
+
+**Podemos ser contratados para prestar consultoria por hora**, com acompanhamento técnico direto do início ao fim:
+- **WhatsApp:** [55 41 99865-410](https://wa.me/554199865410) (clique para falar conosco)
+
+---
+
+### 💻 Para desenvolvedores
+Se você é desenvolvedor, **colabore com o projeto Open Source, não seja mala!** Envie pull requests com melhorias, compartilhe ideias construtivas, ajude a aprimorar o código e fortaleça o ecossistema livre em vez de apenas criticar.

@@ -192,3 +192,47 @@ export const DEFAULT_CONFIG: AppConfig = {
   ticket_width_mm: '58',
   reset_daily: true,
 };
+
+export interface BackupInfo {
+  arquivo: string;
+  tamanho: number;
+  criado_em: string;
+  tipo: 'auto' | 'manual' | 'pre-restauracao' | string;
+}
+
+export interface PersistenceStats {
+  tamanhoBancoBytes: number;
+  totalItens: number;
+  totalAtivos: number;
+  totalSalas: number;
+  totalServicos: number;
+  totalVeterinarios: number;
+  totalBackups: number;
+  ultimoBackup: string | null;
+  caminhoBanco: string;
+}
+
+export interface ExportDataJson {
+  versao: number;
+  sistema: string;
+  exportado_em: string;
+  config: AppConfig;
+  servicos: QueueService[];
+  salas: QueueRoom[];
+  veterinarios: QueueVeterinarian[];
+  itens?: QueueItem[];
+  chamadas?: Array<{ id: string; item_id: string; sala_id: string | null; created_at: string }>;
+}
+
+export interface ImportResult {
+  ok: boolean;
+  mensagem: string;
+  detalhes?: {
+    configAtualizada?: boolean;
+    servicosImportados?: number;
+    salasImportadas?: number;
+    veterinariosImportados?: number;
+    itensImportados?: number;
+  };
+}
+

@@ -484,11 +484,76 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
     if (caminho === '/api/health') return { corpo: { ok: true, hora: agora() } };
     if (caminho === '/api/info') return { corpo: { ips: [], hostname: 'clinica.local', porta: 0, versao: 'demo' } };
     if (caminho === '/api/auth') return { corpo: { pinRequired: false } };
+    if (caminho === '/api/dados/estatisticas') {
+      return {
+        corpo: {
+          tamanhoBancoBytes: 49152,
+          totalItens: e.itens.length,
+          totalAtivos: e.itens.filter((i) => ATIVOS.includes(i.status)).length,
+          totalSalas: e.salas.length,
+          totalServicos: e.servicos.length,
+          totalVeterinarios: (e.veterinarios || []).length,
+          totalBackups: 1,
+          ultimoBackup: agora(),
+          caminhoBanco: 'localStorage (Modo Demonstração)',
+        },
+      };
+    }
+    if (caminho === '/api/backups') {
+      return {
+        corpo: [
+          {
+            arquivo: `auto-${diaLocal()}.db`,
+            tamanho: 49152,
+            criado_em: agora(),
+            tipo: 'auto',
+          },
+        ],
+      };
+    }
+    if (caminho === '/api/dados/exportar') {
+      return {
+        corpo: {
+          versao: 1,
+          sistema: 'vetbots-fila-presencial',
+          exportado_em: agora(),
+          config: configPublica(e),
+          servicos: e.servicos,
+          salas: e.salas,
+          veterinarios: e.veterinarios || [],
+          itens: e.itens,
+          chamadas: [],
+        },
+      };
+    }
     if (caminho === '/api/backup') throw new ErroHttp(403, INDISPONIVEL);
   }
 
   if (metodo === 'POST') {
     if (caminho === '/api/auth/verificar') return { corpo: { ok: true } };
+    if (caminho === '/api/backups') {
+      return {
+        status: 201,
+        corpo: {
+          arquivo: `manual-${diaLocal()}-demo.db`,
+          tamanho: 49152,
+          criado_em: agora(),
+          tipo: 'manual',
+        },
+      };
+    }
+    if (caminho === '/api/backups/restaurar') {
+      return { corpo: { ok: true, arquivo: (corpo as Record<string, string>)?.arquivo || 'demo.db' }, mudou: true };
+    }
+    if (caminho === '/api/dados/importar') {
+      const d = ((corpo as Record<string, unknown>)?.dados || corpo) as Record<string, unknown>;
+      if (d.config && typeof d.config === 'object') Object.assign(e.config, d.config);
+      if (Array.isArray(d.servicos)) e.servicos = d.servicos as QueueService[];
+      if (Array.isArray(d.salas)) e.salas = d.salas as QueueRoom[];
+      if (Array.isArray(d.veterinarios)) e.veterinarios = d.veterinarios as QueueVeterinarian[];
+      if (Array.isArray(d.itens)) e.itens = d.itens as Item[];
+      return { corpo: { ok: true, mensagem: 'Dados importados na demonstração.' }, mudou: true };
+    }
     if (caminho === '/api/itens') return { status: 201, corpo: adicionarItem(e, corpo), mudou: true };
     if (rota(/^\/api\/itens\/([^/]+)\/acao$/)) {
       const { acao, salaId, novoServicoId, motivo, veterinarioNome } = corpo as Record<string, string>;
