@@ -7,3 +7,5 @@ data/*
 *.log
 web/dist-demo/
 .vercel
+desktop/app/
+desktop/release/

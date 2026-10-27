@@ -1,0 +1,82 @@
+# Gera os instaladores do aplicativo da Fila Presencial nos três sistemas, cada um na sua própria máquina.
+#   - Manual (aba Actions → "Aplicativo desktop" → Run workflow): os instaladores ficam nos Artifacts da execução.
+#   - Tag de versão (git tag v2.0.0 && git push origin v2.0.0): também publica uma Release com os instaladores.
+name: Aplicativo desktop
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  instaladores:
+    name: ${{ matrix.nome }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { nome: Windows, os: windows-latest, alvo: --win }
+          - { nome: macOS, os: macos-latest, alvo: --mac }
+          - { nome: Linux, os: ubuntu-latest, alvo: --linux }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            desktop/package-lock.json
+
+      - name: Dependências do sistema
+        run: npm ci
+        env:
+          SKIP_BUILD: '1'
+
+      - name: Testes
+        run: npm test
+
+      - name: Interface (web/dist)
+        run: npm run build
+
+      - name: Dependências do empacotador
+        run: npm ci --prefix desktop
+
+      - name: Gerar instaladores
+        working-directory: desktop
+        run: node preparar.mjs && npx electron-builder ${{ matrix.alvo }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fila-presencial-${{ matrix.nome }}
+          if-no-files-found: error
+          path: |
+            desktop/release/*.exe
+            desktop/release/*.dmg
+            desktop/release/*.AppImage
+            desktop/release/*.deb
+
+  release:
+    name: Publicar Release
+    needs: instaladores
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: instaladores
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: instaladores/*
+          generate_release_notes: true

@@ -1,0 +1,90 @@
+{
+  "name": "fila-presencial-desktop",
+  "private": true,
+  "description": "Empacota a Fila Presencial como aplicativo para Windows, macOS e Linux (Electron). Separado da raiz para que o npm install da clínica não baixe o Electron.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "preparar": "node preparar.mjs",
+    "start": "node preparar.mjs && electron app",
+    "dist": "node preparar.mjs && electron-builder",
+    "dist:win": "node preparar.mjs && electron-builder --win",
+    "dist:mac": "node preparar.mjs && electron-builder --mac",
+    "dist:linux": "node preparar.mjs && electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "br.com.vetbots.filapresencial",
+    "productName": "Fila Presencial",
+    "copyright": "© 2026 VetBots",
+    "directories": {
+      "app": "app",
+      "output": "release",
+      "buildResources": "build"
+    },
+    "artifactName": "Fila-Presencial-${version}-${os}-${arch}.${ext}",
+    "npmRebuild": false,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Fila Presencial",
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "category": "public.app-category.business",
+      "icon": "build/icon.png",
+      "identity": "-",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "title": "Fila Presencial ${version}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Office",
+      "icon": "build/icon.png",
+      "maintainer": "VetBots <daniel@duplod.com.br>",
+      "synopsis": "Fila presencial para clínicas veterinárias"
+    }
+  }
+}

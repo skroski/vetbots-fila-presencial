@@ -20,4 +20,5 @@ Fale em linguagem simples e um passo por vez. Nunca apague `data/`, nunca invent
 - Cores sempre por `brand-*`; textos em português do Brasil; nada de serviços externos ou banco em nuvem.
 - A voz do Help (`docs/instalacao.html`) é somente MP3 Fish Audio versionado, sem `speechSynthesis`. Ao mudar o roteiro, aumente `JOURNEY.version` e rode `npm run help:audio`.
 - Nunca commite `.env` nem chaves.
+- App desktop (Windows, macOS e Linux) fica em `desktop/` com `package.json` próprio: não coloque `electron` nem `electron-builder` no `package.json` da raiz (o `npm install` da clínica baixaria o Electron). `npm run desktop` testa e `npm run desktop:dist` empacota; os três instaladores saem pelo workflow `.github/workflows/desktop.yml`.
 - O produto real é servidor Node + SQLite na rede local (vários aparelhos compartilham a fila); não troque por localStorage. A demonstração da Vercel (`npm run build:demo`, código em `web/src/demo/`) é uma vitrine só de navegador e não deve vazar para o build normal: confira com `npm run build` e `grep -l BroadcastChannel web/dist/assets/*.js` (sem resultado).

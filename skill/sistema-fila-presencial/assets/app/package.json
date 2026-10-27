@@ -18,7 +18,8 @@
     "test": "node --test server/test/fila.test.js server/test/pin.test.js",
     "sync-skill": "node scripts/sync-skill.mjs",
     "help:audio": "node scripts/gerar-audio-ajuda.mjs",
-    "electron": "electron scripts/electron-main.cjs"
+    "desktop": "npm run build && npm ci --prefix desktop --no-audit --no-fund && npm start --prefix desktop",
+    "desktop:dist": "npm run build && npm ci --prefix desktop --no-audit --no-fund && npm run dist --prefix desktop"
   },
   "dependencies": {
     "express": "^4.21.2"

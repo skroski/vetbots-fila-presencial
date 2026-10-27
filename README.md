@@ -17,9 +17,21 @@ Não precisa digitar comandos nem usar terminal:
 
 | Sistema | Como iniciar |
 | --- | --- |
-| **Windows** | Dê **duplo clique em `iniciar.bat`** (ou `npm run electron` para janela de app) |
-| **macOS** | Dê **duplo clique em `iniciar.command`** (ou execute `./iniciar.sh`) |
-| **Desktop Nativo** | `npm run electron` (abre a janela do app sem navegador e com servidor interno) |
+| **Windows** | Dê **duplo clique em `iniciar.bat`** |
+| **macOS** | Dê **duplo clique em `iniciar.command`** |
+| **Linux** | No terminal, dentro da pasta: `./iniciar.sh` |
+| **Aplicativo (Windows, macOS e Linux)** | Baixe o instalador em [Releases](https://github.com/skroski/vetbots-fila-presencial/releases/latest) (`.exe`, `.dmg`, `.deb` ou `.AppImage`). Não precisa de Node.js |
+
+### Aplicativo desktop (Electron)
+
+Fica em `desktop/`, com dependências próprias: o `npm install` da clínica não baixa o Electron.
+
+- Testar no seu computador: `npm run desktop` (abre a janela com o servidor dentro).
+- Gerar o instalador do sistema atual: `npm run desktop:dist` (sai em `desktop/release/`).
+- Gerar os três: GitHub Actions → **Aplicativo desktop** → *Run workflow* (instaladores nos Artifacts) ou publique uma tag `vX.Y.Z` para criar a Release.
+- Dados do app: Windows `%APPDATA%\Fila Presencial\dados`, macOS `~/Library/Application Support/Fila Presencial/dados`, Linux `~/.config/Fila Presencial/dados` (menu **Fila → Abrir a pasta dos dados**).
+- Fechar a janela não desliga a fila (TV e consultórios dependem dela); para desligar, **Encerrar a fila**.
+- Os instaladores não são assinados: o Windows (SmartScreen) e o macOS (Gatekeeper) pedem confirmação na primeira abertura.
 
 Na primeira vez, a instalação é automática. Deixe a janela aberta: o servidor da clínica estará ativo e pronto.
 
