@@ -183,7 +183,7 @@ export const DEFAULT_CONFIG: AppConfig = {
   tv_privacy: false,
   tv_layout: 'video_16_9',
   tv_theme: 'dark',
-  tv_video_size: '1_3',
+  tv_video_size: '2_3',
   tv_show_lists: true,
   tv_video_muted: true,
   tv_overlay_seconds: 12,

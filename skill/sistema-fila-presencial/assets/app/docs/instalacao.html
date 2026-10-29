@@ -199,6 +199,7 @@
   @media (prefers-color-scheme: dark) { .oh-btn.primary { color: #04130d; } }
   .oh-btn.primary:hover { background: var(--accent-strong); }
   .oh-btn.secondary { background: var(--accent-soft); color: var(--accent-strong); }
+  .oh-btn:disabled { opacity: .5; cursor: not-allowed; }
   .oh-arrow { position: absolute; width: 12px; height: 12px; background: var(--surface); border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: rotate(45deg); }
   .oh-live { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 2147483003; background: var(--warn-bg); color: var(--warn-text); padding: 10px 16px; border-radius: 8px; font-size: 14px; max-width: calc(100vw - 24px); }
   .oh-launcher { position: fixed; right: 18px; bottom: 18px; z-index: 30; box-shadow: 0 10px 30px rgb(0 0 0 / 25%); }
@@ -267,7 +268,7 @@
     <section class="step" id="instalar" aria-labelledby="h-ins">
       <h2 id="h-ins"><span class="num" aria-hidden="true">1</span>Instalar</h2>
       <p class="sub">Feito uma única vez no computador que ficará ligado na clínica (o “servidor”). Escolha o caminho mais fácil para você: pedir a um agente de IA ou instalar com o Node.js.</p>
-      <div class="card" id="instalar-ia">
+      <div class="card" id="instalar-ia" data-open-help="instalar-ia">
         <h3>Opção A · Peça a um agente de IA (o mais simples)</h3>
         <p>Funciona com <strong>Claude Code</strong>, <strong>Codex</strong> e <strong>Antigravity com Gemini</strong>. Você escreve em português e o agente confere o Node.js, instala, liga o sistema e mostra o endereço de cada tela.</p>
         <ol class="passos">
@@ -316,16 +317,16 @@
               <p>Dê <strong>duplo clique em <code class="i">iniciar.command</code></strong>. Se o macOS bloquear, clique com o botão direito no arquivo e escolha <strong>Abrir</strong>. Deixe a janela aberta.</p>
             </div>
             <div role="tabpanel" id="p-lin" aria-labelledby="tab-lin" hidden>
-              <p>Abra o terminal dentro da pasta e rode os dois comandos abaixo. Deixe o terminal aberto.</p>
-              <div class="code"><pre>npm install
-npm start</pre><button type="button" data-copy>Copiar</button></div>
+              <p>Abra o terminal dentro da pasta e rode o comando abaixo. Na primeira vez ele instala tudo sozinho. Deixe o terminal aberto.</p>
+              <div class="code"><pre>./iniciar.sh</pre><button type="button" data-copy>Copiar</button></div>
+              <p class="note">Se aparecer “Permissão negada”, rode <code class="i">bash iniciar.sh</code>. Também funciona com <code class="i">npm install</code> e <code class="i">npm start</code>.</p>
             </div>
             <p class="note">Deu certo quando aparecer <strong>“Fila Presencial no ar!”</strong> com uma lista de endereços. Anote o número que começa com <code class="i">192.168…</code>: é o <strong>IP do servidor</strong> e você vai usar no próximo passo.</p>
           </li>
         </ol>
       </div>
       <h3 class="alt-title" id="instalar-app">Opção C · Aplicativo para instalar (Windows, macOS e Linux)</h3>
-      <div class="card">
+      <div class="card" data-open-help="instalar-app">
         <p>Não precisa instalar o Node.js: o aplicativo já leva tudo dentro. Baixe o arquivo do seu sistema na página de <a href="https://github.com/skroski/vetbots-fila-presencial/releases/latest" target="_blank" rel="noopener">versões (Releases)</a>:</p>
         <ul class="check">
           <li><strong>Windows:</strong> <code class="i">Fila-Presencial-…-win-x64.exe</code>. Se aparecer “O Windows protegeu o computador”, clique em <strong>Mais informações → Executar assim mesmo</strong>. O instalador já libera o Firewall para redes privadas.</li>
@@ -531,7 +532,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
       <details><summary>A TV ou o tablet não abre o endereço</summary>
         <p>Confira se o aparelho está no <strong>mesmo Wi-Fi</strong> do servidor, se o IP está certo e se o endereço termina com <code class="i">:3000</code>. No Windows, o Firewall precisa estar liberado para <strong>Redes privadas</strong>.</p></details>
       <details><summary>Fechei a janela preta e o sistema parou</summary>
-        <p>Ela é o sistema. Abra o <code class="i">iniciar.bat</code> (ou <code class="i">iniciar.command</code>) de novo e deixe aberta. Seus dados continuam guardados.</p></details>
+        <p>Ela é o sistema. Abra o <code class="i">iniciar.bat</code> (ou <code class="i">iniciar.command</code>; no Linux, <code class="i">./iniciar.sh</code>) de novo e deixe aberta. Seus dados continuam guardados.</p></details>
       <details><summary>Não toca som na chamada</summary>
         <p>Os navegadores só liberam o som depois de um clique. Dê um clique na tela da TV uma vez.</p></details>
       <details><summary>O vídeo não toca na TV</summary>
@@ -629,6 +630,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
   }
   document.querySelectorAll('.code').forEach((bloco) => {
     const btn = bloco.querySelector('[data-copy]');
+    if (!btn) return;                               // o bloco do Pix tem botão próprio; sem esta guarda o erro derrubava as abas de sistema
     btn.addEventListener('click', () =>
       copiar(bloco.querySelector('pre').textContent.trim()).then(() => feedback(btn, 'Copiado ✓'), () => feedback(btn, 'Selecione e copie')));
   });
@@ -761,16 +763,32 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
   /* JOURNEY:INICIO */
   const JOURNEY = {
     id: 'instalacao-fila',
-    version: 3,                 // aumente ao mudar textos/narração/voz: reinicia o "concluído" e a pasta de áudio
+    version: 4,                 // aumente ao mudar textos/narração/voz: reinicia o "concluído" e a pasta de áudio
     language: 'pt-BR',
     steps: [
       {
+        id: 'instalar-ia',
+        title: 'Peça a um agente de IA',
+        body: 'O caminho mais simples, feito uma única vez no computador da clínica: abra o agente (Claude Code, Codex ou Antigravity com Gemini) dentro da pasta do sistema e peça em português “Instale o sistema de fila presencial e me mostre os endereços.”',
+        narration: 'Vamos conhecer o sistema inteiro, começando pela instalação. Ela é feita uma única vez, no computador que vai ficar ligado na clínica, o nosso servidor. O caminho mais simples é pedir a um agente de I A, como o Clód Côud, o Códex ou o Antigrávity com Gêmini. Abra o agente dentro da pasta do sistema e escreva, em português: instale o sistema de fila presencial e me mostre os endereços. Ele confere o Node, instala, liga o sistema e mostra o endereço de cada tela.',
+        target: '[data-open-help="instalar-ia"]', placement: 'bottom',
+        audioSrc: 'open-help/v4/instalar-ia.mp3',
+      },
+      {
         id: 'instalar',
-        title: 'Instale em três etapas',
-        body: 'Feito uma única vez no computador que ficará ligado na clínica: instale o Node.js, coloque a pasta do sistema nele e inicie. No Windows, dê duplo clique em iniciar.bat. Quando aparecer “Fila Presencial no ar!”, deu certo.',
-        narration: 'Vamos conhecer o sistema inteiro, começando pela instalação. São só três etapas, feitas uma única vez no computador que vai ficar ligado na clínica, o nosso servidor. Primeiro, instale o Node ponto jota és, na versão L T S. Depois, coloque a pasta do sistema nesse computador. Por fim, inicie. No Windows, dê dois cliques no arquivo iniciar ponto bat. No Mac, use o iniciar ponto command. Deixe a janela que abrir sempre aberta, porque ela é o sistema funcionando. Quando aparecer fila presencial no ar, deu certo.',
+        title: 'Ou instale você mesmo com o Node.js',
+        body: 'Instale o Node.js (versão LTS), coloque a pasta do sistema no computador e inicie: iniciar.bat no Windows, iniciar.command no Mac ou ./iniciar.sh no Linux. Quando aparecer “Fila Presencial no ar!”, deu certo.',
+        narration: 'Se preferir instalar você mesmo, são três etapas. Primeiro, instale o Node ponto jota és, na versão L T S. Depois, coloque a pasta do sistema nesse computador. Por fim, inicie. No Windows, dê dois cliques no arquivo iniciar ponto bat. No Mac, use o iniciar ponto command. No Linux, abra o terminal na pasta e rode ponto barra iniciar ponto ésse agá. Deixe a janela aberta, porque ela é o sistema funcionando. Quando aparecer fila presencial no ar, deu certo.',
         target: '[data-open-help="instalar"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/instalar.mp3',
+        audioSrc: 'open-help/v4/instalar.mp3',
+      },
+      {
+        id: 'instalar-app',
+        title: 'Ou use o aplicativo para instalar',
+        body: 'Sem precisar do Node.js: baixe o instalador do seu sistema (Windows, macOS ou Linux) na página de versões. Fechar a janela não desliga a fila; ela continua perto do relógio.',
+        narration: 'A terceira opção é o aplicativo para instalar. Ele já leva tudo dentro, então você não precisa instalar o Node. Baixe o arquivo do seu sistema na página de versões: o instalador para Windows, o disco D M G para Mac, ou o pacote D E B, ou A p p Image, para Linux. Fechar a janela não desliga a fila: ela continua funcionando perto do relógio. Para desligar, use encerrar a fila.',
+        target: '[data-open-help="instalar-app"]', placement: 'bottom',
+        audioSrc: 'open-help/v4/instalar-app.mp3',
       },
       {
         id: 'enderecos',
@@ -778,7 +796,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Digite o IP do computador servidor (aparece na janela do sistema). A tabela monta o endereço de cada tela para você copiar e abrir na TV, no tablet e nos consultórios.',
         narration: 'Agora, vamos abrir as telas nos outros aparelhos. Na janela do sistema aparece um número chamado I P, que começa com cento e noventa e dois ponto cento e sessenta e oito. Digite esse número aqui. A tabela monta o endereço de cada tela: recepção, telão da TV, chamador do consultório, totem, métricas e ajustes. É só tocar em copiar e colar no navegador do aparelho. Todos precisam estar no mesmo Wi-Fi, ou no mesmo cabo, do servidor.',
         target: '[data-open-help="enderecos"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/enderecos.mp3',
+        audioSrc: 'open-help/v4/enderecos.mp3',
       },
       {
         id: 'personalizar',
@@ -786,7 +804,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Em Ajustes você escolhe a cor, envia o logotipo, sobe os vídeos MP4 da TV e cadastra salas e serviços. Tudo muda na hora, em todas as telas, sem reiniciar.',
         narration: 'Agora, deixe o sistema com a cara da clínica. Tudo isso é feito na tela de ajustes, e muda na hora, em todas as telas, sem reiniciar. Na aba aparência, você escolhe a cor da marca, o nome da clínica e envia o logotipo. Na aba T V e vídeos, você envia vídeos em formato M P quatro, e escolhe a ordem em que eles passam. Na aba consultórios e salas, você cadastra cada sala de atendimento. Em serviços e prefixos, você define os serviços, como consulta ou vacina, e a letra de cada senha. E na aba sistema, você baixa o backup.',
         target: '[data-open-help="personalizar"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/personalizar.mp3',
+        audioSrc: 'open-help/v4/personalizar.mp3',
       },
       {
         id: 'usar',
@@ -794,7 +812,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'A recepção ou o totem emite a senha. O veterinário clica em “Chamar Próximo da Fila”. A TV mostra a senha e o consultório e toca um aviso. Depois é só iniciar e finalizar a consulta.',
         narration: 'Agora vem o dia a dia. Primeiro, veja o caminho de uma senha. O tutor chega e pega a senha na recepção ou no totem. Ele espera no saguão, acompanhando a TV. O veterinário aperta chamar próximo da fila. A TV mostra a senha, o consultório, e toca um aviso sonoro. Quando o paciente entra, o veterinário inicia a consulta e, no fim, finaliza. Nos próximos passos, vamos ver cada tela, uma por uma.',
         target: '[data-open-help="usar"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/usar.mp3',
+        audioSrc: 'open-help/v4/usar.mp3',
       },
       {
         id: 'recepcao',
@@ -802,7 +820,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Clique em “Nova Senha”, escolha serviço e prioridade, digite tutor e pet e emita. Na lista você chama no telão, transfere de sala e imprime o cupom.',
         narration: 'Esta é a recepção. Para emitir uma senha, clique em nova senha. Escolha o serviço e a prioridade: normal, preferencial ou emergência. Digite o nome do tutor, que é obrigatório, e o nome do pet. Se quiser, escreva o motivo da visita e escolha uma sala específica. Sem sala, a senha vai para a fila geral, e qualquer consultório livre pode chamar. Depois, clique em emitir nova senha de atendimento. No topo da tela, quatro quadros mostram quantos aguardam no saguão, quantos estão em consulta, os atendidos hoje, e os chamados na TV. Na lista da fila, você pode chamar um paciente no telão, transferir para outra sala ou serviço, e imprimir o cupom. A busca encontra por senha, tutor ou pet.',
         target: '[data-open-help="recepcao"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/recepcao.mp3',
+        audioSrc: 'open-help/v4/recepcao.mp3',
       },
       {
         id: 'chamador',
@@ -810,7 +828,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Confirme a sala, clique em “Chamar Próximo da Fila”, depois em “Iniciar Consulta” e em “Finalizar Consulta”. Também há Repetir Chamada, Não Compareceu e Transferir.',
         narration: 'Este é o chamador do consultório, usado pelo veterinário. Primeiro, confira em você está atendendo em, se a sala é a sua. Depois, clique em chamar próximo da fila. A TV avisa na hora. Quando o paciente entrar, clique em iniciar consulta. No fim, clique em finalizar consulta. Se o tutor não ouviu, use repetir chamada. Se ninguém apareceu, use não compareceu. E se for preciso mandar o paciente para outra sala, use transferir atendimento.',
         target: '[data-open-help="chamador"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/chamador.mp3',
+        audioSrc: 'open-help/v4/chamador.mp3',
       },
       {
         id: 'totem',
@@ -818,7 +836,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Na tela de toque, o tutor escolhe o serviço, digita o nome dele e do pet e toca em “Emitir Senha Agora”. Há também o botão vermelho de Emergência Veterinária.',
         narration: 'Este é o totem, uma tela de toque na entrada, para o tutor retirar a senha sozinho. Ele toca no serviço de que precisa, onde está escrito toque para retirar senha, digita o nome dele e o do pet, e toca em emitir senha agora. Se houver impressora, a senha sai impressa. Em um caso grave, existe o botão vermelho, emergência veterinária. Assim, a recepção fica livre para atender quem está no balcão.',
         target: '[data-open-help="totem"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/totem.mp3',
+        audioSrc: 'open-help/v4/totem.mp3',
       },
       {
         id: 'telao',
@@ -826,7 +844,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Ninguém precisa mexer: a TV mostra a chamada atual bem grande, as chamadas recentes e os próximos, e passa seus vídeos. O botão de privacidade esconde os nomes.',
         narration: 'Este é o telão da TV, na sala de espera. Ninguém precisa mexer nele. Ele mostra a chamada atual, bem grande, com a senha e o consultório, as chamadas recentes, e os próximos a serem atendidos. Entre uma chamada e outra, ele passa os vídeos que você enviou. Quando alguém é chamado, toca um aviso sonoro. E o botão de privacidade esconde o nome dos tutores, mostrando só a senha.',
         target: '[data-open-help="telao"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/telao.mp3',
+        audioSrc: 'open-help/v4/telao.mp3',
       },
       {
         id: 'metricas',
@@ -834,7 +852,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'O gestor vê o tempo médio da chegada até ser chamado, a duração média da consulta e o volume de atendimentos por serviço.',
         narration: 'Esta é a tela de métricas, para o gestor. Ela mostra o tempo médio da chegada até ser chamado, a duração média da consulta, e o volume de atendimentos por serviço. Com esses números, você descobre os horários mais cheios e se a fila está andando bem.',
         target: '[data-open-help="metricas"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/metricas.mp3',
+        audioSrc: 'open-help/v4/metricas.mp3',
       },
       {
         id: 'tv',
@@ -842,7 +860,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Na TV, abra o endereço /tv em tela cheia e clique uma vez para liberar o som. Cada consultório tem um link próprio em Ajustes. O totem é o endereço /totem em um tablet.',
         narration: 'Para colocar cada aparelho para funcionar, é só abrir o endereço no navegador. Na TV da sala de espera, abra o endereço barra T V, deixe em tela cheia e dê um clique na tela para liberar o som. Salve nos favoritos e desligue a proteção de tela. Cada consultório tem o seu próprio link do chamador, no botão link do chamador, em ajustes, consultórios e salas. E o totem é o endereço barra totem, em um tablet, em tela cheia.',
         target: '[data-open-help="tv"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/tv.mp3',
+        audioSrc: 'open-help/v4/tv.mp3',
       },
       {
         id: 'backup',
@@ -850,7 +868,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Tudo fica na pasta data e o sistema faz um backup por dia sozinho. Para trocar de computador, copie essa pasta. Use o sistema só na rede da clínica.',
         narration: 'Seus dados ficam na pasta data, e o sistema faz um backup por dia, sozinho, guardando as últimas catorze cópias. Você também pode baixar um backup quando quiser, em ajustes, aba sistema. Para trocar de computador, é só copiar a pasta data. Use o sistema apenas na rede da clínica, e nunca abra a porta para a internet.',
         target: '[data-open-help="backup"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/backup.mp3',
+        audioSrc: 'open-help/v4/backup.mp3',
       },
       {
         id: 'checklist',
@@ -858,7 +876,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         body: 'Marque cada item conforme concluir. Quando todos estiverem marcados, a clínica já pode usar a fila. Você pode refazer este tour quando quiser, pelo botão “Tour guiado”.',
         narration: 'Para terminar, confira tudo no checklist. Marque cada item conforme for concluindo. Quando todos estiverem marcados, a clínica já pode usar a fila. E você pode refazer este tour quando quiser, pelo botão tour guiado.',
         target: '[data-open-help="checklist"]', placement: 'bottom',
-        audioSrc: 'open-help/v3/checklist.mp3',
+        audioSrc: 'open-help/v4/checklist.mp3',
       },
     ],
   };
@@ -894,6 +912,10 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
       const p = a.play();
       if (p && p.catch) p.catch(solta);             // som bloqueado ou arquivo ausente: silêncio, sem tentar de novo
     }
+    preload(step) {                                 // aquece o cache do próximo passo: sem atraso ao clicar em "Próximo"
+      if (!this.supported || this.muted || !step?.audioSrc) return;
+      const a = new Audio(); a.preload = 'auto'; a.src = step.audioSrc;
+    }
     stop() { if (this.audio) { this.audio.pause(); this.audio = null; } }
     setMuted(m) { this.muted = m; if (m) this.stop(); }
     destroy() { this.stop(); }
@@ -917,7 +939,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
   /* ---------- Renderer: spotlight + popover, foco, posicionamento (todo texto via textContent) ---------- */
   const reduzMovimento = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   class Renderer {
-    constructor() { this.nodes = []; this.off = null; }
+    constructor() { this.nodes = []; this.off = null; this.muteBtn = null; }
     el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
     btn(label, cls, fn) { const b = this.el('button', cls, label); b.type = 'button'; b.addEventListener('click', fn); return b; }
 
@@ -940,7 +962,9 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
       const voice = this.el('div', 'oh-voice');
       if (voiceOk && step.audioSrc) {
         const rep = this.btn('Ouvir de novo', 'oh-btn secondary', act.repeat); rep.setAttribute('aria-label', 'Ouvir esta orientação novamente');
-        const mute = this.btn(muted ? 'Ativar voz' : 'Silenciar', 'oh-btn secondary', act.toggleMute); mute.setAttribute('aria-pressed', String(muted));
+        rep.disabled = muted;                         // silenciado: repetir não tem efeito
+        const mute = this.btn(muted ? 'Ativar voz' : 'Silenciar', 'oh-btn secondary', act.toggleMute);   // o rótulo já diz o estado
+        this.muteBtn = mute;
         voice.append(rep, mute);
       }
       const nav = this.el('div', 'oh-navigation');
@@ -1000,7 +1024,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
       } else if (arrow) arrow.style.display = 'none';
     }
 
-    destroy() { this.off?.(); this.off = null; this.nodes.forEach((n) => n.remove()); this.nodes = []; }
+    destroy() { this.off?.(); this.off = null; this.nodes.forEach((n) => n.remove()); this.nodes = []; this.muteBtn = null; }
   }
 
   /* ---------- Engine: estado e navegação (um por página) ---------- */
@@ -1024,9 +1048,10 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
     next() { if (this.status === 'running') this.show(this.index + 1, 1); }
     back() { if (this.status === 'running' && this.index > 0) this.show(this.index - 1, -1); }
     repeat() { const s = this.journey.steps[this.index]; if (s && !this.muted) this.voice.speak(s); }
-    toggleMute() {
+    async toggleMute() {
       this.muted = !this.muted; writeMuted(this.muted); this.voice.setMuted(this.muted);
-      this.show(this.index, 0, false);
+      await this.show(this.index, 0, false);
+      this.renderer.muteBtn?.focus({ preventScroll: true });   // o balão é redesenhado: devolve o foco ao botão usado
     }
     cancel() { if (this.status !== 'running') return; this.status = 'cancelled'; this.teardown(); this.onStatus?.('cancelled'); }
     complete() { this.status = 'completed'; storage.set('completed'); this.teardown(); this.onStatus?.('completed'); }
@@ -1061,6 +1086,7 @@ npm start</pre><button type="button" data-copy>Copiar</button></div>
         repeat: () => this.repeat(), toggleMute: () => this.toggleMute(),
       });
       if (falar && !this.muted) this.repeat();       // só depois do clique do usuário em "Tour guiado"
+      if (!this.muted) this.voice.preload(this.journey.steps[i + 1]);
     }
 
     error(msg) {
