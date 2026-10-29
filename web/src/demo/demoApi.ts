@@ -7,7 +7,7 @@
 // - Envio de logo/vídeos e backup ficam desativados.
 // - Nada sai do navegador: não há servidor, banco nem rede.
 import { DEFAULT_CONFIG } from '@/types/queue';
-import type { AppConfig, QueueItem, QueuePriority, QueueRoom, QueueService, QueueVeterinarian } from '@/types/queue';
+import type { AppConfig, Media, QueueItem, QueuePriority, QueueRoom, QueueService, QueueVeterinarian } from '@/types/queue';
 
 const CHAVE = 'fila-demo-v1';
 const CANAL = 'fila-demo';
@@ -23,6 +23,7 @@ interface Estado {
   veterinarios: QueueVeterinarian[];
   itens: Item[];
   config: AppConfig;
+  midias: Media[];
 }
 
 class ErroHttp extends Error {
@@ -225,12 +226,26 @@ function semear(): Estado {
   ];
 
   itens.sort((a, b) => a.chegada_em.localeCompare(b.chegada_em));
+  const midias: Media[] = [
+    {
+      id: 'demo-video-vetbots',
+      nome: 'Apresentação de VetBots · Chatbot com IA para Clínicas Veterinárias',
+      arquivo: 'youtube-FB56YWC3tz4',
+      tamanho: 0,
+      ordem: 0,
+      ativo: true,
+      tipo: 'youtube',
+      youtube_id: 'FB56YWC3tz4',
+      url: 'https://www.youtube.com/watch?v=FB56YWC3tz4',
+    },
+  ];
   return {
     criadoEm: Date.now(),
     servicos,
     salas,
     veterinarios,
     itens,
+    midias,
     config: { ...DEFAULT_CONFIG, clinic_name: 'Clínica Veterinária Exemplo', clinic_subtitle: 'Demonstração do Painel de Atendimento' },
   };
 }
@@ -250,6 +265,21 @@ function ler(): Estado {
   e = e ?? memoria;
   if (!e || Date.now() - e.criadoEm > VALIDADE_MS) {
     e = semear();
+    gravar(e);
+  } else if (!e.midias || e.midias.length === 0) {
+    e.midias = [
+      {
+        id: 'demo-video-vetbots',
+        nome: 'Apresentação de VetBots · Chatbot com IA para Clínicas Veterinárias',
+        arquivo: 'youtube-FB56YWC3tz4',
+        tamanho: 0,
+        ordem: 0,
+        ativo: true,
+          tipo: 'youtube',
+        youtube_id: 'FB56YWC3tz4',
+        url: 'https://www.youtube.com/watch?v=FB56YWC3tz4',
+      },
+    ];
     gravar(e);
   }
   return e;
@@ -474,11 +504,14 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
           salas: [...e.salas].sort((a, b) => a.nome.localeCompare(b.nome)),
           veterinarios: [...(e.veterinarios || [])].sort((a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome)),
           itens: e.itens.filter((i) => ATIVOS.includes(i.status) || i.chegada_em >= corte),
-          midias: [],
+          midias: [...(e.midias || [])].sort((a, b) => a.ordem - b.ordem),
           config: configPublica(e),
           horaServidor: agora(),
         },
       };
+    }
+    if (caminho === '/api/midias') {
+      return { corpo: [...(e.midias || [])].sort((a, b) => a.ordem - b.ordem) };
     }
     if (caminho === '/api/config') return { corpo: configPublica(e) };
     if (caminho === '/api/health') return { corpo: { ok: true, hora: agora() } };
@@ -592,7 +625,27 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
       e.veterinarios.push(vet);
       return { status: 201, corpo: vet, mudou: true };
     }
-    if (caminho === '/api/midias/ordem' || caminho === '/api/midias/youtube') throw new ErroHttp(403, INDISPONIVEL);
+    if (caminho === '/api/midias/youtube') {
+      const url = String(corpo.url || '').trim();
+      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+      if (!match) throw new ErroHttp(400, 'Link do YouTube inválido.');
+      const idYoutube = match[1];
+      if (!e.midias) e.midias = [];
+      const nova: Media = {
+        id: uuid(),
+        nome: typeof corpo.nome === 'string' && corpo.nome.trim() ? corpo.nome.trim() : `Vídeo do YouTube (${idYoutube})`,
+        arquivo: `youtube-${idYoutube}`,
+        tamanho: 0,
+        ordem: e.midias.reduce((max, item) => Math.max(max, item.ordem), -1) + 1,
+        ativo: true,
+          tipo: 'youtube',
+        youtube_id: idYoutube,
+        url,
+      };
+      e.midias.push(nova);
+      return { status: 201, corpo: nova, mudou: true };
+    }
+    if (caminho === '/api/midias/ordem') throw new ErroHttp(403, INDISPONIVEL);
   }
 
   if (metodo === 'PATCH') {
@@ -653,7 +706,13 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
       if (Number.isInteger(corpo.ordem)) vet.ordem = corpo.ordem as number;
       return { corpo: vet, mudou: true };
     }
-    if (rota(/^\/api\/midias\/([^/]+)$/)) throw new ErroHttp(403, INDISPONIVEL);
+    if (rota(/^\/api\/midias\/([^/]+)$/)) {
+      const midia = (e.midias || []).find((item) => item.id === m![1]);
+      if (!midia) throw new ErroHttp(404, 'Vídeo não encontrado.');
+      if (corpo.ativo !== undefined) midia.ativo = Boolean(corpo.ativo);
+      if (corpo.nome !== undefined) midia.nome = String(corpo.nome).trim().slice(0, 120);
+      return { corpo: midia, mudou: true };
+    }
   }
 
   if (metodo === 'DELETE') {
@@ -678,13 +737,29 @@ function rotear(metodo: string, caminho: string, corpo: Corpo, e: Estado): Respo
       if (e.veterinarios.length === n) throw new ErroHttp(404, 'Veterinário não encontrado.');
       return { status: 204, mudou: true };
     }
-    if (caminho === '/api/logo' || rota(/^\/api\/midias\/([^/]+)$/)) throw new ErroHttp(403, INDISPONIVEL);
+    if (rota(/^\/api\/midias\/([^/]+)$/)) {
+      const id = m![1];
+      const anterior = (e.midias || []).length;
+      e.midias = (e.midias || []).filter((item) => item.id !== id);
+      if (e.midias.length === anterior) throw new ErroHttp(404, 'Vídeo não encontrado.');
+      return { status: 204, mudou: true };
+    }
+    if (caminho === '/api/logo') throw new ErroHttp(403, INDISPONIVEL);
   }
 
   if (metodo === 'PUT') {
     if (caminho === '/api/config') {
       validarConfig(e, corpo);
       return { corpo: configPublica(e), mudou: true };
+    }
+    if (caminho === '/api/midias/ordem') {
+      const ids = corpo.ids as string[];
+      if (!Array.isArray(ids)) throw new ErroHttp(400, 'Lista de IDs inválida.');
+      const mapa = new Map(ids.map((id, idx) => [id, idx]));
+      (e.midias || []).forEach((item) => {
+        if (mapa.has(item.id)) item.ordem = mapa.get(item.id)!;
+      });
+      return { corpo: [...(e.midias || [])].sort((a, b) => a.ordem - b.ordem), mudou: true };
     }
     if (caminho === '/api/logo' || caminho === '/api/midias') throw new ErroHttp(403, INDISPONIVEL);
   }

@@ -27,7 +27,8 @@ import { cssDaCor } from '../shared/cores.js';
 export const ADMIN_PIN = process.env.ADMIN_PIN || '';
 const DIST = join(ROOT, 'web', 'dist');
 
-if (fila.carregarPadroes()) media.carregarVideoPadrao();
+fila.carregarPadroes();
+if (media.listarMidias().length === 0) media.carregarVideoPadrao();
 
 export const app = express();
 app.disable('x-powered-by');

@@ -539,6 +539,11 @@ export default function TvDisplayPage() {
 
   // ---------- Layout 2: vídeo à esquerda, painel de chamadas à direita ----------
   if (lateral) {
+    const colunasLateral = doisTercos
+      ? 'grid-cols-[minmax(0,2fr)_minmax(0,1fr)]'
+      : meioDaTela
+        ? 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'
+        : 'grid-cols-[minmax(0,1fr)_minmax(0,2fr)]';
     return (
       <div
         onClick={aoClicar}
@@ -549,7 +554,7 @@ export default function TvDisplayPage() {
           {titulo}
           {controles}
         </header>
-        <div className="flex-1 min-h-0 grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-5">
+        <div className={`flex-1 min-h-0 grid ${colunasLateral} gap-5`}>
           <div className="rounded-lg overflow-hidden bg-black border border-base-300 min-h-0">
             <TvVideo playlist={playlist} muted={config.tv_video_muted} duck={isPulsing} className="h-full w-full" fit="contain" />
           </div>

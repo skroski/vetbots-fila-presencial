@@ -346,13 +346,13 @@ function MiniaturaYoutube({ id }: { id: string }) {
 
 /** Desenho esquemático de cada layout da TV (aparece no cartão de escolha). */
 function PreviaLayout({ tipo, tamanho }: { tipo: AppConfig['tv_layout']; tamanho: AppConfig['tv_video_size'] }) {
-  const video = 'rounded-sm bg-primary/60';
+  const video = 'rounded-sm bg-primary/70 flex items-center justify-center text-[9px] font-bold text-white';
   const texto = 'rounded-sm bg-base-content/70';
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-md border border-base-300 bg-base-200" aria-hidden="true">
       {tipo === 'tela_cheia' && (
         <>
-          <div className={`absolute inset-0 ${video} opacity-60`} />
+          <div className={`absolute inset-0 ${video} opacity-75`}>Vídeo 100%</div>
           <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-base-100/90 px-2 py-1">
             <div className={`${texto} h-3 w-10`} />
             <div className="h-1.5 w-16 rounded-sm bg-base-content/40" />
@@ -360,12 +360,20 @@ function PreviaLayout({ tipo, tamanho }: { tipo: AppConfig['tv_layout']; tamanho
         </>
       )}
       {tipo === 'lateral' && (
-        <div className="absolute inset-1 grid grid-cols-[3fr_2fr] gap-1">
-          <div className={video} />
-          <div className="flex flex-col items-center justify-center gap-1">
-            <div className={`${texto} h-4 w-4/5`} />
-            <div className="h-2 w-3/5 rounded-sm bg-base-content/40" />
-            <div className="mt-1 h-2 w-4/5 rounded-sm bg-base-content/25" />
+        <div
+          className={`absolute inset-1 grid gap-1 ${
+            tamanho === '2_3'
+              ? 'grid-cols-[2fr_1fr]'
+              : tamanho === '1_2'
+                ? 'grid-cols-2'
+                : 'grid-cols-[1fr_2fr]'
+          }`}
+        >
+          <div className={video}>{tamanho === '2_3' ? 'Vídeo 2/3' : tamanho === '1_2' ? 'Vídeo 1/2' : 'Vídeo 1/3'}</div>
+          <div className="flex flex-col items-center justify-center gap-1 rounded-sm border border-primary/40 bg-base-100/60 p-1">
+            <div className={`${texto} h-3 w-4/5`} />
+            <div className="h-1.5 w-3/5 rounded-sm bg-base-content/40" />
+            <div className="mt-1 h-1.5 w-4/5 rounded-sm bg-base-content/25" />
           </div>
         </div>
       )}
@@ -379,14 +387,16 @@ function PreviaLayout({ tipo, tamanho }: { tipo: AppConfig['tv_layout']; tamanho
                 : 'grid-cols-[2fr_1fr]'
           }`}
         >
-          <div className="flex flex-col items-center justify-center gap-1 rounded-sm border border-primary/60">
-            <div className={`${texto} ${tamanho === '2_3' ? 'h-3.5 w-4/5' : 'h-5 w-4/5'}`} />
-            <div className="h-2 w-3/5 rounded-sm bg-base-content/40" />
+          <div className="flex flex-col items-center justify-center gap-1 rounded-sm border border-primary/40 bg-base-100/60 p-1">
+            <div className={`${texto} ${tamanho === '2_3' ? 'h-3 w-4/5' : 'h-4 w-4/5'}`} />
+            <div className="h-1.5 w-3/5 rounded-sm bg-base-content/40" />
           </div>
           <div className="flex flex-col gap-1">
-            <div className={`${video} aspect-video w-full`} />
-            <div className="h-2 rounded-sm bg-base-content/25" />
-            <div className="h-2 rounded-sm bg-base-content/25" />
+            <div className={`${video} aspect-video w-full`}>
+              {tamanho === '2_3' ? 'Vídeo 2/3' : tamanho === '1_2' ? 'Vídeo 1/2' : 'Vídeo 1/3'}
+            </div>
+            <div className="h-1.5 rounded-sm bg-base-content/25" />
+            <div className="h-1.5 rounded-sm bg-base-content/25" />
           </div>
         </div>
       )}
@@ -399,6 +409,26 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
   const arquivoRef = useRef<HTMLInputElement>(null);
   const [link, setLink] = useState('');
   const [adicionando, setAdicionando] = useState(false);
+
+  const restaurarVideoVetbots = async () => {
+    try {
+      const existente = midias.find((m) => m.youtube_id === 'FB56YWC3tz4' || m.arquivo?.includes('FB56YWC3tz4'));
+      if (existente) {
+        if (!existente.ativo) {
+          await api('PATCH', `/api/midias/${existente.id}`, { ativo: true });
+        }
+      } else {
+        await api('POST', '/api/midias/youtube', {
+          url: 'https://www.youtube.com/watch?v=FB56YWC3tz4',
+          nome: 'Apresentação de VetBots · Chatbot com IA para Clínicas Veterinárias',
+        });
+      }
+      await refresh();
+      toast.success('Vídeo da VetBots ativado na playlist!');
+    } catch (e) {
+      toast.error(erroDe(e));
+    }
+  };
 
   const adicionarYoutube = async (texto: string) => {
     const url = texto.trim();
@@ -618,7 +648,42 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
       </div>
 
       <div className={cartao}>
-        <h2 className="text-sm font-bold text-base-content">Como a TV se comporta</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-bold text-base-content">Como a TV se comporta</h2>
+            <p className="text-xs text-neutral">Formato e proporção da imagem na tela da sala de espera.</p>
+          </div>
+          <a
+            href="/tv"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-sm btn-ghost gap-2 border border-base-300 hover:border-primary text-xs"
+            title="Abre o Telão da TV em nova aba para ver as alterações em tempo real"
+          >
+            <Tv className="h-4 w-4 text-primary" aria-hidden="true" />
+            <span>Ver Telão ao vivo</span>
+            <ExternalLink className="h-3 w-3 opacity-60" aria-hidden="true" />
+          </a>
+        </div>
+
+        {ativos === 0 && (
+          <div className="rounded-lg border border-warning/40 bg-warning/10 p-3 text-xs flex flex-wrap items-center justify-between gap-3 text-base-content">
+            <div className="flex items-center gap-2">
+              <span className="text-base">⚠️</span>
+              <span>
+                <strong>Nenhum vídeo ativo na playlist.</strong> A TV está exibindo o modo de senhas em tela cheia. Ative ou restaure um vídeo abaixo para aplicar os layouts acima.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => void restaurarVideoVetbots()}
+              className="btn btn-xs btn-primary whitespace-nowrap"
+            >
+              Restaurar vídeo VetBots
+            </button>
+          </div>
+        )}
+
         <div className="grid sm:grid-cols-3 gap-3">
           {(
             [
@@ -633,9 +698,9 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
                 key={valor}
                 type="button"
                 aria-pressed={marcado}
-                onClick={() => salvarConfig({ tv_layout: valor })}
+                onClick={() => salvarConfig({ tv_layout: valor }, `Layout da TV alterado para "${titulo}".`)}
                 className={`card text-left p-3 gap-3 border-2 transition duration-200 ${
-                  marcado ? 'border-primary bg-primary/10' : 'border-base-300 bg-base-100 hover:border-primary/50'
+                  marcado ? 'border-primary bg-primary/10 shadow-sm' : 'border-base-300 bg-base-100 hover:border-primary/50'
                 }`}
               >
                 <PreviaLayout tipo={valor} tamanho={config.tv_video_size} />
@@ -669,7 +734,7 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
                   type="button"
                   role="radio"
                   aria-checked={config.tv_theme === valor}
-                  onClick={() => salvarConfig({ tv_theme: valor })}
+                  onClick={() => salvarConfig({ tv_theme: valor }, `Visual da TV alterado para tema ${rotulo}.`)}
                   className={`btn btn-sm join-item ${config.tv_theme === valor ? 'btn-primary' : 'btn-ghost border-base-300'}`}
                 >
                   {rotulo}
@@ -679,10 +744,13 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
           </div>
         </div>
 
-        {config.tv_layout === 'video_16_9' && (
+        {(config.tv_layout === 'video_16_9' || config.tv_layout === 'lateral') && (
           <div className="space-y-3 rounded-lg border border-base-300 bg-base-200/50 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span id="tamanho-tv" className="text-xs font-semibold text-base-content">Quanto da tela o vídeo ocupa</span>
+              <div>
+                <span id="tamanho-tv" className="text-xs font-semibold text-base-content block">Quanto da tela o vídeo ocupa</span>
+                <span className="text-xs text-neutral">Define a proporção entre a área do vídeo e o painel de chamadas.</span>
+              </div>
               <div role="radiogroup" aria-labelledby="tamanho-tv" className="join">
                 {(
                   [
@@ -696,7 +764,7 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
                     type="button"
                     role="radio"
                     aria-checked={config.tv_video_size === valor}
-                    onClick={() => salvarConfig({ tv_video_size: valor })}
+                    onClick={() => salvarConfig({ tv_video_size: valor }, `Proporção do vídeo ajustada para ${rotulo}.`)}
                     className={`btn btn-sm join-item ${config.tv_video_size === valor ? 'btn-primary' : 'btn-ghost border-base-300'}`}
                   >
                     {rotulo}
@@ -704,12 +772,14 @@ function AbaTv({ config, midias }: { config: AppConfig; midias: Media[] }) {
                 ))}
               </div>
             </div>
-            <Interruptor
-              ativo={config.tv_show_lists}
-              onChange={(v) => salvarConfig({ tv_show_lists: v })}
-              titulo="Mostrar chamadas anteriores e próximos"
-              detalhe="Desligado, a TV mostra só o vídeo e a chamada atual, bem grande."
-            />
+            {config.tv_layout === 'video_16_9' && (
+              <Interruptor
+                ativo={config.tv_show_lists}
+                onChange={(v) => salvarConfig({ tv_show_lists: v })}
+                titulo="Mostrar chamadas anteriores e próximos"
+                detalhe="Desligado, a TV mostra só o vídeo e a chamada atual, bem grande."
+              />
+            )}
           </div>
         )}
 
